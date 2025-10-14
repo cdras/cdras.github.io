@@ -1,0 +1,67 @@
+@font-face {
+    font-family: 'Ultralight';
+    src: local('Neue Machina Ultralight'), local('NeueMachina-Ultralight'),
+        url('NeueMachina-Ultralight.eot?#iefix') format('embedded-opentype'),
+        url('NeueMachina-Ultralight.woff2') format('woff2'),
+        url('NeueMachina-Ultralight.woff') format('woff'),
+        url('NeueMachina-Ultralight.ttf') format('truetype');
+    font-weight: 200;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Light';
+    src: url('fonts/ClarendonTLig.ttf') format('truetype');
+    font-weight: 300;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Neue Machina';
+    src: local('Neue Machina Black'), local('NeueMachina-Black'),
+        url('NeueMachina-Black.eot?#iefix') format('embedded-opentype'),
+        url('NeueMachina-Black.woff2') format('woff2'),
+        url('NeueMachina-Black.woff') format('woff'),
+        url('NeueMachina-Black.ttf') format('truetype');
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Regular';
+    src: local('Neue Machina Regular'), local('NeueMachina-Regular'),
+        url('fonts/NeueMachina-Regular.eot?#iefix') format('embedded-opentype'),
+        url('fonts/NeueMachina-Regular.woff2') format('woff2'),
+        url('fonts/NeueMachina-Regular.woff') format('woff'),
+        url('fonts/NeueMachina-Regular.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Bold';
+    src:url('fonts/ClarendonTBol.ttf') format('truetype');
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'BoldExp';
+    src:url('fonts/ClarendonTBolExp.ttf') format('truetype');
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Medium';
+    src:url('fonts/ClarendonTMed.ttf') format('truetype');
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Neue Machina';
+    src: local('Neue Machina Ultrabold'), local('NeueMachina-Ultrabold'),
+        url('NeueMachina-Ultrabold.eot?#iefix') format('embedded-opentype'),
+        url('NeueMachina-Ultrabold.woff2') format('woff2'),
+        url('NeueMachina-Ultrabold.woff') format('woff'),
+        url('NeueMachina-Ultrabold.ttf') format('truetype');
+    font-style: normal;
+}
+
