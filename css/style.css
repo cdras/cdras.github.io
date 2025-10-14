@@ -7,14 +7,26 @@ body {
 /*    overflow-x: hidden;*/
 }
 
-.topBar{
+/*.topBar{
     width: 100%;
     height: 196px;
-/*    background-color: #F8F8F8;*/
     display: flex;
     align-items: center;
     justify-content: center;
     background-image: linear-gradient(to bottom, #F8F8F8, #FFFFFF);
+}*/
+
+.topBar {  
+    box-shadow: 0 0 20px rgb(0 0 0 / 5%);
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 196px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-image: linear-gradient(to bottom, #F8F8F8, #FFFFFF);
+    z-index: 1000; /* Убедитесь, что шапка поверх другого контента */
 }
 
 .mainCover{
@@ -28,6 +40,7 @@ body {
 }
 
 .mainCoverDiv{
+    margin-top: 196px;
     width: 100%;
     height: 100%;
     background-color: #FFFFFF;
@@ -75,6 +88,68 @@ h3{
     font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
+}
+
+h4{  
+    text-align: center;
+    font-size: 60px;
+    font-family: 'ClarendonTLig Regular';
+    font-weight: normal;
+    color: #260041;
+    margin: 0 0 0 0;
+}
+
+.moreInfoDiv{
+    margin-left: 72px;
+    margin-top: 39px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
+.moreInformationText{
+    margin-top: 500px;
+    margin-bottom: 40px;
+
+}
+
+.moreInfoTitles{
+
+}
+
+.moreInfoLightTextStreams{
+    margin: 0 18px 0px 14px;
+    font-size: 50px;
+
+}
+
+.text500000{
+    font-size: 60px;
+}
+
+.moreInfoLightTexts{
+    margin: 8px 0px 0px 0px;
+}
+
+.moreInfoBoldText{
+    margin: 8px 0px 0px 0px;
+}
+
+.linkSvg{
+    width: 38px;
+    height: 38px;
+}
+
+.lastStreamsTextDiv{
+    display: flex;
+    align-items: center;
+    margin: 8px 0px 350px 0px;
+}
+
+.artistMain{
+    width: 624px;
+    height: 624px;
+    margin-left: 72px;
 }
 
 .text1{
@@ -150,6 +225,9 @@ h3{
 
 
 @media (min-device-width: 500px) {
+    .mainCoverDiv{
+        margin-top: 98px;
+    }
     .topBar{
         height: 98px;
     }
