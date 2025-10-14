@@ -1,3 +1,12 @@
+body {
+    background-color: white;
+/*    color: black;*/
+/*    font-size: 12px;*/
+    margin: 0 auto;
+/*    height: 100%;*/
+/*    overflow-x: hidden;*/
+}
+
 .topBar{
     width: 100%;
     height: 196px;
@@ -9,8 +18,8 @@
 }
 
 .mainCover{
-    width: 900;
-    height: 667;
+    width: 900px;
+    height: 667px;
 }
 
 .topCDRAlogo{
@@ -34,24 +43,36 @@
     align-items: center;
 }
 
+.swipeForNextDiv{
+    width: 100%;
+    height: 100%;
+    background-color: #FFFFFF;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
 h1{  
     text-align: center;
     font-size: 70px;
-    font-family: 'Bold', Sans-Serif;
+    font-family: 'ClarendonTBol Regular';
+    font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
 }
 h2{  
     text-align: center;
     font-size: 40px;
-    font-family: 'Medium', Sans-Serif;
+    font-family: 'ClarendonTMed Regular';
+    font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
 }
 h3{  
     text-align: center;
     font-size: 70px;
-    font-family: 'BoldExp', Sans-Serif;
+    font-family: 'ClarendonTBolExp Regular';
+    font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
 }
@@ -69,401 +90,26 @@ h3{
 }
 
 .text4{
-    margin: 147px 0 0 0;
+    margin: 78px 0 0 0;
 }
 
 .text5{
-    margin: 147px 0 0 0;
+    margin: 13px 0 0 0;
 }
 
 .text6{
-    margin: 147px 0 0 0;
+    margin: 5px 0 0 0;
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/* Базовые стили для всех устройств */
-body {
-    background-color: white;
-    font-family: Verdana, Tahoma, Arial, Sans-Serif;
-    color: black;
-    font-size: 12px;
-    margin: 0 auto;
-    height: 100%;
-    overflow-x: hidden;
-}
-
-.divPhotos{
-    width: 100%;
-    display: flex;
-    justify-content: center;
-}
-
-.noPcVerText {
-    font-family: 'Medium', Sans-Serif;
-    width: 50%;
-    text-align: center;
-    font-weight: 500;
-    font-size: 15px;
-}
-
-.regular {
-    font-family: 'Regular', Sans-Serif;
-    width: 100%;
-    text-align: center;
-    font-size: 21px;
-    font-weight: normal;
-}
-
-.nomargin {
-    margin: 0;
-}
-
-.noPcVer {
-    margin-top: 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-    height: 100%;
-}
-
-header {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background-color: #F6F6F6;
-    height: 140px;
-    width: 100vw;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.25);
-}
-
-.main_text {
-    font-family: 'Medium', Sans-Serif;
-    width: 80%;
-    text-align: center;
-    font-weight: 500;
-    font-size: 35px;
-}
-.main_text_bio {
-    font-family: 'Medium', Sans-Serif;
-    width: 80%;
-    text-align: center;
-    font-weight: 500;
-    font-size: 35px;
-}
-
-
-
-
-
-
-
-
-/* Стили для мобильных устройств (до 500px) */
-.centerdivbio {
-    height: 325px;
-    display: flex;
-    align-items: center;
-    justify-content: left;
-    margin-left: 10%;
-}
-
-.centerdiv {
-    width: 100%;
-    height: 325px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mainphoto {
-    border-radius: 100%;
-    width: 200px;
-    height: 200px;
-}
-
-.strip {
-    background-color: #969191;
-    width: 100%;
-    height: 1px;
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
-}
-
-.socnettextdiv {
-    width: 100%;
-    height: 100px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.biotextdiv {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.biotext {
-    font-family: 'Medium', Sans-Serif;
-    width: 90%;
-    text-align: center;
-    font-size: 25px; /* Увеличен размер для телефонов */
-    font-weight: normal;
-}
-
-.socnettext {
-    font-family: 'Regular', Sans-Serif;
-    width: 100%;
-    text-align: center;
+.text7{
+    margin: 151px 0 0 0;
     font-size: 30px;
-    font-weight: normal;
-    color: black; /* Черный цвет для всех страниц */
 }
 
-.socnet {
-    width: 367px;
-    height: 96px;
-    background-color: #F6F6F6;
-    border-radius: 116px;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 25px;
-    margin-left: 30px;
-    margin-right: 30px;
-}
-
-.viewBioBut{
-    width: 367px;
-    height: 96px;
-    background-color: #F6F6F6;
-    border-radius: 116px;
-    border: 1px solid #595959;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-top: 20px;
-    margin-left: 30px;
-    margin-right: 30px;
-}
-
-
-.languagesDiv{
-    display: flex;
-    justify-content: center;
-    width: 400px;
-}
-
-.changeLang {
-    width: 80px;
-    height: 60px;
-    background-color: #F6F6F6;
-    border-radius: 116px;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-}
-
-.changeLangSelected {
-    width: 80px;
-    height: 60px;
-    background-color: #000000;
-    border-radius: 116px;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-right: 10px;
-}
-.changeLangButTextSelected {
-    font-family: 'Medium', Sans-Serif;
-    text-align: center;
-    font-size: 25px;
-    font-weight: 500;
-     color: white;
-}
-
-.changeLangButText {
-    font-family: 'Medium', Sans-Serif;
-    text-align: center;
-    font-size: 25px;
-    font-weight: 500;
-}
-
-.nextPage {
-    width: 75px;
-    height: 75px;
-    background-color: #F6F6F6;
-    border-radius: 116px;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 30px;
-    margin-right: 30px;
-}
-
-.previousPage {
-    width: 75px;
-    height: 75px;
-    background-color: #F6F6F6;
-    border-radius: 116px;
-    border: 2px solid black;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-left: 30px;
-    margin-right: 30px;
-}
-
-.NPpageButImg {
-    margin-left: 50px;
-    width: 25px;
-    height: 25px;
-}
-
-.NPpageButText {
-    font-family: 'Medium', Sans-Serif;
-    width: 59%;
-    text-align: center;
-    font-size: 30px;
-    font-weight: 500;
-    margin-top: auto;
-}
-
-.socNetButText {
-    font-family: 'Medium', Sans-Serif;
-    width: 50%;
-    text-align: center;
-    font-size: 28px;
-    margin-right: 25px;
-    font-weight: 500;
-}
-.viewFullBioButText{
-	font-family: 'Medium', Sans-Serif;
-    text-align: center;
-    font-weight: 500;
-    font-size: 28px; 
-    margin-right: 0px;
-    width: 100%;
-}
-.socNetButImg {
-    margin-left: 50px;
-    width: 35px;
-    height: 35px;
-}
-
-.socnets {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.mainbio p {
-    font-size: 30px;
-    text-align: center;
-    padding-top: 3%;
-    padding-bottom: 5%;
-    font-family: 'Medium', Sans-Serif;
-}
-
-.ytVideos {
-    margin-top: 40px;
-    width: 100%;
-    height: 460px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.photo {
-    justify-content: center;
-    display: flex;
-}
-
-.photo div {
-    position: relative;
-    overflow: hidden;
-    width: 300px;
-    height: 300px;
-    display: inline-block;
-    padding: 1%;
-}
-
-.photo div img {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 300px;
-    height: 300px;
-    object-fit: cover;
-}
-
-.bigphoto div {
-    width: 100%;
-    margin-bottom: 5%;
-}
-
-.bigphoto div img {
-    width: 100%;
-}
-
-table.iksweb {
-    width: 90%;
-    border-collapse: collapse;
-    border-spacing: 0;
-    height: auto;
-    margin: auto;
-}
-
-table.iksweb, table.iksweb td, table.iksweb th {
-    border: 1px solid #595959;
-}
-
-table.iksweb td, table.iksweb th {
-    padding: 3px;
-    height: 35px;
-    font-family: 'Medium', Sans-Serif;
-    text-align: center;
-    font-weight: 500;
-    font-size: 22px;
-    height: 60px;
-    width: 20%;
-    border: 1px solid #969191;
-}
-
-table.iksweb th {
-    font-family: 'Medium', Sans-Serif;
-    text-align: center;
-    font-weight: 500;
-    font-size: 25px;
-    height: 75px;
-}
-
-a {
-    text-decoration: none;
-    color: black;
+.downSvg{
+    width: 66px;
+    height: 74px;
+    margin: 23px 0 0 0;
 }
 
 
@@ -473,113 +119,6 @@ a {
 
 
 
-
-
-
-
-@media (min-device-width: 500px) and (min-width: 500px) {
-    .noPcVer {
-        display: flex;
-    }
-    .aboutPage {
-        display: none;
-    }
-}
-
-@media screen and (orientation: landscape) {
-    .noPcVer {
-        display: flex;
-    }
-    .aboutPage {
-        display: none;
-    }
-}
-
-@media (min-device-width: 600px) and (min-width: 600px) {
-	.aboutPage {
-        display: block;
-        max-width: 980px;
-        margin: 0 auto; /* Центрируем с пустым местом по бокам */
-    }
-}
-
-
-
-
-/* Переключатель языков */
-.language-switcher {
-    display: flex;
-    justify-content: center;
-    gap: 10px;
-    padding: 20px 0;
-}
-
-.lang-btn {
-    padding: 10px 20px;
-    font-family: 'Medium', Sans-Serif;
-    font-size: 16px;
-    font-weight: 500;
-    background-color: #F6F6F6;
-    border: 2px solid black;
-    border-radius: 20px;
-    cursor: pointer;
-    transition: background-color 0.3s, color 0.3s;
-}
-
-.lang-btn.active {
-    background-color: black;
-    color: white;
-}
-
-.lang-btn:hover:not(.active) {
-    background-color: #e0e0e0;
-}
-
-/* Скрытие контента */
-.hidden {
-    position: absolute;
-    left: -9999px;
-}
-
-/* Заголовок биографии */
-.bio-title {
-    font-family: 'Medium', Sans-Serif;
-    font-size: 35px;
-    font-weight: normal;
-    margin: 0;
-    text-align: center;
-    font-size: 30px;
-    margin-right: 100px;
-    margin-left: 250px;
-    
-}
-.img-title {
-    font-family: 'Medium', Sans-Serif;
-    font-size: 30px;
-    padding: 0px 0px 0px 100px;
-    font-weight: normal;
-    margin: 0;
-    text-align: center;
-}
-
-/* Цитаты */
-.biotext.quote {
-    font-style: italic;
-    color: #555;
-    border-left: 4px solid #969191;
-    padding-left: 15px;
-    margin: 10px 0;
-}
-
-/* Улучшение отступов */
-.biotextdiv {
-    padding: 15px 0;
-}
-
-.biotext {
-    margin: 10px 0;
-    line-height: 1.5; /* Улучшает читаемость */
-}
 
 
 
@@ -593,73 +132,8 @@ a {
 
 
 
-
 @media (min-device-width: 1px) and (min-width: 1px) {
-	.main_text_bio{
-		margin-left: 280px;
-	}
-	.viewFullBioButText{
-	font-family: 'Medium', Sans-Serif;
-    text-align: center;
-    font-weight: 500;
-    font-size: 28px; 
-    margin-right: 0px;
-    width: 100%;
 }
-	.biotext.quote {
-    	font-size: 25px;
-	}
-	/*.changeLangSelected {
-    width: 80px;
-    height: 60px;
-	}
-
-	.changeLang {
-    width: 80px;
-    height: 60px;
-	}
-
-	.changeLangButTextSelected{
-		font-size: 25px;
-	}
-
-	.changeLangButText{
-		font-size: 25px;
-
-	}*/
-	.tdEmail{
-		font-size: 25px;
-	}
-	.trMainText{
-		height: 110px;
-	}
-	.trMainTextTh {
-		font-size: 35px;
-	}
-	table.iksweb td, table.iksweb th{
-		height: 100px;
-    	font-size: 28px;
-	}
-	table.iksweb th {
-    	font-size: 30px;
-	}
-	.photo{
-	width: 980px;
-	}
-
-    .noPcVer {
-        display: none;
-    }
-    .aboutPage {
-        display: block;
-    }
-}
-
-
-
-
-
-
 
 
 
@@ -673,131 +147,61 @@ a {
 
 
 
-
 @media (min-device-width: 500px) {
-	.main_text_bio{
-		margin-left: 222px;
-	}
-	.viewFullBioButText {
+    .topBar{
+        height: 98px;
+    }
+    .mainCover{
+        width: 450px;
+        height: 333px;
+    }
+
+    .topCDRAlogo{
+        width: 123px;
+        height: 23px;
+    }
+    h1{  
+        font-size: 35px;
+    }
+    h2{  
         font-size: 20px;
     }
-	.socNetButImg {
-    margin-left: 45px;
-    	width: 25px;
-    	height: 25px;
-	}
-	.socNetButText{
-		font-size: 20px;
-		width: 45%;
-	}
-	.socnet{
-		width: 300px;
-		height: 70px;
-	}
-	.viewBioBut{
-    width: 300px;
-    height: 60px;
+    h3{  
+        font-size: 35px;
+    }
+    .text1{
+        margin: 44.5px 0 0 0;
+    }
+
+    .text2{
+        margin: 10.5px 0 0 0;
+    }
+
+    .text3{
+        margin: 2px 0 0 0;
+    }
+
+    .text4{
+        margin: 39px 0 0 0;
+    }
+
+    .text5{
+        margin: 6.5px 0 0 0;
+    }
+
+    .text6{
+        margin: 2.5px 0 0 0;
+    }
+
+    .text7{
+        margin: 75.5px 0 0 0;
+        font-size: 15px;
+    }
+
+.downSvg{
+    width: 33px;
+    height: 37px;
+    margin: 11.5px 0 0 0;
 }
-	.bio-title {
-		font-size: 20px;
-    margin-left: 0px;
-	}
-	.nextPage {
-    	width: 60px;
-    	height: 60px;
-	}
-	.previousPage {
-    	width: 60px;
-    	height: 60px;
-	}
-	.NPpageButText {
-    margin-top: 13px;
-	}
-	.img-title{
-        font-size: 20px;
-        margin-right: 50px;
-	}
-	.socnettextdiv {
-    height: 80px;
-	}
-	.socnettext {
-    font-size: 25px;
-	}
-	.biotext.quote {
-    	font-size: 15px;
-	}
-	.changeLangSelected {
-    width: 60px;
-    height: 40px;
-	}
-
-	.changeLang {
-    width: 60px;
-    height: 40px;
-	}
-
-	.changeLangButTextSelected{
-		font-size: 15px;
-	}
-
-	.changeLangButText{
-		font-size: 15px;
-
-	}
-
-	.tdEmail{
-		font-size: 22px;
-	}
-
-	.trMainTextTh{
-		font-size: 35px;
-	}
-	.trMainText{
-		height: 50px;
-	}
-	table.iksweb td, table.iksweb th{
-		height: 60px;
-    	font-size: 22px;
-	}
-	table.iksweb th {
-    font-size: 25px;
-}
-    .aboutPage {
-        display: block;
-        max-width: 800px;
-        margin: 0 auto; /* Центрируем с пустым местом по бокам */
-    }
-
-    .noPcVer {
-        display: none;
-    }
-
-    header {
-        width: 100%;
-    }
-
-    .centerdivbio {
-        margin-left: 0;
-        justify-content: space-between; /* Распределяем фото и текст */
-        padding: 0 20px; /* Отступы по бокам */
-    }
-
-    .centerdiv {
-        margin-left: 0;
-    }
-
-    /* Убираем абсолютное позиционирование */
-    .center-align {
-        position: static;
-        margin: 0;
-    }
-
-    /* Специфично для страницы биографии */
-    .centerdivbio .mainphoto {
-        margin-left: 20px;
-    }
-    .biotext {
-        font-size: 18px;
-    }
 }
 

@@ -1,0 +1,359 @@
+    @font-face {
+    font-family: 'URWClarendonT Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonT Regular'), url('39694_URWClarendonT.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonT Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonT Oblique'), url('39693_URWClarendonTOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonT Bold Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonT Bold Oblique'), url('39691_URWClarendonTBoldOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonT Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonT Bold'), url('39692_URWClarendonTBold.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTLigExtWid Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTLigExtWid Regular'), url('39718_URWClarendonTLigExtWid.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTLigNar Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTLigNar Regular'), url('39720_URWClarendonTLigNar.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTNar Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTNar Regular'), url('39734_URWClarendonTNar.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon Cn BT Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon Cn BT Regular'), url('08636_ClarendonCondensedBT.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'ClarendonSteDExtBol Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('ClarendonSteDExtBol Regular'), url('08650_ClarendonSteDExtBol.woff') format('woff');
+    }
+    
+
+
+
+/*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  */
+
+    @font-face {
+    font-family: 'ClarendonTBol Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('ClarendonTBol Regular'), url('08651_ClarendonTBol.woff') format('woff');
+    }
+    
+
+
+/*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  *//*  BOLD  */
+
+
+
+
+/*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  */
+
+    @font-face {
+    font-family: 'ClarendonTBolExp Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('ClarendonTBolExp Regular'), url('08652_ClarendonTBolExp.woff') format('woff');
+    }
+
+/*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  */
+
+
+
+
+    @font-face {
+    font-family: 'ClarendonTExtBol Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('ClarendonTExtBol Regular'), url('08653_ClarendonTExtBol.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'ClarendonTLig Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('ClarendonTLig Regular'), url('08654_ClarendonTLig.woff') format('woff');
+    }
+    
+
+
+
+/*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  */
+
+    @font-face {
+    font-family: 'ClarendonTMed Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('ClarendonTMed Regular'), url('08655_ClarendonTMed.woff') format('woff');
+    }
+
+/*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  */
+
+
+
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtBol Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtBol Regular'), url('39696_URWClarendonTExtBol.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtBolExtNar Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtBolExtNar Regular'), url('39698_URWClarendonTExtBolExtNar.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtBolExtWid Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtBolExtWid Regular'), url('39700_URWClarendonTExtBolExtWid.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtWid Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtWid Regular'), url('39712_URWClarendonTExtWid.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTLigExtNar Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTLigExtNar Regular'), url('39716_URWClarendonTLigExtNar.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTLigExtWid Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTLigExtWid Oblique'), url('39717_URWClarendonTLigExtWidOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTLigNar Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTLigNar Oblique'), url('39719_URWClarendonTLigNarOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTMed Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTMed Oblique'), url('39723_URWClarendonTMedOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTWid Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTWid Oblique'), url('39735_URWClarendonTWidOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon Blk BT Black';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon Blk BT Black'), url('08628_ClarendonBlackBT.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon BT Roman';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon BT Roman'), url('08634_ClarendonBT.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon Lt BT Light';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon Lt BT Light'), url('08639_ClarendonLightBT.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtBol Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtBol Oblique'), url('39695_URWClarendonTExtBolOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtBolExtNar Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtBolExtNar Oblique'), url('39697_URWClarendonTExtBolExtNarOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtBolExtWid Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtBolExtWid Oblique'), url('39699_URWClarendonTExtBolExtWidOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtBolWid Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtBolWid Oblique'), url('39703_URWClarendonTExtBolWidOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtWid Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtWid Oblique'), url('39711_URWClarendonTExtWidOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTLig Oblique';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTLig Oblique'), url('39713_URWClarendonTLigOblique.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon-Light Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon-Light Regular'), url('08625_CLAREND1 (1).woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon Regular'), url('08627_CLARENDO.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon-Bold Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon-Bold Regular'), url('08643_Clarendon-Bold.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon-DemiBold Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon-DemiBold Regular'), url('08644_Clarendon-DemiBold.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon-ExtraBold Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon-ExtraBold Regular'), url('08646_Clarendon-ExtraBold.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon-Medium Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon-Medium Regular'), url('08648_Clarendon-Medium.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon-Regular Regular';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon-Regular Regular'), url('08649_Clarendon-Regular.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon BT Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon BT Bold'), url('08629_ClarendonBoldBT.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'Clarendon Cn BT Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('Clarendon Cn BT Bold'), url('08630_ClarendonBoldCondensedBT.woff') format('woff');
+    }
+    
+
+    @font-face {
+    font-family: 'URWClarendonTExtWid Bold';
+    font-style: normal;
+    font-weight: normal;
+    src: local('URWClarendonTExtWid Bold'), url('39710_URWClarendonTExtWidBold.woff') format('woff');
+    }
