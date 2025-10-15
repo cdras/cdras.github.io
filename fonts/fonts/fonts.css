@@ -78,7 +78,8 @@
     font-family: 'ClarendonTBol Regular';
     font-style: normal;
     font-weight: normal;
-    src: local('ClarendonTBol Regular'), url('08651_ClarendonTBol.woff') format('woff');
+    src: local('ClarendonTBol Regular'), url('08651_ClarendonTBol.woff') format('woff'),
+        url('ClarendonTBol.ttf') format('truetype');
     }
     
 
@@ -94,7 +95,8 @@
     font-family: 'ClarendonTBolExp Regular';
     font-style: normal;
     font-weight: normal;
-    src: local('ClarendonTBolExp Regular'), url('08652_ClarendonTBolExp.woff') format('woff');
+    src: local('ClarendonTBolExp Regular'), url('08652_ClarendonTBolExp.woff') format('woff'),
+        url('ClarendonTBolExp.ttf') format('truetype');
     }
 
 /*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  *//*  BOLD EXP  */
@@ -106,7 +108,8 @@
     font-family: 'ClarendonTExtBol Regular';
     font-style: normal;
     font-weight: normal;
-    src: local('ClarendonTExtBol Regular'), url('08653_ClarendonTExtBol.woff') format('woff');
+    src: local('ClarendonTExtBol Regular'), url('08653_ClarendonTExtBol.woff') format('woff'),
+        url('ClarendonTExtBol.ttf') format('truetype');
     }
     
 
@@ -117,7 +120,8 @@
     font-family: 'ClarendonTLig Regular';
     font-style: normal;
     font-weight: normal;
-    src: local('ClarendonTLig Regular'), url('08654_ClarendonTLig.woff') format('woff');
+    src: local('ClarendonTLig Regular'), url('08654_ClarendonTLig.woff') format('woff'),
+        url('ClarendonTLig.ttf') format('truetype');
     }
     
 /*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  *//*  LIGHT  */
@@ -132,7 +136,8 @@
     font-family: 'ClarendonTMed Regular';
     font-style: normal;
     font-weight: normal;
-    src: local('ClarendonTMed Regular'), url('08655_ClarendonTMed.woff') format('woff');
+    src: local('ClarendonTMed Regular'), url('08655_ClarendonTMed.woff') format('woff'),
+        url('ClarendonTMed.ttf') format('truetype');
     }
 
 /*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  *//*  MEDIUM  */
