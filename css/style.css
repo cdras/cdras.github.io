@@ -7,6 +7,12 @@ body {
 /*    overflow-x: hidden;*/
 }
 
+a {
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+}
+
 /*.topBar{
     width: 100%;
     height: 196px;
@@ -154,6 +160,12 @@ h4{
 .lastStreamsTextDiv{
     display: flex;
     align-items: center;
+    margin: 8px 0px 10px 0px;
+}
+
+.lastStreamsTextDiv2{
+    display: flex;
+    align-items: center;
     margin: 8px 0px 50px 0px;
 }
 
@@ -279,6 +291,10 @@ h4{
     }
 
     .lastStreamsTextDiv{
+        margin: 4px 0px 5px 0px;
+    }
+
+    .lastStreamsTextDiv2{
         margin: 4px 0px 162.5px 0px;
     }
 
