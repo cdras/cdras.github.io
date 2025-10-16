@@ -68,7 +68,7 @@ body {
 h1{  
     text-align: center;
     font-size: 70px;
-    font-family: 'ClarendonTBol Regular';
+    font-family: 'ClarendonTBol Regular', serif;
     font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
@@ -76,7 +76,7 @@ h1{
 h2{  
     text-align: center;
     font-size: 40px;
-    font-family: 'ClarendonTMed Regular';
+    font-family: 'ClarendonTMed Regular', serif;
     font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
@@ -84,7 +84,7 @@ h2{
 h3{  
     text-align: center;
     font-size: 70px;
-    font-family: 'ClarendonTBolExp Regular';
+    font-family: 'ClarendonTBolExp Regular', serif;
     font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
@@ -93,7 +93,7 @@ h3{
 h4{  
     text-align: center;
     font-size: 60px;
-    font-family: 'ClarendonTLig Regular';
+    font-family: 'ClarendonTLig Regular', serif;
     font-weight: normal;
     color: #260041;
     margin: 0 0 0 0;
@@ -154,7 +154,7 @@ h4{
 .lastStreamsTextDiv{
     display: flex;
     align-items: center;
-    margin: 8px 0px 325px 0px;
+    margin: 8px 0px 250px 0px;
 }
 
 .artistMain{
