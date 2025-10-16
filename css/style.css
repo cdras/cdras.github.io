@@ -154,7 +154,7 @@ h4{
 .lastStreamsTextDiv{
     display: flex;
     align-items: center;
-    margin: 8px 0px 250px 0px;
+    margin: 8px 0px 50px 0px;
 }
 
 .artistMain{
@@ -246,7 +246,7 @@ h4{
     }
 
     .moreInformationText{
-        margin-top: 250px;
+        margin-top: 300px;
         margin-bottom: 20px;
 
     }
