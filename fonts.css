@@ -1,0 +1,9 @@
+
+@font-face {
+    font-family: 'Medium';
+    src: local('ClarendonTMed Regular'),
+    	url('fonts/fonts/08655_ClarendonTMed.woff') format('woff'),
+        url('fonts/fonts/ClarendonTMed.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+}
