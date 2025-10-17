@@ -14,9 +14,9 @@ a {
 }
 
 .centerDiv{
-    display: flex;
+    /*display: flex;
     align-items: center;
-    flex-direction: column;
+    flex-direction: column;*/
 /*    align-content: center;*/
     justify-content: center;
     height: 100vh;
