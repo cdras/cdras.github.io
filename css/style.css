@@ -128,6 +128,8 @@ h4{
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
+    height: 400vh;
 
 }
 
@@ -139,6 +141,7 @@ h4{
 .moreInformationText{
     margin-top: 100px;
     margin-bottom: 40px;
+    margin-top: 196px;
 
 }
 
