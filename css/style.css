@@ -13,6 +13,15 @@ a {
     align-items: center;
 }
 
+.centerDiv{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+/*    align-content: center;*/
+    justify-content: center;
+    height: 400vh;
+}
+
 /*.topBar{
     width: 100%;
     height: 196px;
@@ -23,7 +32,7 @@ a {
 }*/
 
 .topBar {  
-    box-shadow: 0 0 20px rgb(0 0 0 / 5%);
+/*    box-shadow: 0 0 20px rgb(0 0 0 / 5%);*/
     position: fixed;
     top: 0;
     width: 100%;
@@ -46,8 +55,8 @@ a {
 }
 
 .mainCoverDiv{
-    margin-top: 300px;
-/*    margin-top: 196px;*/
+/*    margin-top: 300px;*/
+    margin-top: 196px;
     width: 100%;
 /*    height: 100%;*/
     background-color: #FFFFFF;
@@ -70,6 +79,8 @@ a {
     display: flex;
     align-items: center;
     flex-direction: column;
+    justify-content: flex-end;
+    margin-bottom: 50px;
 }
 
 h1{  
@@ -126,7 +137,7 @@ h4{
 }
 
 .moreInformationText{
-    margin-top: 50px;
+    margin-top: 100px;
     margin-bottom: 40px;
 
 }
@@ -205,6 +216,11 @@ h4{
 
 .text7{
     margin: 100px 0 0 0;
+    font-size: 30px;
+}
+
+.textOtherAwards{
+    margin: 50px 0 0 0;
     font-size: 30px;
 }
 
