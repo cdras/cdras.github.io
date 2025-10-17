@@ -129,7 +129,7 @@ h4{
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    height: 400vh;
+/*    height: 400vh;*/
 
 }
 
@@ -142,6 +142,15 @@ h4{
     margin-top: 100px;
     margin-bottom: 40px;
     margin-top: 196px;
+
+}
+
+.moreInfoMainDiv15{
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: center;
+/*    height: 400vh;*/
 
 }
 
@@ -218,7 +227,7 @@ h4{
 }
 
 .text7{
-    margin: 100px 0 0 0;
+    margin: 40px 0 0 0;
     font-size: 30px;
 }
 
