@@ -287,6 +287,14 @@ h4{
 }
 
 
+@media (min-device-height: 850px) {
+
+    .swipeForNextDiv{
+        margin-bottom: 100px;
+    }
+}
+
+
 @media (max-device-height: 850px) {
     .mainCover{
         width: 800px;
@@ -330,6 +338,9 @@ h4{
         width: 45px;
         height: 50px;
         margin: 11.5px 0 0 0;
+    }
+    .swipeForNextDiv{
+        margin-bottom: 200px;
     }
 
 /*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*/
@@ -436,6 +447,9 @@ h4{
         width: 54px;
         height: 60px;
         margin: 11.5px 0 0 0;
+    }
+    .swipeForNextDiv{
+        margin-bottom: 150px;
     }
 
 /*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*/
