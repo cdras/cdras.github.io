@@ -46,14 +46,15 @@
 </style>
 </head>
 <body>
+
   <div class="container">
-    <section class="s1">
+    <section class="s1" id="myDiv">
       <div class="centerDiv">
         <div class="mainCoverDiv">
           <img src="images/GET_IT,Vol.1/GET_IT,Vol.1_GOLD.png" class="mainCover">  
         </div>
           <div class="infoDiv">
-            <h2 class="text1">Award for the track</h2>
+            <h2 class="text1" id="myText">Award for the track</h2>
             <h1 class="text2">GOT ME UP 2</h1>
             <h1 class="text3">SETTWOR</h1>
           </div>
@@ -148,6 +149,12 @@
   
 
 
-    
+    <script>
+  const div = document.getElementById('myDiv');
+  const text = document.getElementById('myText');
+  const width = div.offsetWidth;
+  const height = div.offsetHeight;
+  text.textContent = `Ширина: ${width}px, Высота: ${height}px`;
+</script>
 </body>
 </html>
