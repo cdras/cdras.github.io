@@ -214,7 +214,7 @@ h4{
 }
 
 .text4{
-    margin: 70px 0 0 0;
+    margin: 50px 0 0 0;
 }
 
 .text5{
@@ -263,6 +263,27 @@ h4{
 
 
 @media (min-device-width: 1px) and (min-width: 1px) {
+}
+
+@media (min-device-width: 0px) and (max-device-width: 320px) {
+    .swipeForNextDiv{
+        margin-bottom: 100px;
+    }
+}
+@media (min-device-width: 320px) and (max-device-width: 375px) {
+    .swipeForNextDiv{
+        margin-bottom: 75px;
+    }
+}
+@media (min-device-width: 375px) and (max-device-width: 425px) {
+    .swipeForNextDiv{
+        margin-bottom: 50px;
+    }
+}
+@media (min-device-width: 425px) and (max-device-width: 750px) {
+    .swipeForNextDiv{
+        margin-bottom: 25px;
+    }
 }
 
 
