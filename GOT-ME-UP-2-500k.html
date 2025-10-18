@@ -59,7 +59,7 @@
             <h1 class="text3">SETTWOR</h1>
           </div>
           <div class="infoDiv">
-            <h2 class="text4">for reaching</h2>
+            <h2 class="text4" id="myText2">for reaching</h2>
             <h3 class="text5">500,000</h3>
             <h1 class="text6">all-time streams</h1>
           </div>
@@ -155,6 +155,12 @@
   const width = div.offsetWidth;
   const height = div.offsetHeight;
   text.textContent = `Ширина: ${width}px, Высота: ${height}px`;
+
+   const myText2 = document.getElementById('myText2');
+  const deviceWidth = window.screen.width;
+  const deviceHeight = window.screen.height;
+  myText2.textContent = `device-width: ${deviceWidth}px, device-height: ${deviceHeight}px`;
+
 </script>
 </body>
 </html>
