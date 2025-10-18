@@ -22,6 +22,41 @@ a {
 /*    height: 100vh;*/
 }
 
+.moreAboutDiv{
+    margin: 20px 70px 0 70px;
+}
+
+.bioText1{
+    text-align: left;
+    font-size: 40px;
+}
+
+.bioText2{
+    text-align: right;
+    margin-top: 60px;
+    font-size: 40px;
+
+}
+.bioText3{
+    text-align: left;
+    margin-top: 60px;
+    font-size: 40px;
+
+}
+
+.moreInfoBoldText2{
+    font-size: 40px;
+}
+
+
+
+.otherAwardsDiv{
+    margin-top: 50px;
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+}
+
 /*.topBar{
     width: 100%;
     height: 196px;
@@ -119,7 +154,7 @@ h4{
 }
 
 .moreInfoDiv{
-    margin-top: 39px;
+    margin-top: 30px;
     display: flex;
     align-items: flex-start;
     flex-direction: column;
@@ -156,6 +191,7 @@ h4{
 }
 
 .moreInfoTitles{
+    margin-top: 20px;
 
 }
 
@@ -176,6 +212,10 @@ h4{
 .moreInfoBoldText{
     margin: 8px 0px 0px 0px;
 }
+.moreInfoBoldText2{
+    margin: 8px 0px 0px 0px;
+        font-size: 50px;
+}
 
 .linkSvg{
     width: 38px;
@@ -187,11 +227,17 @@ h4{
     align-items: center;
     margin: 8px 0px 10px 0px;
 }
+.lastStreamsTextDiv3{
+    display: flex;
+    align-items: center;
+    margin: 100px 0px 10px 0px;
+    justify-content: center;
+}
 
 .lastStreamsTextDiv2{
     display: flex;
     align-items: center;
-    margin: 8px 0px 50px 0px;
+    margin: 8px 0px 0px 0px;
 }
 
 .artistMain{
@@ -205,8 +251,16 @@ h4{
     margin: 80px 0 0 0;
 }
 
+.text1_1{
+    margin: 10px 0 0 0;
+}
+
 .text2{
     margin: 21px 0 0 0;
+}
+
+.text2_2{
+    margin: 5px 0 0 0;
 }
 
 .text3{
@@ -295,7 +349,7 @@ h4{
 
 @media (max-device-height: 667px) {
     .swipeForNextDiv{
-        margin-top: 50px;
+        margin-top: 10px;
     }
 }
 
@@ -319,6 +373,10 @@ h4{
     }
     .text1{
         margin: 40px 0 0 0;
+        font-size: 30px;
+    }
+    .text1_1{
+        margin: 5px 0 0 0;
         font-size: 30px;
     }
 
@@ -365,7 +423,7 @@ h4{
 
 
     .moreInfoDiv{
-        margin-top: 19.5px;
+        margin-top: 15px;
     }
 
     .moreInformationText{
@@ -389,6 +447,11 @@ h4{
         font-size: 60px;
     }
 
+    .moreInfoBoldText2{
+        margin: 4px 0px 0px 0px;
+        font-size: 50px;
+    }
+
     .artistMain{
         width: 400px;
         height: 400px;
@@ -397,29 +460,63 @@ h4{
 
 /*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*/
 
-    /*.text500000{
-        font-size: 30px;
+    .text500000{
+        font-size: 60px;
     }
 
     .moreInfoLightTextStreams{
         margin: 0 9px 0px 7px;
-        font-size: 25px;
+        font-size: 40px;
 
     }
 
+    .text2_2{
+        font-size: 60px;
+    }
+
     .linkSvg{
-        width: 19px;
-        height: 19px;
+        width: 30px;
+        height: 30px;
     }
 
     .lastStreamsTextDiv{
         margin: 4px 0px 5px 0px;
     }
 
+    .lastStreamsTextDiv3{
+/*        margin: 4px 0px 5px 0px;*/
+    }
+
     .lastStreamsTextDiv2{
         margin: 4px 0px 162.5px 0px;
-    }*/
+    }
+
+
+
+    .bioText1{
+        font-size: 40px;
+    }
+    .bioText2{
+        font-size: 40px;
+        margin-top: 50px;
+    }
+    .bioText3{
+        font-size: 40px;
+        margin-top: 50px;
+    }
+    .moreInfoBoldText2{
+        font-size: 40px;
+    }
+
+    .lastStreamsTextDiv3{
+        margin: 50px 0px 5px 0px;
+    }
 }
+
+
+/*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*/
+
+
 
 @media (min-device-height: 750px) and (max-device-height: 850px) {
     .mainCover{
@@ -430,8 +527,17 @@ h4{
         margin: 50px 0 0 0;
         font-size: 35px;
     }
+    .text1_1{
+        margin: 5px 0 0 0;
+        font-size: 35px;
+    }
 
     .text2{
+        margin: 11px 0 0 0;
+        font-size: 65px;
+    }
+
+    .text2_2{
         margin: 11px 0 0 0;
         font-size: 65px;
     }
@@ -472,7 +578,7 @@ h4{
 /*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*/
 
     .moreInfoDiv{
-        margin-top: 35px;
+        margin-top: 20px;
     }
 
     .moreInformationText{
@@ -493,7 +599,12 @@ h4{
 
     .moreInfoBoldText{
         margin: 4px 0px 0px 0px;
-        font-size: 65px;
+        font-size: 60px;
+    }
+
+    .moreInfoBoldText2{
+        margin: 4px 0px 0px 0px;
+        font-size: 60px;
     }
 
     .artistMain{
@@ -502,9 +613,38 @@ h4{
     }
 
 
-/*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*/
+/*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*/
+
+
+
+/*SECTION 4*//*SECTION 4*//*SECTION 4*//*SECTION 4*/
+
+
+    .bioText1{
+        font-size: 40px;
+    }
+    .bioText2{
+        font-size: 40px;
+        margin-top: 50px;
+    }
+    .bioText3{
+        font-size: 40px;
+        margin-top: 50px;
+    }
+    .moreInfoBoldText2{
+        font-size: 40px;
+    }
+
+    .lastStreamsTextDiv3{
+        margin: 50px 0px 5px 0px;
+    }
     
 }
+
+
+/*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*//*MEDUIM PHONES*/
+
+
 
 
 /* Адаптация для больших экранов (500px и выше) */
@@ -552,6 +692,10 @@ h4{
     .moreInfoBoldText{
         margin: 4px 0px 0px 0px;
     }
+    .moreInfoBoldText2{
+        margin: 4px 0px 0px 0px;
+    }
+
 
     .linkSvg{
         width: 19px;
@@ -560,6 +704,10 @@ h4{
 
     .lastStreamsTextDiv{
         margin: 4px 0px 5px 0px;
+    }
+
+    .lastStreamsTextDiv3{
+/*        margin: 4px 0px 5px 0px;*/
     }
 
     .lastStreamsTextDiv2{
@@ -602,6 +750,9 @@ h4{
     }
     .text1{
         margin: 40px 0 0 0;
+    }
+    .text1_1{
+        margin: 20px 0 0 0;
     }
 
     .text2{
