@@ -266,8 +266,191 @@ h4{
 }
 
 
+@media (max-device-height: 850px) {
+    .mainCover{
+        width: 800px;
+        height: 593px;
+    }
+    .text1{
+        margin: 40px 0 0 0;
+        font-size: 30px;
+    }
+
+    .text2{
+        margin: 6px 0 0 0;
+        font-size: 60px;
+    }
+
+    .text3{
+        margin: 2px 0 0 0;
+        font-size: 40px;
+    }
+
+    .text4{
+        margin: 35px 0 0 0;
+        font-size: 30px;
+    }
+
+    .text5{
+        margin: 5px 0 0 0;
+        font-size: 60px;
+    }
+
+    .text6{
+        margin: 0px 0 0 0;
+        font-size: 45px;
+    }
+
+    .text7{
+        font-size: 25px;
+    }
+
+    .downSvg{
+        width: 45px;
+        height: 50px;
+        margin: 11.5px 0 0 0;
+    }
+
+/*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*/
 
 
+
+    .moreInfoDiv{
+        margin-top: 19.5px;
+    }
+
+    .moreInformationText{
+        margin-bottom: 40px;
+
+    }
+
+    .moreInfoTitles{
+        font-size: 30px;
+
+    }
+
+    .moreInfoLightTexts{
+        margin: 4px 0px 0px 0px;
+        font-size: 50px;
+    }
+
+    .moreInfoBoldText{
+        margin: 4px 0px 0px 0px;
+        font-size: 60px;
+    }
+
+    .artistMain{
+        width: 400px;
+        height: 400px;
+    }
+
+
+/*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*/
+
+    /*.text500000{
+        font-size: 30px;
+    }
+
+    .moreInfoLightTextStreams{
+        margin: 0 9px 0px 7px;
+        font-size: 25px;
+
+    }
+
+    .linkSvg{
+        width: 19px;
+        height: 19px;
+    }
+
+    .lastStreamsTextDiv{
+        margin: 4px 0px 5px 0px;
+    }
+
+    .lastStreamsTextDiv2{
+        margin: 4px 0px 162.5px 0px;
+    }*/
+}
+
+@media (min-device-height: 750px) and (max-device-height: 850px) {
+    .mainCover{
+        width: 850px;
+        height: 630px;
+    }
+    .text1{
+        margin: 50px 0 0 0;
+        font-size: 35px;
+    }
+
+    .text2{
+        margin: 11px 0 0 0;
+        font-size: 65px;
+    }
+
+    .text3{
+        margin: 7px 0 0 0;
+        font-size: 45px;
+    }
+
+    .text4{
+        margin: 45px 0 0 0;
+        font-size: 35px;
+    }
+
+    .text5{
+        margin: 10px 0 0 0;
+        font-size: 65px;
+    }
+
+    .text6{
+        margin: 0px 0 0 0;
+        font-size: 50px;
+    }
+
+    .text7{
+        font-size: 30px;
+    }
+
+    .downSvg{
+        width: 54px;
+        height: 60px;
+        margin: 11.5px 0 0 0;
+    }
+
+/*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*/
+
+    .moreInfoDiv{
+        margin-top: 35px;
+    }
+
+    .moreInformationText{
+        margin-bottom: 40px;
+
+    }
+
+    .moreInfoTitles{
+        font-size: 35px;
+
+    }
+
+    .moreInfoLightTexts{
+        margin: 4px 0px 0px 0px;
+        font-size: 55px;
+    }
+
+    .moreInfoBoldText{
+        margin: 4px 0px 0px 0px;
+        font-size: 65px;
+    }
+
+    .artistMain{
+        width: 450px;
+        height: 450px;
+    }
+
+
+/*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*//*SECTION 3*/
+    
+}
 
 
 /* Адаптация для больших экранов (500px и выше) */
