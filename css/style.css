@@ -265,24 +265,24 @@ h4{
 @media (min-device-width: 1px) and (min-width: 1px) {
 }
 
-@media (min-device-width: 0px) and (max-device-width: 320px) {
+@media (min-device-width: 320px) and (max-device-width: 345px) {
     .swipeForNextDiv{
         margin-bottom: 200px;
     }
 }
-@media (min-device-width: 320px) and (max-device-width: 375px) {
+@media (min-device-width: 345px) and (max-device-width: 375px) {
     .swipeForNextDiv{
-        margin-bottom: 85px;
+        margin-bottom: 150px;
     }
 }
-@media (min-device-width: 375px) and (max-device-width: 425px) {
+@media (min-device-width: 375px) and (max-device-width: 440px) {
     .swipeForNextDiv{
         margin-bottom: 60px;
     }
 }
 @media (min-device-width: 425px) and (max-device-width: 750px) {
     .swipeForNextDiv{
-        margin-bottom: 25px;
+/*        margin-bottom: 25px;*/
     }
 }
 
@@ -290,7 +290,7 @@ h4{
 @media (min-device-height: 850px) {
 
     .swipeForNextDiv{
-        margin-bottom: 100px;
+/*        margin-bottom: 300px;*/
     }
 }
 
@@ -340,7 +340,7 @@ h4{
         margin: 11.5px 0 0 0;
     }
     .swipeForNextDiv{
-        margin-bottom: 200px;
+/*        margin-bottom: 300px;*/
     }
 
 /*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*/
@@ -449,7 +449,7 @@ h4{
         margin: 11.5px 0 0 0;
     }
     .swipeForNextDiv{
-        margin-bottom: 150px;
+/*        margin-bottom: 150px;*/
     }
 
 /*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*//*SECTION 2*/
