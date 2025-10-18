@@ -295,19 +295,19 @@ h4{
 
 @media (max-device-height: 667px) {
     .swipeForNextDiv{
-        margin-top: 100px;
+        margin-top: 50px;
     }
 }
 
-@media (min-device-height: 667px) and (max-device-height: 932px) {
+@media (min-device-height: 668px) and (max-device-height: 932px) {
     .swipeForNextDiv{
-        margin-top: 150px;
+        margin-top: 100px;
     }
 }
 
 @media (min-device-height: 932px){
     .swipeForNextDiv{
-        margin-top: 250px;
+        margin-top: 150px;
     }
 }
 
