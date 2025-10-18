@@ -12,68 +12,184 @@
   <meta name="google-site-verification" content="85QeaPD1bZhDauEhX-KQNN8-4ZBrGAfRE7DqocyOwxE" />
   <link rel="stylesheet" type="text/css" href="css/style.css" />
   <link rel="icon" type="image/png" href="images/favicon.png">
+  <style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    scroll-behavior: smooth;
+  }
+
+  /* Контейнер для секций */
+  .container {
+    height: 100vh;
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory; /* Привязка по вертикали */
+  }
+
+  /* Каждая секция */
+  section {
+    height: 100vh;
+    scroll-snap-align: start;
+    display: flex;
+    flex-direction: column;
+    /* font-size: 40px; */
+    /* color: white; */
+    justify-content: flex-start;
+    
+    align-items: center;
+  }
+
+  /* Пример цветов */
+  /*.s1 { background: #ff0050; }
+  .s2 { background: #00f2ea; }
+  .s3 { background: #000000; }*/
+</style>
 </head>
 <body>
+
+  <div class="container">
+    <section class="s1" id="myDiv">
+      <div class="centerDiv">
+        <div class="mainCoverDiv">
+          <img src="images/GET_IT,Vol.1/GET_IT,Vol.1_low.png" class="mainCover">  
+        </div>
+          <div class="infoDiv">
+            <h2 class="text1" id="myText">Award for the track</h2>
+            <h1 class="text2">GOT ME UP 2</h1>
+            <h1 class="text3">SETTWOR</h1>
+          </div>
+          <div class="infoDiv">
+            <h2 class="text4" id="myText2">for reaching</h2>
+            <h3 class="text5">250,000</h3>
+            <h1 class="text6">all-time streams</h1>
+          </div>
+      </div>
+        <div class="swipeForNextDiv">
+          <h2 class="text7">Swipe for more information</h2>
+          <img src="images/down.svg" class="downSvg">
+        </div>
+    </section>
+
+
+    <section class="s2">
+        <h2 class="moreInformationText">More information</h2>
+      <div class="centerDiv">
+          <div class="moreInfoMainDiv2">
+            <img src="images/SETTWOR_main.jpg" class="artistMain">
+          <div class="moreInfoDiv">
+            <h2 class="moreInfoTitles">Award for</h2>
+            <h1 class="moreInfoBoldText">SETTWOR</h1>
+          </div>
+          <div class="moreInfoDiv">
+            <h2 class="moreInfoTitles">Date</h2>
+            <h4 class="moreInfoLightTexts">May 1, 2025</h4>
+          </div>
+          <div class="moreInfoDiv">
+            <h2 class="moreInfoTitles">Label</h2>
+            <h4 class="moreInfoLightTexts">SETTWOR</h4>
+          </div>
+          <div class="moreInfoDiv">
+            <h2 class="moreInfoTitles">Release Date</h2>
+            <h4 class="moreInfoLightTexts">March 15, 2024</h4>
+          </div>
+          </div>
+      </div>
+        <div class="swipeForNextDiv">
+          <h2 class="text7">Other awards</h2>
+          <img src="images/down.svg" class="downSvg">
+        </div>
+    </section>
+
+
+    <section class="s3">
+      <h2 class="moreInformationText">Other awards</h2>
+            <div class="moreInfoMainDiv">
+              <div class="moreInfoMainDiv2">
+                <img src="images/GET_IT,Vol.1/GET_IT,Vol.1_cover.png" class="artistMain">
+                <div class="moreInfoDiv">
+                  <h2 class="text1_1">Awards for</h2>
+                  <h1 class="text2_2">GOT ME UP 2</h1>
+                  <h1 class="text3">by SETTWOR</h1>
+                </div>
+                <div class="otherAwardsDiv">
+                  <h2 class="moreInfoTitles">April 3, 2025</h2>
+                  <!-- <h4 class="moreInfoLightTexts">GOT ME UP 2</h4> -->
+                </div>
+                  <div class="lastStreamsTextDiv">
+                    <a href="GOT-ME-UP-2-100k.html">
+                    <h3 class="text500000">100,000</h3>
+                    <h4 class="moreInfoLightTextStreams">streams</h4>
+                    <img src="images/link.svg" class="linkSvg">
+                    </a>
+                  </div>
+                  <div class="lastStreamsTextDiv">
+                  <h2 class="moreInfoTitles">May 1, 2025</h2>
+                </div>
+                  <div class="lastStreamsTextDiv">
+                    <a href="GOT-ME-UP-2-250k.html">
+                    <h3 class="text500000">250,000</h3>
+                    <h4 class="moreInfoLightTextStreams">streams</h4>
+                    <img src="images/link.svg" class="linkSvg">
+                    </a>
+                  </div>
+                  <div class="lastStreamsTextDiv">
+                  <h2 class="moreInfoTitles">July 22, 2025</h2>
+                  <!-- <h4 class="moreInfoLightTexts">GOT ME UP 2</h4> -->
+                </div>
+                  <div class="lastStreamsTextDiv">
+                    <a href="GOT-ME-UP-2-500k.html">
+                    <h3 class="text500000">500,000</h3>
+                    <h4 class="moreInfoLightTextStreams">streams</h4>
+                    <img src="images/link.svg" class="linkSvg">
+                    </a>
+                  </div>
+                </div>
+              </div>
+        <div class="swipeForNextDiv">
+          <h2 class="text7">More about SETTWOR</h2>
+          <img src="images/down.svg" class="downSvg">
+        </div>
+    </section>
+    <section class="s4">
+      <h2 class="moreInformationText">More about SETTWOR</h2>
+            <div class="moreAboutDiv">
+                  <h4 class="bioText1">SETTWOR is a music producer specializing in phonk, hip-hop/rap, and dance/electronic music. Originally from Kryvyi Rih, Ukraine, he relocated to Poland in 2022 and manages a well-known 8D music channel.</h4>
+                  <h4 class="bioText2">In 2018 he began studying music and, having gained some knowledge, released his first track “Light Wave” in 2021.</h4>
+                  <h4 class="bioText3">SETTWOR was born on February 8, 2007, in Kryvyi Rih, Ukraine. In 2020, Daniil took the pseudonym SETTWOR and created a YouTube channel of the same name for his work and future music. On May 8, 2022, the artist's first track in the phonk genre - Lunatic - was released.</h4>
+
+                  <div class="lastStreamsTextDiv3">
+                    <a href="https://settwor.github.io/">
+                    <h1 class="moreInfoBoldText2">Full information  </h1>
+                    <img src="images/link.svg" class="linkSvg">
+                    </a>
+                  </div>
+                  <!-- <h1 class="text2_2">GOT ME UP 2</h1>
+                  <h1 class="text3">by SETTWOR</h1> -->
+              </div>
+            </div>
+    </section>
+
+
+            </div>
+  </div>
   <header class="topBar">
     <img src="images/CDRAlogo.svg" class="topCDRAlogo">
   </header>
-  <div class="mainCoverDiv">
-    <img src="images/GET_IT,Vol.1/GET_IT,Vol.1_100k_streams.png" class="mainCover">  
-  </div>
-    <div class="infoDiv">
-      <h2 class="text1">Award for the track</h2>
-      <h1 class="text2">GOT ME UP 2</h1>
-      <h1 class="text3">SETTWOR</h1>
-    </div>
-    <div class="infoDiv">
-      <h2 class="text4">for reaching</h2>
-      <h3 class="text5">250,000</h3>
-      <h1 class="text6">all-time streams</h1>
-    </div>
-    <div class="swipeForNextDiv">
-      <h2 class="text7">Swipe for more details</h2>
-      <img src="images/down.svg" class="downSvg">
-    </div>
+  
 
 
-    <h2 class="moreInformationText">More information</h2>
-    <div class="moreInfoMainDiv">
-      <div class="moreInfoMainDiv2">
-        <img src="images/SETTWOR_main.jpg" class="artistMain">
-        <div class="moreInfoDiv">
-          <h2 class="moreInfoTitles">Award for</h2>
-          <h1 class="moreInfoBoldText">SETTWOR</h1>
-        </div>
-        <div class="moreInfoDiv">
-          <h2 class="moreInfoTitles">Date</h2>
-          <h4 class="moreInfoLightTexts">May 1, 2025</h4>
-        </div>
-        <div class="moreInfoDiv">
-          <h2 class="moreInfoTitles">Label</h2>
-          <h4 class="moreInfoLightTexts">SETTWOR</h4>
-        </div>
-        <div class="moreInfoDiv">
-          <h2 class="moreInfoTitles">Release Date</h2>
-          <h4 class="moreInfoLightTexts">March 15, 2024</h4>
-        </div>
-        <div class="moreInfoDiv">
-          <h2 class="moreInfoTitles">Other awards</h2>
-          <div class="lastStreamsTextDiv">
-            <a href="GOT-ME-UP-2-100k.html">
-            <h3 class="text500000">100,000</h3>
-            <h4 class="moreInfoLightTextStreams">streams</h4>
-            <img src="images/link.svg" class="linkSvg">
-            </a>
-          </div>
-          <div class="lastStreamsTextDiv2">
-            <a href="GOT-ME-UP-2-500k.html">
-            <h3 class="text500000">500,000</h3>
-            <h4 class="moreInfoLightTextStreams">streams</h4>
-            <img src="images/link.svg" class="linkSvg">
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
+    <script>
+  const div = document.getElementById('myDiv');
+  const text = document.getElementById('myText');
+  const width = div.offsetWidth;
+  const height = div.offsetHeight;
+  // text.textContent = `width: ${width}px, height: ${height}px`;
+
+   const myText2 = document.getElementById('myText2');
+  const deviceWidth = window.screen.width;
+  const deviceHeight = window.screen.height;
+  // myText2.textContent = `device-width: ${deviceWidth}px, device-height: ${deviceHeight}px`;
+
+</script>
 </body>
 </html>
