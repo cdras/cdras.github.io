@@ -84,6 +84,11 @@ a {
     height: 667px;
 }
 
+/*.mainCoverArtist{
+    width: 667px;
+    height: 667px;
+}*/
+
 .topCDRAlogo{
     width: 246px;
     height: 46px;
@@ -175,9 +180,8 @@ h4{
 }
 
 .moreInformationText{
-    margin-top: 100px;
     margin-bottom: 40px;
-    margin-top: 196px;
+    margin-top: 108px;
 
 }
 
@@ -428,7 +432,7 @@ h4{
 
     .moreInformationText{
         margin-bottom: 40px;
-        font-size: 30px;
+/*        font-size: 30px;*/
 
     }
 
@@ -583,7 +587,7 @@ h4{
 
     .moreInformationText{
         margin-bottom: 40px;
-        font-size: 35px;
+/*        font-size: 35px;*/
 
     }
 
@@ -653,22 +657,42 @@ h4{
 
 @media (min-device-width: 500px) {
 
+    .swipeForNextDiv{
+        margin-top: 50px;
+    }
+
     .moreInfoMainDiv2{
         margin-right: 100px;
         width: 312px;
     }
 
     .moreInfoDiv{
-        margin-top: 19.5px;
+        margin-top: 0px;
     }
 
     .moreInformationText{
-        margin-top: 300px;
+/*        margin-top: 300px;*/
         margin-bottom: 20px;
 
     }
+    .bioText1{
+        font-size: 25px;
+    }
+    .bioText2{
+        font-size: 25px;
+    margin-top: 40px;
+    }
+    .bioText3{
+        font-size: 25px;
+    margin-top: 40px;
+    }
+
+    .moreAboutDiv{
+        width: 450px;
+    }
 
     .moreInfoTitles{
+    margin-top: 10px;
 
     }
 
@@ -690,7 +714,8 @@ h4{
         margin: 4px 0px 0px 0px;
     }
     .moreInfoBoldText2{
-        margin: 4px 0px 0px 0px;
+        margin: 0px 0px 0px 0px;
+        font-size: 25px;
     }
 
 
@@ -704,7 +729,7 @@ h4{
     }
 
     .lastStreamsTextDiv3{
-/*        margin: 4px 0px 5px 0px;*/
+        margin: 80px 0px 0px 0px;
     }
 
     .lastStreamsTextDiv2{
@@ -727,6 +752,11 @@ h4{
         margin-top: 100px;
         width: 450px;
         height: 333px;
+    }
+    .mainCoverArtist{
+        margin-top: 100px;
+        width: 450px;
+        height: 450px;
     }
 
     .topCDRAlogo{
