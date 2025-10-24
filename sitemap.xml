@@ -4,27 +4,28 @@
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
       xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
             http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
+<!-- created with Free Online Sitemap Generator www.xml-sitemaps.com -->
 
 
-<!-- <url>
-  <loc>https://cdras.github.io/</loc>
-  <lastmod>2025-10-17T11:22:37+00:00</lastmod>
-  <priority>1.00</priority>
-</url> -->
+<url>
+  <loc>https://cdras.github.io/SETTWOR-1m.html</loc>
+  <lastmod>2025-10-21T07:53:05+00:00</lastmod>
+  <priority>0.90</priority>
+</url>
 <url>
   <loc>https://cdras.github.io/GOT-ME-UP-2-500k.html</loc>
-  <lastmod>2025-10-17T11:22:37+00:00</lastmod>
+  <lastmod>2025-10-21T07:53:05+00:00</lastmod>
   <priority>1.00</priority>
 </url>
 <url>
   <loc>https://cdras.github.io/GOT-ME-UP-2-100k.html</loc>
-  <lastmod>2025-10-17T11:22:37+00:00</lastmod>
-  <priority>0.80</priority>
+  <lastmod>2025-10-21T07:53:05+00:00</lastmod>
+  <priority>0.70</priority>
 </url>
 <url>
   <loc>https://cdras.github.io/GOT-ME-UP-2-250k.html</loc>
-  <lastmod>2025-10-17T11:22:37+00:00</lastmod>
-  <priority>0.90</priority>
+  <lastmod>2025-10-21T07:53:05+00:00</lastmod>
+  <priority>0.80</priority>
 </url>
 
 
