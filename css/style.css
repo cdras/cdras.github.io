@@ -98,6 +98,19 @@ a {
   justify-content: center;
   background-image: linear-gradient(to bottom, var(--bar-bg), var(--bg));
 }
+/* v1.9.4 (task 12.7): the bar is the floating functional layer, so it becomes a translucent material
+   (blur + light fill) and content passes softly beneath it while scrolling. Only where backdrop-filter works;
+   everywhere else (and under reduced transparency / more contrast, see the preferences block at the end)
+   the solid gradient above stays. Fill 78% white keeps the ink logo >= 10:1 even over the darkest content
+   (the ink bar #260041). The bar takes no extra space: --bar-full is unchanged. */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .topbar {
+    background-image: none;
+    background-color: rgba(255, 255, 255, 0.78);
+    -webkit-backdrop-filter: blur(20px) saturate(1.4);
+    backdrop-filter: blur(20px) saturate(1.4);
+  }
+}
 .topbar a {
   display: flex;
   align-items: center;
@@ -317,12 +330,19 @@ ul { list-style: none; }
 /* ---------- Short landscape screens (phones turned sideways) ---------- */
 @media (orientation: landscape) and (max-height: 520px) {
   :root { --bar: 3rem; }
-  .s1 .plaque { flex-direction: row; max-width: 52rem; gap: clamp(1rem, 4vw, 3rem); }
-  .s1 .hero-media { width: auto; flex: 0 1 46%; }
-  .s1 .ledger { flex: 1 1 54%; }
+  /* v1.9.6 (task 12.2, first part): the plaque is wider here, so the table does not wrap and the screen fits */
+  .s1 .plaque { flex-direction: row; width: min(calc(100% - 1rem), 40rem); max-width: 52rem; gap: clamp(1rem, 4vw, 3rem); }
+  .s1 .hero-media { width: auto; flex: 0 1 40%; }
+  .s1 .ledger { flex: 1 1 60%; }
   .s1 .dedication { display: none; }
-  .s1 .cover        { width: min(100%, max(8rem, calc((100dvh - var(--bar-full) - 8rem) * 1.348))); }
-  .s1 .cover--square{ width: min(100%, max(8rem, calc(100dvh - var(--bar-full) - 8rem))); }
+  .s1 .ledger-top  { padding-block: 0.1875rem; letter-spacing: 0.05em; }
+  .s1 .ledger-top span { white-space: nowrap; }
+  .s1 .ledger-unit { letter-spacing: 0.04em; white-space: nowrap; }
+  .s1 .ledger-rank { gap: 0.5rem; }
+  .s1 .tier-row    { padding-block: 0.25rem; }
+  .s1 .ledger-rank { padding-block: 0.25rem; }
+  .s1 .plaque .cover        { width: min(100%, max(8rem, calc((100dvh - var(--bar-full) - 8rem) * 1.348))); }
+  .s1 .plaque .cover--square{ width: min(100%, max(7rem, calc(100dvh - var(--bar-full) - 10.5rem))); }
   .home-lead { display: none; }
   .home-plaque .home-name { font-size: 1.75rem; }
   .logo { height: 0.9375rem; }
@@ -397,19 +417,21 @@ ul { list-style: none; }
 }
 
 /* ---------- Award finish (v1.6.0) ----------
-   The look of a presentation plaque: a double gilt frame, a medal seal, fine gilt rules.
+   The look of a presentation plaque: a fine ink frame and ink rules (v1.10.1: no medal seal, no coloured metal outlines).
    Brand stays: text is always --ink (#260041) on white; the metal colours are DECORATION only
    (no text uses them) and every line colour is >= 3:1 on white (--gilt-line is 5-6:1).
    Each award level gets its own metal through body[data-tier]. No logos or marks of any
    third party are used; this is CDRA's own design. */
 :root {
-  --g-hi: #fbeeb0;  --g-mid: #e0b64a;  --g-lo: #a67a17;  --gilt-line: #8a6410;  --g-rgb: 224 182 74;
-  --seal: clamp(2rem, min(12vw, 6dvh), 3.25rem);
+  --g-hi: #fbeeb0;  --g-mid: #e0b64a;  --g-lo: #a67a17;  --g-rgb: 224 182 74;
+  /* v1.10.1: outlines, rules and tints are CDRA ink for every level (no coloured metal borders);
+     the level metal is used only inside the disc artwork. */
+  --gilt-line: var(--ink);  --line-rgb: 38 0 65;
 }
-[data-tier="bronze"]   { --g-hi: #f3d3b4; --g-mid: #c98a52; --g-lo: #8a5226; --gilt-line: #8a5226; --g-rgb: 201 138 82; }
-[data-tier="silver"]   { --g-hi: #f6f8fb; --g-mid: #c3c9d2; --g-lo: #7b8594; --gilt-line: #66707f; --g-rgb: 195 201 210; }
-[data-tier="gold"]     { --g-hi: #fbeeb0; --g-mid: #e0b64a; --g-lo: #a67a17; --gilt-line: #8a6410; --g-rgb: 224 182 74; }
-[data-tier="platinum"] { --g-hi: #ffffff; --g-mid: #d9dfea; --g-lo: #8592ab; --gilt-line: #566684; --g-rgb: 190 200 220; }
+[data-tier="bronze"]   { --g-hi: #f3d3b4; --g-mid: #c98a52; --g-lo: #8a5226; --g-rgb: 201 138 82; }
+[data-tier="silver"]   { --g-hi: #f6f8fb; --g-mid: #c3c9d2; --g-lo: #7b8594; --g-rgb: 195 201 210; }
+[data-tier="gold"]     { --g-hi: #fbeeb0; --g-mid: #e0b64a; --g-lo: #a67a17; --g-rgb: 224 182 74; }
+[data-tier="platinum"] { --g-hi: #ffffff; --g-mid: #d9dfea; --g-lo: #8592ab; --g-rgb: 190 200 220; }
 
 /* hairline under the top bar */
 .topbar::after {
@@ -422,14 +444,13 @@ ul { list-style: none; }
 }
 
 /* a soft metallic glow behind the award (static) */
-.s1 { background: radial-gradient(ellipse 70% 46% at 50% 40%, rgb(var(--g-rgb) / 0.12), transparent 70%); }
+.s1 { background: radial-gradient(ellipse 70% 46% at 50% 40%, rgb(var(--line-rgb) / 0.05), transparent 70%); }
 
 /* the plaque */
 .plaque {
   position: relative;
   width: min(calc(100% - 1rem), 25rem);
-  margin-top: calc(var(--seal) * 0.5);
-  padding: calc(var(--seal) * 0.6 + 0.375rem) clamp(0.75rem, 4vw, 1.5rem) clamp(0.75rem, 2dvh, 1.125rem);
+  padding: clamp(0.875rem, 2.6dvh, 1.375rem) clamp(0.75rem, 4vw, 1.5rem) clamp(0.75rem, 2dvh, 1.125rem);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -437,26 +458,67 @@ ul { list-style: none; }
   background: linear-gradient(180deg, #fff, #fffdf8);
   border: 1px solid var(--gilt-line);
   border-radius: 0.25rem;
+  /* v1.10.1: one fine inner ink line (certificate style), a white gap, a soft shadow. No colour. */
   box-shadow:
     inset 0 0 0 0.3125rem #fff,
-    inset 0 0 0 calc(0.3125rem + 1px) rgb(var(--g-rgb) / 0.85),
-    0 1.25rem 2.25rem -1.5rem rgb(38 0 65 / 0.35);
-}
-.seal {
-  position: absolute;
-  top: calc(var(--seal) * -0.5);
-  left: calc(50% - var(--seal) * 0.5);
-  width: var(--seal);
-  height: auto;
-  aspect-ratio: 100 / 114;
-  filter: drop-shadow(0 0.25rem 0.375rem rgb(38 0 65 / 0.28));
-  pointer-events: none;
+    inset 0 0 0 calc(0.3125rem + 1px) rgb(var(--line-rgb) / 0.3),
+    0 0.25rem 0.625rem -0.25rem rgb(38 0 65 / 0.22),
+    0 1.5rem 2.5rem -1.25rem rgb(38 0 65 / 0.4);
 }
 .cover { filter: drop-shadow(0 0.5rem 0.75rem rgb(38 0 65 / 0.3)); }
 /* the plaque takes some height, so the cover is a little smaller than before */
 .plaque .cover { width: min(66vw, var(--cover-max), max(7rem, 25dvh)); }
 .plaque .cover--square { width: min(54vw, calc(var(--cover-max) * 0.8), max(7rem, 21dvh)); }
 .cover--square { border-radius: 0.25rem; }
+
+/* ---- CSS disc (v1.9.9, task 12.4 part 1; award pages only) ----
+   The cover is a plain sleeve; the disc behind it is drawn here, in the metal of the tier (body[data-tier]).
+   Proportions equal the old baked image (900:668: sleeve 74.2% of the width, disc 82% of its height, right edge flush),
+   so the screen heights do not change. Decoration only: the colours are --g-* / --ink, no text sits on it (§5 item 13a). */
+.has-disc { position: relative; display: block; }
+.has-disc .sleeve {
+  position: absolute; z-index: 1; left: 0; top: 0;
+  width: 74.22%; height: 100%;
+}
+.has-disc .disc {
+  position: absolute; z-index: 0; right: 0; top: 9%;
+  height: 82%; aspect-ratio: 1 / 1; border-radius: 50%;
+  background:
+    conic-gradient(from 18deg, transparent 0 7%, rgb(255 255 255 / 0.5) 11%, transparent 17% 56%, rgb(255 255 255 / 0.32) 62%, transparent 68%),
+    conic-gradient(from -30deg, var(--g-lo), var(--g-hi) 12%, var(--g-mid) 26%, var(--g-lo) 46%, var(--g-hi) 63%, var(--g-mid) 79%, var(--g-lo));
+  box-shadow: inset 0 0 0 1px var(--gilt-line), inset 0 0 0 0.1875rem rgb(var(--g-rgb) / 0.35);
+}
+/* fine grooves in a ring (smooth band inside, thin rim outside) */
+.has-disc .disc::before {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background: repeating-radial-gradient(circle closest-side, transparent 0 0.9%, rgb(38 0 65 / 0.1) 0.9% 1.35%);
+  -webkit-mask-image: radial-gradient(circle closest-side, transparent 36%, #000 38%, #000 94%, transparent 96%);
+  mask-image: radial-gradient(circle closest-side, transparent 36%, #000 38%, #000 94%, transparent 96%);
+}
+/* the shadow the sleeve casts on the disc, and the edge of the smooth inner band */
+.has-disc .disc::after {
+  content: ""; position: absolute; inset: 0; border-radius: 50%;
+  background:
+    linear-gradient(90deg, transparent 50%, rgb(38 0 65 / 0.34) 57.6%, transparent 71%),
+    radial-gradient(circle closest-side, transparent 35%, rgb(38 0 65 / 0.16) 37%, transparent 39.5%);
+}
+@media (prefers-reduced-motion: no-preference) {
+  /* the disc rolls out from under the sleeve once, on load (translate + opacity only; no JS) */
+  .has-disc .disc { animation: disc-out 900ms var(--ease) 260ms backwards; }
+  @keyframes disc-out { from { opacity: 0; translate: -38% 0; } 35% { opacity: 1; } to { opacity: 1; translate: 0 0; } }
+}
+/* v1.9.8 (task 12.2, rest): where the screen has room (>= 600x700) the award is bigger:
+   plaque 30rem instead of 25, cover ~45% larger (capped by the plaque width and by dvh, so the first screen still fits),
+   ledger figures a little larger. Short landscape phones are excluded by min-height and keep their own rules above. */
+@media (min-width: 600px) and (min-height: 700px) {
+  .s1 .plaque { width: min(calc(100% - 1rem), 30rem); }
+  .s1 .plaque .cover        { width: min(100%, 66vw, calc(var(--cover-max) * 1.45), max(7rem, 36.5dvh)); }
+  .s1 .plaque .cover--square{ width: min(100%, 54vw, calc(var(--cover-max) * 1.16), max(7rem, 30.5dvh)); }
+  .s1 .tier-row .t-display { font-size: clamp(1.375rem, min(5vw, 3.8dvh), 2.125rem); }
+  .s1 .tier-row .t-title   { font-size: 1.0625rem; }
+  .s1 .ledger-rank .t-num  { font-size: clamp(1.5rem, min(5.6vw, 4.4dvh), 2.5rem); }
+  .s1 .ledger-top, .s1 .tier-row .t-label, .s1 .ledger-unit { font-size: 0.875rem; }
+}
 /* ---- the ledger (v1.7.0): a compact award table (header, tinted row, rank box) and a dedication ---- */
 .hero-group { display: flex; flex-direction: column; align-items: center; gap: clamp(0.125rem, 0.8dvh, 0.5rem); }
 .ledger {
@@ -480,7 +542,7 @@ ul { list-style: none; }
   align-items: flex-start;
   gap: 0.125rem;
   padding: 0.5rem 0.625rem;
-  background: linear-gradient(100deg, rgb(var(--g-rgb) / 0.38), rgb(var(--g-rgb) / 0.16));
+  background: linear-gradient(100deg, rgb(var(--line-rgb) / 0.07), rgb(var(--line-rgb) / 0.05));
 }
 .tier-row .t-label, .tier-row .t-display, .tier-row .t-title { text-align: left; }
 .tier-row .t-label { font-size: var(--fs-small); letter-spacing: 0.08em; text-transform: uppercase; }
@@ -497,10 +559,16 @@ ul { list-style: none; }
 }
 .ledger-rank .t-num { font-size: clamp(1.375rem, min(6.4vw, 3.8dvh), 2rem); white-space: nowrap; text-align: left; }
 .ledger-unit { font-size: var(--fs-small); line-height: 1.2; letter-spacing: 0.08em; text-transform: uppercase; text-align: right; }
+/* v1.9.13 (task 12.10 finding): on the narrowest phones (320 px) the header «CDRA Award | date» wrapped into 2+2 lines;
+   tighter tracking (apple-design 15: small text, tracking near 0) keeps each on one line. Text size is not reduced (floor 13 px kept). */
+@media (max-width: 359px) {
+  .ledger-top { letter-spacing: 0.03em; padding-inline: 0.5rem; }
+  .ledger-top span { white-space: nowrap; }
+}
 .dedication {
   width: 100%;
   padding: 0.5rem 0.75rem;
-  border: 1px solid rgb(var(--g-rgb) / 0.9);
+  border: 1px solid rgb(var(--line-rgb) / 0.3);
   font-size: var(--fs-small);
   line-height: 1.4;
   text-align: center;
@@ -529,20 +597,30 @@ ul { list-style: none; }
   position: absolute;
   inset: calc(var(--rule-gap) * -0.5) 0 auto 0;
   height: 1px;
-  background: rgb(var(--g-rgb) / 0.9);
+  background: rgb(var(--line-rgb) / 0.3);
 }
 .facts dt { font-size: var(--fs-hint); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
 
 /* awards list: gilt rules, and a star on the page you are on (shape, not only colour) */
 .awards { --rule-gap: clamp(0.25rem, 1.2dvh, 0.75rem); }
 .awards li { position: relative; }
+/* v1.9.11 (task 12.4 part 3): a small CSS disc with a visible hub hole before each number, metal by the row's data-tier.
+   Decoration (aria-hidden); the number and «streams» stay the text; it sits inside the 44px row, so heights do not change. */
+.mini-disc {
+  flex: none; width: 1.25rem; height: 1.25rem; border-radius: 50%;
+  background:
+    radial-gradient(circle closest-side, var(--bg) 0 13%, rgb(38 0 65 / 0.3) 14% 19%, transparent 21%),
+    radial-gradient(circle closest-side, transparent 58%, rgb(38 0 65 / 0.14) 60%, transparent 63%),
+    conic-gradient(from -30deg, var(--g-lo), var(--g-hi) 12%, var(--g-mid) 26%, var(--g-lo) 46%, var(--g-hi) 63%, var(--g-mid) 79%, var(--g-lo));
+  box-shadow: inset 0 0 0 1px var(--gilt-line);
+}
 .award-link[aria-current="page"]::before {
   content: "";
   width: 0.9rem;
   height: 0.9rem;
   flex: none;
-  background: linear-gradient(135deg, var(--g-hi), var(--g-mid) 50%, var(--g-lo));
-  clip-path: polygon(50% 0, 62% 36%, 100% 38%, 70% 60%, 81% 100%, 50% 76%, 19% 100%, 30% 60%, 0 38%, 38% 36%);
+  background: var(--ink);
+  clip-path: polygon(50% 0, 100% 50%, 50% 100%, 0 50%);
 }
 
 /* "Full information" as a framed button */
@@ -551,7 +629,7 @@ ul { list-style: none; }
   border-radius: 999px;
   padding-inline: 1.5rem;
   background: linear-gradient(180deg, #fff, #fffdf8);
-  box-shadow: inset 0 0 0 0.1875rem #fff, inset 0 0 0 calc(0.1875rem + 1px) rgb(var(--g-rgb) / 0.85);
+  box-shadow: inset 0 0 0 0.1875rem #fff, inset 0 0 0 calc(0.1875rem + 1px) rgb(var(--line-rgb) / 0.3);
 }
 .site-foot { position: relative; }
 .site-foot::before {
@@ -568,14 +646,13 @@ ul { list-style: none; }
 @media (prefers-reduced-motion: no-preference) {
   @keyframes pop   { from { opacity: 0; scale: 0.8; } to { opacity: 1; scale: 1; } }
   @keyframes shine { from { translate: 0 0; } to { translate: 230px 0; } }
-  .seal  { animation: pop 620ms var(--spring) 280ms backwards; }
   .shine { animation: shine 1100ms ease-out 900ms backwards; }
   .plaque { animation: rise 560ms var(--ease) 40ms backwards; }
 }
 
 /* ---------- Home page (v1.8.0): all awards as cards ----------
    Each card carries its own data-tier, so it takes its own metal. The tier is also written as text. */
-.home-plaque { text-align: center; padding-top: calc(var(--seal) * 0.6 + 0.75rem); }
+.home-plaque { text-align: center; padding-top: clamp(1rem, 3dvh, 1.5rem); }
 .home-name { font-size: clamp(2rem, min(11vw, 6.5dvh), 3.5rem); letter-spacing: 0.04em; }
 .home-lead { font-size: var(--fs-body); line-height: 1.35; text-wrap: balance; max-width: 20rem; }
 .award-groups { width: min(100%, 24rem); display: flex; flex-direction: column; gap: clamp(0.375rem, 1.2dvh, 0.75rem); }
@@ -588,35 +665,16 @@ ul { list-style: none; }
   min-height: 44px;
   padding: 0.5rem 0.75rem 0.5rem 0.5rem;
   border: 1px solid var(--gilt-line);
-  border-left-width: 0.375rem;
-  border-left-color: transparent;           /* the metal spine is painted by ::before in the same 0.375rem */
   border-radius: 0.25rem;
-  background: linear-gradient(100deg, rgb(var(--g-rgb) / 0.3), rgb(var(--g-rgb) / 0.08));
+  background: linear-gradient(100deg, rgb(var(--line-rgb) / 0.07), rgb(var(--line-rgb) / 0.05));
   position: relative;
   box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.7), 0 0.125rem 0.5rem -0.125rem rgb(38 0 65 / 0.2);
 }
-/* v1.9.3 (task 12.6): metal spine + small medal dot. Both are decoration on top of the existing
-   border box, so card heights and widths are unchanged; the tier is still written as text. */
-.award-card::before {
-  content: "";
-  position: absolute;
-  inset: -1px auto -1px -0.375rem;
-  width: 0.375rem;
-  border-radius: 0.25rem 0 0 0.25rem;
-  background: linear-gradient(180deg, var(--g-hi), var(--g-mid) 42%, var(--g-lo));
-  box-shadow: inset -1px 0 0 rgb(38 0 65 / 0.22);
-}
-.medal {
-  display: inline-block;
-  width: 0.625rem;
-  height: 0.625rem;
-  margin-left: 0.5rem;
-  border-radius: 50%;
-  border: 1px solid var(--gilt-line);
-  background: radial-gradient(circle at 32% 28%, var(--g-hi), var(--g-mid) 55%, var(--g-lo));
-  vertical-align: 0.0625rem;
-}
 .card-cover { width: clamp(2.75rem, min(13vw, 7dvh), 3.5rem); height: auto; aspect-ratio: 1 / 1; border-radius: 0.2rem; flex: none; object-fit: cover; }
+/* v1.9.10 (task 12.4 part 2): the same CSS disc peeks 0.5rem out of the cover into the existing 0.75rem gap, so card sizes do not change */
+.card-art { flex: none; z-index: 0; }
+.card-art .card-cover { display: block; position: relative; z-index: 1; }
+.card-art .disc { right: -0.5rem; animation: none; }
 .card-text { display: flex; flex-direction: column; gap: 0.125rem; flex: 1 1 auto; min-width: 0; }
 .card-num { font-family: var(--f-title); font-weight: 700; font-size: clamp(1.125rem, min(5vw, 3.2dvh), 1.5rem); line-height: 1.05; }
 .card-sub { font-size: var(--fs-small); line-height: 1.2; letter-spacing: 0.04em; }
@@ -627,7 +685,7 @@ ul { list-style: none; }
   @media (hover: hover) and (pointer: fine) { .award-card:hover { transform: translateY(-0.125rem); } .award-card:active { transform: scale(0.97); } }
 }
 @media (prefers-reduced-motion: reduce) { .award-card:active { opacity: 0.6; } }
-@media (prefers-contrast: more) { .award-card { background: none; border-color: var(--ink); box-shadow: none; } .award-card::before { background: var(--ink); box-shadow: none; } .medal { background: var(--ink); border-color: var(--ink); } }
+@media (prefers-contrast: more) { .award-card { background: none; border-color: var(--ink); box-shadow: none; } }
 
 /* ---------- Accessibility preferences ---------- */
 @media (prefers-reduced-motion: reduce) {
@@ -635,11 +693,25 @@ ul { list-style: none; }
   /* feedback stays, without any movement: a quick dim on press */
   .topbar a:active, .next:active, .award-link:active, .full-info:active, .foot-link:active { opacity: 0.6; }
 }
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) {
+  /* solid bar, no blur (apple-design 14; liquid-glass.md checklist 5) */
+  .topbar {
+    background-image: none;
+    background-color: var(--bg);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+}
 @media (prefers-contrast: more) {
+  .topbar { box-shadow: 0 1px 0 var(--ink); }
   :root { --ink-soft: var(--ink); }
   [data-tier] { --gilt-line: var(--ink); }
   .s1 { background: none; }
   .plaque, .full-info { border-color: var(--ink); box-shadow: none; }
+  .ledger-rank { box-shadow: none; }
+  .mini-disc { background: radial-gradient(circle closest-side, var(--bg) 0 18%, transparent 20%), var(--bg); box-shadow: inset 0 0 0 2px var(--ink); }
+  .has-disc .disc { background: var(--bg); box-shadow: inset 0 0 0 2px var(--ink); }
+  .has-disc .disc::before { display: none; }
   .facts > div + div::before, .awards li + li::before { background: var(--ink); }
 }
 @media print {
@@ -647,3 +719,57 @@ ul { list-style: none; }
   .screen { min-height: 0; break-inside: avoid; }
   .next, .dots { display: none; }
 }
+
+/* ---------- Status finish (v1.10.2) ----------
+   «Make the site more prestigious»: restraint, not ornament. Ink only (no metal outlines), no new elements in the markup.
+   Corner brackets on the plaque, a diamond between the section-title rules, wider tracking on small caps labels,
+   even figures. All decoration sits in existing gaps / pseudo-elements, so no text or screen height changes. */
+.plaque::before {
+  content: "";
+  position: absolute;
+  inset: 0.3125rem;
+  pointer-events: none;
+  --b: 1.5px; --l: 0.875rem;
+  background:
+    linear-gradient(var(--ink), var(--ink)) top left / var(--l) var(--b),
+    linear-gradient(var(--ink), var(--ink)) top left / var(--b) var(--l),
+    linear-gradient(var(--ink), var(--ink)) top right / var(--l) var(--b),
+    linear-gradient(var(--ink), var(--ink)) top right / var(--b) var(--l),
+    linear-gradient(var(--ink), var(--ink)) bottom left / var(--l) var(--b),
+    linear-gradient(var(--ink), var(--ink)) bottom left / var(--b) var(--l),
+    linear-gradient(var(--ink), var(--ink)) bottom right / var(--l) var(--b),
+    linear-gradient(var(--ink), var(--ink)) bottom right / var(--b) var(--l);
+  background-repeat: no-repeat;
+}
+.section-title { letter-spacing: 0.06em; }
+.section-title::before, .section-title::after { height: 1px; background: rgb(var(--line-rgb) / 0.5); }
+.section-title::before { margin-right: 0; }
+.ledger-top { letter-spacing: 0.16em; }
+.ledger-unit { letter-spacing: 0.14em; }
+.ledger-rank .t-num, .card-num, .awards .t-num { font-variant-numeric: lining-nums tabular-nums; letter-spacing: 0.01em; }
+.tier-row .t-label { letter-spacing: 0.14em; }
+.plaque { box-shadow:
+    inset 0 0 0 0.3125rem #fff,
+    inset 0 0 0 calc(0.3125rem + 1px) rgb(var(--line-rgb) / 0.3),
+    0 0.125rem 0.25rem rgb(38 0 65 / 0.12),
+    0 1.75rem 2.75rem -1.25rem rgb(38 0 65 / 0.45); }
+@media (max-width: 359px) { .ledger-top { letter-spacing: 0.03em; } }
+@media (prefers-contrast: more) { .plaque::before { display: none; } }
+
+/* v1.10.3: a link inside the facts list (Listen on Spotify): ink, underlined, 44px target */
+.fact-link { display: inline-flex; align-items: center; min-height: 44px; color: var(--ink); text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+@media (prefers-reduced-motion: no-preference) { .fact-link { transition: opacity 100ms; } .fact-link:active { opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) { .fact-link:active { opacity: 0.6; } }
+
+/* v1.10.5: FAQ on the home page: native <details>, no JavaScript; ink hairlines; 44px rows */
+.faq { width: min(100%, 26rem); }
+.faq details { border-bottom: 1px solid rgb(var(--line-rgb) / 0.3); }
+.faq details:first-child { border-top: 1px solid rgb(var(--line-rgb) / 0.3); }
+.faq summary { display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; min-height: 44px; padding-block: 0.25rem; cursor: pointer; list-style: none; font-family: var(--f-title); font-weight: 700; font-size: var(--fs-body); line-height: 1.25; }
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after { content: "+"; flex: none; font-weight: 400; font-size: 1.25rem; line-height: 1; }
+.faq details[open] summary::after { content: "\2212"; }
+.faq summary:focus-visible { outline: 2px solid var(--ink); outline-offset: 2px; }
+.faq p { padding: 0 0 0.75rem; font-size: var(--fs-body); line-height: 1.35; text-wrap: pretty; }
+@media (prefers-reduced-motion: no-preference) { .faq summary:active { opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) { .faq summary:active { opacity: 0.6; } }

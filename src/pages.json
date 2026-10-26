@@ -7,11 +7,15 @@
     "release": "March 15, 2024",
     "id": "got-me-up-2",
     "release_iso": "2024-03-15",
-    "album": "GET IT, Vol.1"
+    "album": "GET IT, Vol.1",
+    "genre": "Phonk",
+    "spotify": "https://open.spotify.com/track/2mb9uchttGxZwzBYwkVT55",
+    "apple_music": "https://music.apple.com/us/album/got-me-up-2/1734684609?i=1734684834"
   },
   "heroes": {
     "gold": {
       "base": "images/GET_IT,Vol.1/GET_IT,Vol.1_GOLD",
+      "sleeve": "images/GET_IT,Vol.1/GET_IT,Vol.1_cover",
       "ext": "webp",
       "cls": "cover--wide",
       "w": 900,
@@ -20,6 +24,7 @@
     },
     "low": {
       "base": "images/GET_IT,Vol.1/GET_IT,Vol.1_low",
+      "sleeve": "images/GET_IT,Vol.1/GET_IT,Vol.1_cover",
       "ext": "webp",
       "cls": "cover--wide",
       "w": 900,

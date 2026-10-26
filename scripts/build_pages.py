@@ -28,17 +28,38 @@ def url_quote(path):
 
 
 def hero_picture(h):
+    if h.get('sleeve'):
+        # v1.9.9 (task 12.4, part 1): plain cover + a disc drawn in CSS (metal from body[data-tier]).
+        # The box keeps the old 900:668 proportions, so the screen heights do not change.
+        return (f'<span class="cover {h["cls"]} has-disc"><span class="disc" aria-hidden="true"></span>'
+                f'<img src="{h["sleeve"]}.{h["ext"]}" class="sleeve" alt="{esc(h["alt"])}" '
+                f'width="668" height="668" fetchpriority="high" decoding="async"></span>')
     return (f'<img src="{h["base"]}.{h["ext"]}" class="cover {h["cls"]}" alt="{esc(h["alt"])}" '
             f'width="{h["w"]}" height="{h["h"]}" fetchpriority="high" decoding="async">')
 
 
 def facts_block(facts):
     out = []
-    for dt, dd, light in facts:
+    for dt, dd, light, *href in facts:
         cls = ' class="is-light"' if light else ''
+        if not href:
+            text = esc(dd)
+        else:   # href[0] = list of (label, url): several links in one row (v1.10.5)
+            text = ' <span aria-hidden="true">·</span> '.join(
+                f'<a class="fact-link" href="{esc(u)}" rel="noopener" target="_blank">{esc(l)}</a>' for l, u in href[0])
         out += ['            <div>', f'              <dt>{esc(dt)}</dt>',
-                f'              <dd{cls}>{esc(dd)}</dd>', '            </div>']
+                f'              <dd{cls}>{text}</dd>', '            </div>']
     return out
+
+
+def card_art(hero):
+    """Cover of a home card; for the track awards a small CSS disc peeks out from under it (v1.9.10, task 12.4 part 2)."""
+    s = min(hero["w"], hero["h"])
+    img = (f'<img src="{hero["base"]}.{hero["ext"]}" class="card-cover" alt="" width="{s}" height="{s}" '
+           f'loading="lazy" decoding="async">')
+    if hero.get('disc'):
+        return ['                <span class="card-art has-disc"><span class="disc" aria-hidden="true"></span>' + img + '</span>']
+    return ['                ' + img]
 
 
 def cards_block(items, d):
@@ -48,9 +69,9 @@ def cards_block(items, d):
         out += [
             '            <li>',
             f'              <a class="award-card" data-tier="{a["tier"]}" href="{url_quote(a["file"])}">',
-            f'                <img src="{hero["base"]}.{hero["ext"]}" class="card-cover" alt="" width="{min(hero["w"], hero["h"])}" height="{min(hero["w"], hero["h"])}" loading="lazy" decoding="async">',
+            *card_art(hero),
             '                <span class="card-text">',
-            f'                  <span class="card-num">{a["streams"]}<span class="medal" aria-hidden="true"></span></span>',
+            f'                  <span class="card-num">{a["streams"]}</span>',
             f'                  <span class="card-sub">all-time streams · {a["tier"].capitalize()}</span>',
             f'                  <span class="card-date">{esc(a["date"])}</span>',
             '                </span>',
@@ -66,9 +87,10 @@ def awards_block(awards, current):
     for a in awards:
         cur = ' aria-current="page"' if a['file'] == current else ''
         out += [
-            '              <li>',
+            f'              <li data-tier="{a["tier"]}">',
             f'                <p class="award-date">{esc(a["date"])}</p>',
             f'                <a class="award-link" href="{a["file"]}"{cur}>',
+            '                  <span class="mini-disc" aria-hidden="true"></span>',
             f'                  <span class="award-num">{a["streams"]}</span>',
             '                  <span class="award-unit">streams</span>',
             '                  <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">',
@@ -99,12 +121,20 @@ def jsonld_graph(spec, d):
         graph += [page, {'@type': 'MusicRecording', '@id': rec_id, 'name': tr['name'],
                          'byArtist': {'@id': ar['id']},
                          'inAlbum': {'@type': 'MusicAlbum', 'name': tr['album'], 'byArtist': {'@id': ar['id']}},
-                         'datePublished': tr['release_iso']}]
+                         'datePublished': tr['release_iso'], 'genre': tr['genre'], 'sameAs': [tr['spotify'], tr['apple_music']]}]
     else:
         page['about'] = {'@id': ar['id']}
         graph.append(page)
     graph.append(artist)
     return {'@context': 'https://schema.org', '@graph': graph}
+
+
+def milestone_days(tr, a):
+    """v1.10.3: days from the track release (src/pages.json track.release_iso) to the award date: computed, not typed."""
+    import datetime
+    d0 = datetime.date.fromisoformat(tr['release_iso'])
+    d1 = datetime.datetime.strptime(a['date'], '%B %d, %Y').date()
+    return f"{(d1 - d0).days} days after release"
 
 
 def page_specs(d):
@@ -122,7 +152,9 @@ def page_specs(d):
             URL=base + url_quote(a['file']), NUM=a['streams'], DATE=a['date'], DED_TRACK=tr['name'], TIER=a['tier'], hero=h, current=a['file'],
             og=f"{d['og_dir']}/og-{a['file'][:-5]}.png",
             group1=[('p', 't-label', 'Award for the track'), ('h1', 't-display', tr['name']), ('p', 't-title', tr['artist'])],
-            facts=[(dt, a['date'] if dd is None else dd, lt) for dt, dd, lt in track_facts],
+            facts=[(dt, a['date'] if dd is None else dd, lt) for dt, dd, lt in track_facts]
+                  + [('Album', tr['album'], True), ('Genre', tr['genre'], True), ('Reached in', milestone_days(tr, a), True),
+                     ('Streams counted', 'All platforms combined', True), ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music'])])],
             award_label=None, about_track=True, is_home=False)
     s = d['artist_page']
     specs[s['file']] = dict(
@@ -147,9 +179,8 @@ def render(template, spec, d, version):
         'FACTS': facts_block(spec['facts']),
         'AWARD_LABEL': [f'                <p class="t-label">{spec["award_label"]}</p>'] if spec['award_label'] else [],
         'AWARDS': awards_block(d['awards'], spec['current']),
-        'HOME_TRACK_CARDS': cards_block([(a, {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp'}) for a in d['awards']], d),
+        'HOME_TRACK_CARDS': cards_block([(a, {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True}) for a in d['awards']], d),
         'HOME_ARTIST_CARD': cards_block([(d['artist_page'], {**d['heroes']['settwor']})], d),
-        'SEAL': ['        ' + ln for ln in SEAL.read_text(encoding='utf-8').rstrip('\n').split('\n')],
     }
     ded = f"Presented to <strong>{esc(d['track']['artist'])}</strong> to commemorate {spec['NUM']} <span class=\"nb\">all-time</span> streams"
     ded += f" of “{esc(spec['DED_TRACK'])}”" if spec['DED_TRACK'] else ''

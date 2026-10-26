@@ -15,7 +15,6 @@ from PIL import Image
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / 'images' / 'og'
 INK = '#260041'
-SEAL = (ROOT / 'src' / 'seal.svg').read_text(encoding='utf-8')
 TIERS = {  # same values as body[data-tier] in css/style.css
     'bronze':   ('#f3d3b4', '#c98a52', '#8a5226', '#8a5226', '201,138,82'),
     'silver':   ('#f6f8fb', '#c3c9d2', '#7b8594', '#66707f', '195,201,210'),
@@ -29,7 +28,7 @@ HTML = """<!doctype html><meta charset="utf-8">
   html,body{{margin:0;width:1200px;height:630px;background:#fff;color:{ink};overflow:hidden}}
   .card{{position:relative;width:1200px;height:630px;display:flex;align-items:center;gap:48px;padding:36px 84px 0 84px;box-sizing:border-box}}
   .cover{{flex:0 0 auto;width:{cw}px;height:{ch}px;object-fit:cover;border-radius:6px}}
-  .txt{{flex:1 1 auto;display:flex;flex-direction:column;gap:26px;min-width:0}}
+  .txt{{position:relative;z-index:2;flex:1 1 auto;display:flex;flex-direction:column;gap:26px;min-width:0}}
   .g{{display:flex;flex-direction:column;gap:6px}}
   .lab{{font-family:'Outfit',system-ui,sans-serif;font-size:34px;line-height:1.15}}
   .big{{font-family:'Outfit',system-ui,sans-serif;font-size:{bigfs}px;line-height:1.05;letter-spacing:-.01em;white-space:nowrap}}
@@ -37,13 +36,23 @@ HTML = """<!doctype html><meta charset="utf-8">
   .num{{font-weight:700;font-family:'Outfit',system-ui,sans-serif;font-size:92px;line-height:1;letter-spacing:-.01em;white-space:nowrap}}
   .logo{{position:absolute;left:84px;bottom:46px;height:28px;width:auto}}
   html{{--g-hi:{g_hi};--g-mid:{g_mid};--g-lo:{g_lo}}}
-  .frame{{position:absolute;inset:54px 22px 22px;border:2px solid {line};border-radius:6px;box-shadow:inset 0 0 0 8px #fff,inset 0 0 0 10px rgba({rgb},.9)}}
-  .glow{{position:absolute;inset:0;background:radial-gradient(ellipse 60% 70% at 38% 50%,rgba({rgb},.14),transparent 70%)}}
-  .seal{{position:absolute;left:calc(50% - 52px);top:2px;width:104px;height:auto;filter:drop-shadow(0 6px 8px rgba(38,0,65,.28))}}
+  .has-disc{{position:relative;filter:drop-shadow(0 8px 12px rgba(38,0,65,.3))}}
+  .has-disc .sleeve{{position:absolute;z-index:1;left:0;top:0;width:74.22%;height:100%;border-radius:6px;object-fit:cover}}
+  .has-disc .disc{{position:absolute;z-index:0;right:0;top:9%;height:82%;aspect-ratio:1/1;border-radius:50%;
+    background:conic-gradient(from 18deg,transparent 0 7%,rgba(255,255,255,.5) 11%,transparent 17% 56%,rgba(255,255,255,.32) 62%,transparent 68%),
+      conic-gradient(from -30deg,{g_lo},{g_hi} 12%,{g_mid} 26%,{g_lo} 46%,{g_hi} 63%,{g_mid} 79%,{g_lo});
+    box-shadow:inset 0 0 0 2px {ink},inset 0 0 0 5px rgba({rgb},.35)}}
+  .has-disc .disc::before{{content:"";position:absolute;inset:0;border-radius:50%;
+    background:repeating-radial-gradient(circle closest-side,transparent 0 .9%,rgba(38,0,65,.1) .9% 1.35%);
+    mask-image:radial-gradient(circle closest-side,transparent 36%,#000 38%,#000 94%,transparent 96%)}}
+  .has-disc .disc::after{{content:"";position:absolute;inset:0;border-radius:50%;
+    background:linear-gradient(90deg,transparent 50%,rgba(38,0,65,.34) 57.6%,transparent 71%),
+      radial-gradient(circle closest-side,transparent 35%,rgba(38,0,65,.16) 37%,transparent 39.5%)}}
+  .frame{{position:absolute;inset:24px;border:2px solid {ink};border-radius:6px;box-shadow:inset 0 0 0 8px #fff,inset 0 0 0 10px rgba(38,0,65,.3)}}
 </style>
 <div class="card">
-  <div class="glow"></div><div class="frame"></div>{seal}
-  <img class="cover" src="{cover}" alt="">
+  <div class="frame"></div>
+  {cover_html}
   <div class="txt">
     <div class="g">{group1}</div>
     <div class="g"><div class="lab">for reaching</div><div class="num">{num}</div><div class="sub">all-time streams</div></div>
@@ -83,8 +92,13 @@ def main():
             square = h['cls'] == 'cover--square'
             cw, ch = (366, 366) if square else (500, 371)
             cover = (ROOT / f"{h['base']}.{h['ext']}").as_uri()
-            html = HTML.format(fonts=fonts, ink=INK, cw=cw, ch=ch, bigfs=64, cover=cover, group1=group1, num=num, logo=logo,
-                              g_hi=g_hi, g_mid=g_mid, g_lo=g_lo, line=line, rgb=rgb, seal=SEAL)
+            if h.get('sleeve'):   # v1.9.12: plain cover + CSS disc, same look as the site
+                sl = (ROOT / f"{h['sleeve']}.{h['ext']}").as_uri()
+                cover_html = f'<div class="cover has-disc"><div class="disc"></div><img class="sleeve" src="{sl}" alt=""></div>'
+            else:
+                cover_html = f'<img class="cover" src="{cover}" alt="">'
+            html = HTML.format(fonts=fonts, ink=INK, cw=cw, ch=ch, bigfs=64, cover_html=cover_html, group1=group1, num=num, logo=logo,
+                              g_hi=g_hi, g_mid=g_mid, g_lo=g_lo, line=line, rgb=rgb)
             with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=ROOT) as f:
                 f.write(html); tmp = pathlib.Path(f.name)
             try:
