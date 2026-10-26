@@ -1,0 +1,69 @@
+<body data-tier="gold">
+  <header class="topbar">
+    <a href="./" aria-label="CDRA — home"><img src="images/CDRAlogo.svg" class="logo" alt="CDRA" width="246" height="46"></a>
+  </header>
+
+  <main>
+    <section class="screen s1" id="s1" aria-label="CDRA">
+      <div class="stack">
+        <div class="plaque home-plaque">
+{{#SEAL}}
+          <h1 class="t-display home-name">CDRA</h1>
+          <p class="t-title">Stream awards for SETTWOR</p>
+          <p class="home-lead">Four awards for all-time streams: 100,000 bronze, 250,000 silver, 500,000 gold and 1,000,000 platinum.</p>
+        </div>
+      </div>
+      <a class="next" href="#s2">
+        <span class="next-text"><span class="hint-touch">Swipe</span><span class="hint-mouse">Scroll</span> to see all awards</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s2" id="s2" aria-labelledby="h-all">
+      <h2 class="section-title" id="h-all">All awards</h2>
+      <div class="stack">
+        <div class="award-groups">
+          <h3 class="group-title">GOT ME UP 2 by SETTWOR</h3>
+          <ul class="cards">
+{{#HOME_TRACK_CARDS}}
+          </ul>
+          <h3 class="group-title">SETTWOR</h3>
+          <ul class="cards">
+{{#HOME_ARTIST_CARD}}
+          </ul>
+        </div>
+      </div>
+      <a class="next" href="#s3">
+        <span class="next-text">More about SETTWOR</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s3" id="s3" aria-labelledby="h-bio">
+      <h2 class="section-title" id="h-bio">More about SETTWOR</h2>
+      <div class="stack">
+        <div class="bio">
+          <p>SETTWOR is a music producer specializing in phonk, hip-hop/rap, and dance/electronic music. Originally from Kryvyi Rih, Ukraine, he relocated to Poland in 2022 and manages a well-known 8D music channel.</p>
+          <p>In 2018 he began studying music and, having gained some knowledge, released his first track “Light Wave” in 2021.</p>
+          <p>SETTWOR was born on February 8, 2007, in Kryvyi Rih, Ukraine. In 2020, Daniil took the pseudonym SETTWOR and created a YouTube channel of the same name for his work and future music. On May 8, 2022, the artist’s first track in the phonk genre - Lunatic - was released.</p>
+        </div>
+        <a class="full-info" href="https://settwor.github.io/" rel="noopener">
+          <span>Full information</span>
+          <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">
+        </a>
+      </div>
+      <footer class="site-foot">
+        <p class="foot-note">CDRA: stream-milestone awards for SETTWOR, run by SETTWOR.</p>
+        <a class="foot-link" href="https://settwor.github.io/" rel="me noopener">Official website: settwor.github.io</a>
+        <p class="ver">CDRA <span data-cdra-version>v{{VERSION}}</span></p>
+      </footer>
+    </section>
+  </main>
+
+  <nav class="dots" aria-label="Screens">
+    <a href="#s1"><span class="visually-hidden">CDRA, screen 1 of 3</span></a>
+    <a href="#s2"><span class="visually-hidden">All awards, screen 2 of 3</span></a>
+    <a href="#s3"><span class="visually-hidden">More about SETTWOR, screen 3 of 3</span></a>
+  </nav>
+</body>
+</html>

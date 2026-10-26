@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en" data-version="{{VERSION}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff">
+  <meta name="color-scheme" content="light">
+  <meta name="cdra-version" content="{{VERSION}}">
+  <title>{{TITLE}}</title>
+  <meta name="description" content="{{DESC}}">
+  <meta name="robots" content="index, follow, max-image-preview:large">
+  <meta name="author" content="SETTWOR">
+  <meta name="google-site-verification" content="85QeaPD1bZhDauEhX-KQNN8-4ZBrGAfRE7DqocyOwxE">
+  <link rel="canonical" href="{{URL}}">
+  <link rel="me" href="https://settwor.github.io/">
+  <meta property="og:type" content="website">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:title" content="{{TITLE}}">
+  <meta property="og:description" content="{{DESC}}">
+  <meta property="og:url" content="{{URL}}">
+  <meta property="og:image" content="{{OG_IMAGE}}">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="{{OG_ALT}}">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:image" content="{{OG_IMAGE}}">
+  <meta name="application-name" content="CDRA">
+  <meta name="apple-mobile-web-app-title" content="CDRA">
+  <meta property="og:site_name" content="CDRA">
+  <link rel="icon" href="favicon.ico" sizes="16x16 32x32 48x48">
+  <link rel="icon" type="image/png" sizes="48x48" href="images/icons/icon-48.png">
+  <link rel="icon" type="image/png" sizes="96x96" href="images/icons/icon-96.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="images/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="images/icons/icon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="images/icons/icon-16.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="images/icons/apple-touch-icon.png">
+  <link rel="manifest" href="site.webmanifest">
+{{#JSONLD}}
+  <link rel="preload" href="fonts/fonts/Outfit-Regular.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="fonts/fonts/Outfit-Bold.woff" as="font" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="fonts/fonts/fonts-site.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body data-tier="{{TIER}}">
+  <header class="topbar">
+    <a href="./" aria-label="CDRA — home"><img src="images/CDRAlogo.svg" class="logo" alt="CDRA" width="246" height="46"></a>
+  </header>
+
+  <main>
+    <section class="screen s1" id="s1" aria-label="Award">
+      <div class="stack">
+        <div class="plaque">
+{{#SEAL}}
+          <div class="hero-media">
+            {{HERO_PICTURE}}
+          </div>
+          <div class="ledger">
+            <p class="ledger-top"><span>CDRA Award</span><span>{{DATE}}</span></p>
+            <div class="hero-group tier-row">
+{{#HERO_GROUP1}}
+            </div>
+            <div class="ledger-rank">
+              <p class="t-num">{{NUM}}</p>
+              <p class="ledger-unit">all-time streams</p>
+            </div>
+          </div>
+          <p class="dedication">{{DEDICATION}}</p>
+        </div>
+      </div>
+      <a class="next" href="#s2">
+        <span class="next-text"><span class="hint-touch">Swipe</span><span class="hint-mouse">Scroll</span> for more information</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s2" id="s2" aria-labelledby="h-info">
+      <h2 class="section-title" id="h-info">More information</h2>
+      <div class="stack">
+        <div class="info">
+          <dl class="facts">
+{{#FACTS}}
+          </dl>
+        </div>
+      </div>
+      <a class="next" href="#s3">
+        <span class="next-text">Other awards</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s3" id="s3" aria-labelledby="h-awards">
+      <h2 class="section-title" id="h-awards">Other awards</h2>
+      <div class="stack">
+        <div class="info">
+          <div class="award-intro">
+            <img src="images/GET_IT,Vol.1/GET_IT,Vol.1_cover.webp" class="thumb" alt="GET IT Vol.1 album cover by SETTWOR" width="668" height="668" loading="lazy" decoding="async">
+            <div class="award-head">
+{{#AWARD_LABEL}}
+              <p class="t-display">GOT ME UP 2</p>
+              <p class="t-title">by SETTWOR</p>
+            </div>
+          </div>
+          <ul class="awards">
+{{#AWARDS}}
+          </ul>
+        </div>
+      </div>
+      <a class="next" href="#s4">
+        <span class="next-text">More about SETTWOR</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s4" id="s4" aria-labelledby="h-bio">
+      <h2 class="section-title" id="h-bio">More about SETTWOR</h2>
+      <div class="stack">
+        <div class="bio">
+          <p>SETTWOR is a music producer specializing in phonk, hip-hop/rap, and dance/electronic music. Originally from Kryvyi Rih, Ukraine, he relocated to Poland in 2022 and manages a well-known 8D music channel.</p>
+          <p>In 2018 he began studying music and, having gained some knowledge, released his first track “Light Wave” in 2021.</p>
+          <p>SETTWOR was born on February 8, 2007, in Kryvyi Rih, Ukraine. In 2020, Daniil took the pseudonym SETTWOR and created a YouTube channel of the same name for his work and future music. On May 8, 2022, the artist’s first track in the phonk genre - Lunatic - was released.</p>
+        </div>
+        <a class="full-info" href="https://settwor.github.io/" rel="noopener">
+          <span>Full information</span>
+          <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">
+        </a>
+      </div>
+      <footer class="site-foot">
+        <p class="foot-note">CDRA: stream-milestone awards for SETTWOR, run by SETTWOR.</p>
+        <a class="foot-link" href="https://settwor.github.io/" rel="me noopener">Official website: settwor.github.io</a>
+        <p class="ver">CDRA <span data-cdra-version>v{{VERSION}}</span></p>
+      </footer>
+    </section>
+  </main>
+
+  <nav class="dots" aria-label="Screens">
+    <a href="#s1"><span class="visually-hidden">Award, screen 1 of 4</span></a>
+    <a href="#s2"><span class="visually-hidden">More information, screen 2 of 4</span></a>
+    <a href="#s3"><span class="visually-hidden">Other awards, screen 3 of 4</span></a>
+    <a href="#s4"><span class="visually-hidden">More about SETTWOR, screen 4 of 4</span></a>
+  </nav>
+</body>
+</html>

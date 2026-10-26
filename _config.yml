@@ -1,0 +1,12 @@
+# GitHub Pages (Jekyll): служебные файлы не публикуются на сайте
+exclude:
+  - skills
+  - src
+  - scripts
+  - dist
+  - AGENTS.md
+  - CLAUDE.md
+  - GEMINI.md
+  - CHANGELOG.md
+  - .cursorrules
+  - .github

@@ -1,0 +1,104 @@
+{
+  "base_url": "https://cdras.github.io/",
+  "track": {
+    "name": "GOT ME UP 2",
+    "artist": "SETTWOR",
+    "label": "SETTWOR",
+    "release": "March 15, 2024",
+    "id": "got-me-up-2",
+    "release_iso": "2024-03-15",
+    "album": "GET IT, Vol.1"
+  },
+  "heroes": {
+    "gold": {
+      "base": "images/GET_IT,Vol.1/GET_IT,Vol.1_GOLD",
+      "ext": "webp",
+      "cls": "cover--wide",
+      "w": 900,
+      "h": 668,
+      "alt": "GET IT Vol.1 album cover by SETTWOR with a gold disc"
+    },
+    "low": {
+      "base": "images/GET_IT,Vol.1/GET_IT,Vol.1_low",
+      "ext": "webp",
+      "cls": "cover--wide",
+      "w": 900,
+      "h": 668,
+      "alt": "GET IT Vol.1 album cover by SETTWOR with a disc"
+    },
+    "settwor": {
+      "base": "images/SETTWOR_main",
+      "ext": "jpg",
+      "cls": "cover--square",
+      "w": 640,
+      "h": 640,
+      "alt": "SETTWOR, portrait"
+    }
+  },
+  "awards": [
+    {
+      "key": "100k",
+      "file": "GOT-ME-UP-2-100k.html",
+      "streams": "100,000",
+      "date": "April 3, 2025",
+      "hero": "low",
+      "tier": "bronze"
+    },
+    {
+      "key": "250k",
+      "file": "GOT-ME-UP-2-250k.html",
+      "streams": "250,000",
+      "date": "May 1, 2025",
+      "hero": "low",
+      "tier": "silver"
+    },
+    {
+      "key": "500k",
+      "file": "GOT-ME-UP-2-500k.html",
+      "streams": "500,000",
+      "date": "July 22, 2025",
+      "hero": "gold",
+      "tier": "gold"
+    }
+  ],
+  "artist_page": {
+    "file": "SETTWOR-1m.html",
+    "key": "1m",
+    "streams": "1,000,000",
+    "date": "October 21, 2025",
+    "hero": "settwor",
+    "tier": "platinum"
+  },
+  "home": {
+    "file": "index.html",
+    "same_as": "500k",
+    "title": "CDRA — Stream awards for SETTWOR",
+    "desc": "CDRA — awards for SETTWOR: 100,000, 250,000, 500,000 and 1,000,000 all-time streams.",
+    "alt_names": [
+      "CDRA Awards",
+      "cdras.github.io"
+    ]
+  },
+  "og_dir": "images/og",
+  "artist": {
+    "id": "https://settwor.github.io/#artist",
+    "name": "SETTWOR",
+    "url": "https://settwor.github.io/",
+    "job": "Music producer",
+    "genres": [
+      "Phonk",
+      "Brazilian funk"
+    ],
+    "same_as": [
+      "https://settwor.github.io/",
+      "https://open.spotify.com/artist/5BD8hsAGp1fwJKcnlQWjGf",
+      "https://music.apple.com/us/artist/settwor/1526983418",
+      "https://music.youtube.com/channel/UCr8rodS7kLD36B_8B4028kg",
+      "https://www.pandora.com/artist/settwor/ARZ4r4pddcgPq3c",
+      "https://youtube.com/c/settwor",
+      "https://instagram.com/settwor",
+      "https://settw0r.t.me",
+      "https://www.last.fm/music/SETTWOR"
+    ]
+  }
+}

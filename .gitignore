@@ -1,0 +1,20 @@
+# ИИ-инструкции и скиллы (остаются локально, в git не попадают)
+AGENTS.md
+CLAUDE.md
+GEMINI.md
+.cursorrules
+.github/copilot-instructions.md
+skills/
+
+# История изменений
+CHANGELOG.md
+TODO.md
+
+# Архивы и сборка
+dist/
+*.zip
+
+# Системные файлы
+.DS_Store
+Thumbs.db
+__pycache__/

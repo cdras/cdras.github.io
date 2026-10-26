@@ -1,0 +1,8 @@
+/* Gloock: used ONLY by scripts/make_icons.py to redraw the current favicon/app icons (the CDRA icon stays in Gloock, owner's request). No page links this file. */
+@font-face {
+  font-family: 'Gloock';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('Gloock-Regular.woff') format('woff');
+}
