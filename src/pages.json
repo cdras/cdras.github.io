@@ -10,7 +10,9 @@
     "album": "GET IT, Vol.1",
     "genre": "Phonk",
     "spotify": "https://open.spotify.com/track/2mb9uchttGxZwzBYwkVT55",
-    "apple_music": "https://music.apple.com/us/album/got-me-up-2/1734684609?i=1734684834"
+    "apple_music": "https://music.apple.com/us/album/got-me-up-2/1734684609?i=1734684834",
+    "youtube_music": "https://music.youtube.com/watch?v=396vxx9I9zs",
+    "youtube": "https://www.youtube.com/watch?v=E457FV34TKA"
   },
   "heroes": {
     "gold": {

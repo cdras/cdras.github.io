@@ -716,9 +716,18 @@ ul { list-style: none; }
   .facts > div + div::before, .awards li + li::before { background: var(--ink); }
 }
 @media print {
-  .topbar { position: static; height: auto; }
+  /* v1.11.12 (task 13.5): the browser's own Print / Save as PDF gives ONE clean landscape sheet:
+     logo, the plaque (name, streams, date, «Presented to SETTWOR»), the address. Screens 2-4 and all controls are not printed. */
+  @page { size: A4 landscape; margin: 12mm; }
+  html, body { background: #fff; height: auto; }
+  body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .topbar { position: static; height: auto; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
   .screen { min-height: 0; break-inside: avoid; }
-  .next, .dots { display: none; }
+  .screen:not(.s1), .next, .dots, .zoom-box, .zoom-toggle { display: none !important; }
+  .s1 { height: auto; padding-block: 0; background: none; }
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  .zoom-cover { cursor: default; }
+  main::after { content: "cdras.github.io"; display: block; margin-top: 4mm; text-align: center; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--ink); }
 }
 
 /* ---------- Status finish (v1.10.2) ----------
@@ -1084,3 +1093,34 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 .facts dd.is-share > span[aria-hidden] { display: none; }
 /* the extra row must not push «More information» past the window on short phones (320×568 was exactly full before): tighter rows under 600px of height */
 @media (max-height: 600px) { .facts { --rule-gap: 0.5rem; } }
+
+/* ---------- v1.11.15 (owner: «more info in the main block, no filler, more status»): the register strip on the first screen ----------
+   The plaque states what the award is (one line) and shows three figures from pages.json: awards presented, top award, latest award.
+   Ink + hairlines only (AGENTS.md §5 13h), Outfit 700 for the figures, 400 for labels, no new colours.
+   apple-hig-review: layout.md › Visual hierarchy (most important first; grouping by hairlines and space), typography.md › Conveying hierarchy
+   (weight + size + colour carry rank), accessibility.md › Vision (labels stay >= 0.8125rem, contrast 8.6:1+; the short forms 1M / Oct 2025
+   have the full text for screen readers). */
+.home-plaque .home-lead { max-width: 19rem; font-size: var(--fs-hint); line-height: 1.4; color: var(--ink-soft); text-wrap: balance; }
+.home-stats { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; max-width: 21rem; margin: 0.125rem 0 0; padding-block: 0.625rem 0.5rem; border-block: 1px solid rgb(var(--line-rgb) / 0.3); }
+.home-stats > div { display: flex; flex-direction: column-reverse; align-items: center; justify-content: flex-end; gap: 0.25rem; min-width: 0; padding-inline: 0.25rem; text-align: center; }
+.home-stats > div + div { border-inline-start: 1px solid rgb(var(--line-rgb) / 0.25); }
+.home-stats dd { margin: 0; font-family: var(--f-title); font-weight: 700; font-size: clamp(1.125rem, 5.2vw, 1.5rem); line-height: 1.1; letter-spacing: 0; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
+.home-stats dt { font-size: var(--fs-small); line-height: 1.25; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
+@media (hover: none) { .home-stats > div { cursor: pointer; } }
+@media (prefers-reduced-motion: no-preference) {
+  .home-stats > div { transition: scale var(--soft), color var(--soft); }
+  @media (hover: hover) and (pointer: fine) { .home-stats > div:hover { scale: 1.04; } }
+  .home-stats > div:active { scale: 0.96; transition-duration: 90ms; }
+}
+@media (prefers-reduced-motion: reduce) { .home-stats > div:active { opacity: 0.6; } }
+@media (prefers-contrast: more) { .home-stats, .home-stats > div + div { border-color: var(--ink); } .home-plaque .home-lead, .home-stats dt { color: var(--ink); } }
+@media (min-width: 900px) and (min-height: 700px) {
+  .home-plaque .home-lead { max-width: 26rem; font-size: var(--fs-body); }
+  .home-stats { max-width: 28rem; padding-block: 0.875rem 0.75rem; }
+  .home-stats dd { font-size: 1.75rem; }
+  .home-stats dt { font-size: var(--fs-label); }
+}
+@media (max-width: 359px) { .home-stats dt { white-space: normal; letter-spacing: 0.04em; text-wrap: balance; } .home-stats > div { padding-inline: 0.125rem; } }
+/* short screens: the first screen must still fit (AGENTS.md §5 13c) */
+@media (max-height: 640px) { .home-plaque .home-lead { display: none; } }
+@media (orientation: landscape) and (max-height: 520px) { .home-stats, .home-plaque .home-lead { display: none; } }

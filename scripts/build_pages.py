@@ -10,7 +10,7 @@ CDRA — генератор страниц наград из одного шаб
 Версия берётся из файла VERSION. Руками править сгенерированные HTML нельзя — правка пропадёт
 при следующей сборке; меняй шаблон/данные и запускай этот скрипт (release.py делает это сам).
 """
-import json, pathlib, sys, urllib.parse
+import datetime, json, pathlib, sys, urllib.parse
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / 'src' / 'page.html'
@@ -135,7 +135,15 @@ def home_texts(d):
     which = (f"The {join_and(nums)} {'awards are' if len(nums) > 1 else 'award is'} for the track “{esc(tr['name'])}” from the album {esc(tr['album'])}, "
              f"released on {esc(tr['release'])}. " if nums else '') + f"The {art['streams']} award is for {esc(tr['artist'])} as an artist."
     dates = '; '.join(f"{a['streams']} on {a['date']}" for a in d['awards'] + [art]) + '.'
-    return {'HOME_LEAD': lead, 'HOME_WHICH': which, 'HOME_DATES': dates}
+    # v1.11.15: figures for the register strip on the first screen; all from pages.json, so they follow the awards list
+    def short_n(n): return f'{n / 1_000_000:g}M' if n >= 1_000_000 else f'{n // 1000}K'
+    allr = d['awards'] + [art]
+    top = max(int(a['streams'].replace(',', '')) for a in allr)
+    last = max(allr, key=lambda a: datetime.datetime.strptime(a['date'], '%B %d, %Y'))
+    ld = datetime.datetime.strptime(last['date'], '%B %d, %Y')
+    return {'HOME_LEAD': lead, 'HOME_WHICH': which, 'HOME_DATES': dates,
+            'HOME_COUNT': str(total), 'HOME_TOP': short_n(top), 'HOME_TOP_FULL': f'{top:,}',
+            'HOME_LATEST': ld.strftime('%b %Y'), 'HOME_LATEST_FULL': last['date']}
 
 
 def level_shown(a, d):
@@ -240,7 +248,7 @@ def jsonld_graph(spec, d):
         graph += [page, {'@type': 'MusicRecording', '@id': rec_id, 'name': tr['name'],
                          'byArtist': {'@id': ar['id']},
                          'inAlbum': {'@type': 'MusicAlbum', 'name': tr['album'], 'byArtist': {'@id': ar['id']}},
-                         'datePublished': tr['release_iso'], 'genre': tr['genre'], 'sameAs': [tr['spotify'], tr['apple_music']]}]
+                         'datePublished': tr['release_iso'], 'genre': tr['genre'], 'sameAs': [tr['spotify'], tr['apple_music'], tr['youtube_music'], tr['youtube']]}]
     else:
         if not spec.get('no_about'):
             page['about'] = {'@id': ar['id']}
@@ -274,7 +282,7 @@ def page_specs(d):
             group1=[('p', 't-label', f"{a['level']} award for the track"), ('h1', 't-display', tr['name']), ('p', 't-title', tr['artist'])],
             facts=[(dt, a['date'] if dd is None else dd, lt) for dt, dd, lt in track_facts]
                   + [('Album', tr['album'], True), ('Genre', tr['genre'], True), ('Reached in', milestone_days(tr, a), True),
-                     ('Streams counted', 'All platforms combined', True), ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music'])]),
+                     ('Streams counted', 'All platforms combined', True), ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music']), ('YouTube Music', tr['youtube_music']), ('YouTube', tr['youtube'])]),
                      ('Share', '', True, share_links(base + url_quote(a['file']), title, f"CDRA award: {tr['name']} by {tr['artist']} reached {a['streams']} all-time streams."))],
             award_label=None, about_track=True, is_home=False)
     s = d['artist_page']
