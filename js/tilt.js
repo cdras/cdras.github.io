@@ -14,14 +14,16 @@
 
   var TAU = 0.14;          /* seconds: how fast the card follows the input */
   var PERSPECTIVE = '60rem';
-  var RANGE = 20;          /* degrees of phone tilt that give the full card tilt */
+  var RANGE = 9;           /* v1.13.11: degrees of phone tilt that give the full card tilt (was 20: now about twice as sensitive) */
+  var GYRO_BOOST = 2.6;    /* v1.13.11: the gyroscope tilts the card 2.6x further than the mouse does (plaque 4 -> 10.4 deg) */
+  var viaGyro = false;
   var BASE_TAU = 4;        /* seconds: the «level» position slowly follows how the phone is held */
 
   function make(el, max) { return el ? { el: el, max: max, x: 0, y: 0, on: false, seen: true } : null; }
   var cards = { plaque: make(plaque, 4), zoom: make(zoomBox, 5) };   /* v1.13.4: smaller angles = less resampling blur */
   var nx = 0, ny = 0;      /* input, -1..1 (right / down for the mouse) */
   var raf = 0, last = 0, idle = 0;
-  var REST_MS = 900;       /* v1.13.4: a mouse that stops lets the card settle flat, so text and cover are razor sharp at rest */
+  var REST_MS = 600;       /* v1.13.4: a mouse that stops lets the card settle flat, so text and cover are razor sharp at rest */
 
   if (cards.plaque && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (e) { cards.plaque.seen = e[e.length - 1].isIntersecting; }).observe(plaque);
@@ -39,7 +41,7 @@
   function apply(c) {
     if (!c.on) { c.el.style.willChange = 'transform'; c.on = true; }
     /* pointer-pressed model: the edge nearest the input goes away from you */
-    c.el.style.transform = 'perspective(' + PERSPECTIVE + ') rotateX(' + (-c.y * c.max).toFixed(2) + 'deg) rotateY(' + (c.x * c.max).toFixed(2) + 'deg)';
+    c.el.style.transform = 'perspective(' + PERSPECTIVE + ') rotateX(' + (-c.y * c.max * (viaGyro ? GYRO_BOOST : 1)).toFixed(2) + 'deg) rotateY(' + (c.x * c.max * (viaGyro ? GYRO_BOOST : 1)).toFixed(2) + 'deg)';
   }
 
   function frame(t) {
@@ -71,8 +73,11 @@
   /* ---- mouse / pen (touch is ignored: a finger drag must keep scrolling the page) ---- */
   window.addEventListener('pointermove', function (e) {
     if (e.pointerType === 'touch' || reduce.matches) return;
-    nx = clamp((e.clientX / window.innerWidth - 0.5) * 2);
-    ny = clamp((e.clientY / window.innerHeight - 0.5) * 2);
+    /* v1.13.10: while the pointer is on TEXT of the block the card settles flat, so the text being pointed at (and zooming) is never resampled by the tilt */
+    viaGyro = false;
+    var t = e.target, onText = !!(plaque && t && t.closest && plaque.contains(t) && !t.closest('.hero-media') && t.closest('p, span, a, dl, dt, dd, li'));
+    nx = onText ? 0 : clamp((e.clientX / window.innerWidth - 0.5) * 2);
+    ny = onText ? 0 : clamp((e.clientY / window.innerHeight - 0.5) * 2);
     clearTimeout(idle);
     idle = setTimeout(function () { nx = ny = 0; wake(); }, REST_MS);
     wake();
@@ -94,6 +99,7 @@
     var f = 1 - Math.exp(-Math.max(t - baseT, 0) / BASE_TAU);
     baseX += (x - baseX) * f; baseY += (y - baseY) * f; baseT = t;
     /* «the card stays where it is, the phone moves around it» */
+    viaGyro = true;
     nx = clamp(-(x - baseX) / RANGE);
     ny = clamp(-(y - baseY) / RANGE);
     wake();

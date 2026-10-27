@@ -136,7 +136,7 @@ def check(version):
             elif m.group(1) != version: errs.append(f'{n}: {label} is {m.group(1)}, VERSION is {version}')
         vp = re.findall(r'<meta[^>]*name="viewport"[^>]*>', t)
         if len(vp) != 1: errs.append(f'{n}: need exactly one viewport meta, found {len(vp)}')
-        elif re.search(r'user-scalable\s*=\s*(no|0)|maximum-scale', vp[0]): errs.append(f'{n}: viewport must not block zoom')
+        elif not re.search(r'user-scalable\s*=\s*(no|0)', vp[0]): errs.append(f'{n}: viewport must block zoom (owner decision v1.13.12)')
         for img in re.findall(r'<img\b[^>]*>', t):
             if not re.search(r'\balt=', img): errs.append(f'{n}: <img> without alt: {img[:60]}')
         for key in (('og:image', 'twitter:image') if p in pages else ()):
