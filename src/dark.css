@@ -1,0 +1,78 @@
+/* CDRA dark theme: the ONE source of the dark rules (v1.13.9 colours, owner request; v1.13.15 switch).
+   scripts/build_pages.py copies this file into css/style.css between the "theme-css" markers, twice:
+     1. AUTO   : @media (prefers-color-scheme: dark), unless the footer switch says "Light"
+     2. FORCED : always, when the footer switch says "Dark"
+   Write plain selectors only (no @media inside; the part after the "@solid" line is the more-contrast / less-transparency part).
+   Edit HERE, then run: python scripts/build_pages.py   (release.py check fails if css/style.css is out of sync).
+   Not applied to print (screen only). Brand: deep violet-black ground, lavender-white ink, the deep-violet brand
+   colour kept as the filled bar (white text on it), tier metals unchanged. Contrast: ink on ground ~16:1, ink-soft ~8:1. */
+
+:root {
+  color-scheme: dark;
+  --ink: #f1eafc;
+  --ink-soft: #b9a9d3;
+  --bg: #0f0818;
+  --bar-bg: #150c21;
+  --surface: #1a1029;
+  --surface-2: #150d22;
+  --line-rgb: 203 186 238;
+  --brand: #3a1270;           /* the CDRA violet, lifted a little so it reads on the dark ground */
+  --brand-2: #2a0c52;
+  --dot-rgb: 241 234 252;     /* screen-dots fill (was a second @keyframes in v1.13.9) */
+}
+html { background: var(--bg); }
+body { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+::selection { background: rgb(160 120 235 / 0.35); }
+
+/* top bar */
+@supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+  .topbar { background-color: rgba(15, 8, 24, 0.72); }
+}
+/* ink-coloured artwork becomes light */
+.logo, .arrow, .icon { filter: brightness(0) invert(1); }
+.logo { opacity: 0.94; }
+
+/* first screen: a violet glow behind the plaque */
+.s1 { background: radial-gradient(ellipse 70% 46% at 50% 40%, rgb(122 72 214 / 0.2), transparent 70%); }
+.cover { filter: drop-shadow(0 0.5rem 0.9rem rgb(0 0 0 / 0.6)); }
+.zoom-img { box-shadow: 0 1rem 2.5rem -0.75rem rgb(0 0 0 / 0.7); }
+
+/* plaque */
+.plaque {
+  background: linear-gradient(180deg, #1e1432, #150d23);
+  box-shadow:
+    inset 0 0 0 0.3125rem #190f28,
+    inset 0 0 0 calc(0.3125rem + 1px) rgb(var(--line-rgb) / 0.32),
+    0 0.125rem 0.25rem rgb(0 0 0 / 0.5),
+    0 0 3.5rem -1rem rgb(138 92 230 / 0.3),
+    0 1.75rem 2.75rem -1.25rem rgb(0 0 0 / 0.8);
+}
+.tier-row { background: linear-gradient(100deg, rgb(var(--line-rgb) / 0.1), rgb(var(--line-rgb) / 0.05)); }
+/* the filled bar keeps the brand violet, text stays white */
+.ledger-rank { background: linear-gradient(100deg, var(--brand), var(--brand-2)); color: #fff; box-shadow: inset 0 0 0 1px rgb(var(--line-rgb) / 0.25); }
+
+/* cards, buttons, panels */
+.award-card {
+  background: var(--surface); border-color: rgb(var(--line-rgb) / 0.4);
+  box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0.125rem 0.5rem -0.125rem rgb(0 0 0 / 0.6);
+}
+.award-card:hover, .award-card:focus-visible { border-color: var(--ink); }
+.full-info {
+  background: linear-gradient(180deg, #1e1432, #170f26);
+  box-shadow: inset 0 0 0 0.1875rem #190f28, inset 0 0 0 calc(0.1875rem + 1px) rgb(var(--line-rgb) / 0.3), 0 0 1.5rem -0.5rem rgb(138 92 230 / 0.35);
+}
+.faq details, .faq details:first-child { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.28); }
+.faq details[open] { background: #1d122f; border-color: rgb(var(--line-rgb) / 0.6); box-shadow: inset 0.1875rem 0 0 #9a6bf0; }
+.faq details[open] summary::after { background: var(--brand); border-color: #9a6bf0; color: #fff; }
+.bio-facts { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.35); }
+.bio-line li::before { background: #9a6bf0; }
+.std-table tbody tr:hover { background: rgb(var(--line-rgb) / 0.08); }
+.zoom-box { background: rgb(15 8 24 / 0.985); }
+.zoom-close { background: var(--surface); }
+.zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
+.dots a::before { border-color: var(--ink-soft); }
+
+/* @solid */
+/* more-contrast / less-transparency users: the solid sheets must be dark too, not the light #fff from above */
+.zoom-box { background: var(--bg); }
+.topbar { background-color: var(--bg); }

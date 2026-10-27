@@ -15,6 +15,7 @@
   --ink-soft: #5b4470;          /* secondary text, 8.6:1 on white */
   --bg: #ffffff;
   --bar-bg: #f8f8f8;
+  --dot-rgb: 38 0 65;           /* screen-dots fill (v1.13.15: was hard-coded in @keyframes dot-fill) */
 
   /* v1.9.0: ONE typeface for everything: Outfit, Regular 400 + Bold 700 for numbers (see fonts/fonts/fonts-site.css).
      The two variables stay so the roles are still easy to tell apart in the rules below. */
@@ -322,9 +323,9 @@ ul { list-style: none; }
 }
 /* 0% — экран только входит, 50% — стоит на месте, 100% — ушёл: соседние точки перетекают друг в друга */
 @keyframes dot-fill {
-  0%   { background-color: rgb(38 0 65 / 0); }
-  50%  { background-color: rgb(38 0 65 / 1); }
-  100% { background-color: rgb(38 0 65 / 0); }
+  0%   { background-color: rgb(var(--dot-rgb) / 0); }
+  50%  { background-color: rgb(var(--dot-rgb) / 1); }
+  100% { background-color: rgb(var(--dot-rgb) / 0); }
 }
 
 /* ---------- Short landscape screens (phones turned sideways) ---------- */
@@ -1201,13 +1202,10 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 @media (max-width: 26rem) { .bio-facts { grid-template-columns: 1fr; } .bio-facts > div { border-right: 0 !important; border-top: 1px solid rgb(var(--line-rgb) / 0.2) !important; } .bio-facts > div:first-child { border-top: 0 !important; } }
 @media print { .bio-facts, .bio-line { break-inside: avoid; } }
 
-/* ==========================================================================
-   Dark theme (v1.13.9, owner request). Automatic: follows the system setting (prefers-color-scheme), no switch, no JS.
-   Not applied to print (screen only). Brand: deep violet-black ground, lavender-white ink, the deep-violet brand
-   colour kept as the filled bar (white text on it), tier metals unchanged. Contrast: ink on ground ~16:1, ink-soft ~8:1.
-   ========================================================================== */
+/* >>> theme-css: generated from src/dark.css by scripts/build_pages.py (python scripts/build_pages.py). Do not edit between the markers. */
+/* AUTO: the system is dark and the footer switch is not on Light */
 @media screen and (prefers-color-scheme: dark) {
-  :root {
+  html:not(:has(input[name="theme"][value="light"]:checked)) {
     color-scheme: dark;
     --ink: #f1eafc;
     --ink-soft: #b9a9d3;
@@ -1216,28 +1214,24 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
     --surface: #1a1029;
     --surface-2: #150d22;
     --line-rgb: 203 186 238;
-    --brand: #3a1270;           /* the CDRA violet, lifted a little so it reads on the dark ground */
+    --brand: #3a1270;
     --brand-2: #2a0c52;
+    --dot-rgb: 241 234 252;
   }
-  html { background: var(--bg); }
-  body { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
-  ::selection { background: rgb(160 120 235 / 0.35); }
-
-  /* top bar */
+  html:not(:has(input[name="theme"][value="light"]:checked)) { background: var(--bg); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) body { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) ::selection { background: rgb(160 120 235 / 0.35); }
   @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-    .topbar { background-color: rgba(15, 8, 24, 0.72); }
+    :where(html:not(:has(input[name="theme"][value="light"]:checked))) .topbar { background-color: rgba(15, 8, 24, 0.72); }
   }
-  /* ink-coloured artwork becomes light */
-  .logo, .arrow, .icon { filter: brightness(0) invert(1); }
-  .logo { opacity: 0.94; }
-
-  /* first screen: a violet glow behind the plaque */
-  .s1 { background: radial-gradient(ellipse 70% 46% at 50% 40%, rgb(122 72 214 / 0.2), transparent 70%); }
-  .cover { filter: drop-shadow(0 0.5rem 0.9rem rgb(0 0 0 / 0.6)); }
-  .zoom-img { box-shadow: 0 1rem 2.5rem -0.75rem rgb(0 0 0 / 0.7); }
-
-  /* plaque */
-  .plaque {
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .logo,
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .arrow,
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .icon { filter: brightness(0) invert(1); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .logo { opacity: 0.94; }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .s1 { background: radial-gradient(ellipse 70% 46% at 50% 40%, rgb(122 72 214 / 0.2), transparent 70%); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .cover { filter: drop-shadow(0 0.5rem 0.9rem rgb(0 0 0 / 0.6)); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-img { box-shadow: 0 1rem 2.5rem -0.75rem rgb(0 0 0 / 0.7); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .plaque {
     background: linear-gradient(180deg, #1e1432, #150d23);
     box-shadow:
       inset 0 0 0 0.3125rem #190f28,
@@ -1246,42 +1240,102 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
       0 0 3.5rem -1rem rgb(138 92 230 / 0.3),
       0 1.75rem 2.75rem -1.25rem rgb(0 0 0 / 0.8);
   }
-  .tier-row { background: linear-gradient(100deg, rgb(var(--line-rgb) / 0.1), rgb(var(--line-rgb) / 0.05)); }
-  /* the filled bar keeps the brand violet, text stays white */
-  .ledger-rank { background: linear-gradient(100deg, var(--brand), var(--brand-2)); color: #fff; box-shadow: inset 0 0 0 1px rgb(var(--line-rgb) / 0.25); }
-
-  /* cards, buttons, panels */
-  .award-card {
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .tier-row { background: linear-gradient(100deg, rgb(var(--line-rgb) / 0.1), rgb(var(--line-rgb) / 0.05)); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .ledger-rank { background: linear-gradient(100deg, var(--brand), var(--brand-2)); color: #fff; box-shadow: inset 0 0 0 1px rgb(var(--line-rgb) / 0.25); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .award-card {
     background: var(--surface); border-color: rgb(var(--line-rgb) / 0.4);
     box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0.125rem 0.5rem -0.125rem rgb(0 0 0 / 0.6);
   }
-  .award-card:hover, .award-card:focus-visible { border-color: var(--ink); }
-  .full-info {
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .award-card:hover,
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .award-card:focus-visible { border-color: var(--ink); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .full-info {
     background: linear-gradient(180deg, #1e1432, #170f26);
     box-shadow: inset 0 0 0 0.1875rem #190f28, inset 0 0 0 calc(0.1875rem + 1px) rgb(var(--line-rgb) / 0.3), 0 0 1.5rem -0.5rem rgb(138 92 230 / 0.35);
   }
-  .faq details, .faq details:first-child { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.28); }
-  .faq details[open] { background: #1d122f; border-color: rgb(var(--line-rgb) / 0.6); box-shadow: inset 0.1875rem 0 0 #9a6bf0; }
-  .faq details[open] summary::after { background: var(--brand); border-color: #9a6bf0; color: #fff; }
-  .bio-facts { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.35); }
-  .bio-line li::before { background: #9a6bf0; }
-  .std-table tbody tr:hover { background: rgb(var(--line-rgb) / 0.08); }
-  .zoom-box { background: rgb(15 8 24 / 0.985); }
-  .zoom-close { background: var(--surface); }
-  .zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
-  .dots a::before { border-color: var(--ink-soft); }
-
-  @keyframes dot-fill {
-    0%   { background-color: rgb(241 234 252 / 0); }
-    50%  { background-color: rgb(241 234 252 / 1); }
-    100% { background-color: rgb(241 234 252 / 0); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .faq details,
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .faq details:first-child { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.28); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .faq details[open] { background: #1d122f; border-color: rgb(var(--line-rgb) / 0.6); box-shadow: inset 0.1875rem 0 0 #9a6bf0; }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .faq details[open] summary::after { background: var(--brand); border-color: #9a6bf0; color: #fff; }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .bio-facts { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.35); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .bio-line li::before { background: #9a6bf0; }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .std-table tbody tr:hover { background: rgb(var(--line-rgb) / 0.08); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-box { background: rgb(15 8 24 / 0.985); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-close { background: var(--surface); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .dots a::before { border-color: var(--ink-soft); }
+}
+/* FORCED: the footer switch is on Dark (any system setting) */
+@media screen {
+  html:has(input[name="theme"][value="dark"]:checked) {
+    color-scheme: dark;
+    --ink: #f1eafc;
+    --ink-soft: #b9a9d3;
+    --bg: #0f0818;
+    --bar-bg: #150c21;
+    --surface: #1a1029;
+    --surface-2: #150d22;
+    --line-rgb: 203 186 238;
+    --brand: #3a1270;
+    --brand-2: #2a0c52;
+    --dot-rgb: 241 234 252;
   }
+  html:has(input[name="theme"][value="dark"]:checked) { background: var(--bg); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) body { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) ::selection { background: rgb(160 120 235 / 0.35); }
+  @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
+    :where(html:has(input[name="theme"][value="dark"]:checked)) .topbar { background-color: rgba(15, 8, 24, 0.72); }
+  }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .logo,
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .arrow,
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .icon { filter: brightness(0) invert(1); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .logo { opacity: 0.94; }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .s1 { background: radial-gradient(ellipse 70% 46% at 50% 40%, rgb(122 72 214 / 0.2), transparent 70%); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .cover { filter: drop-shadow(0 0.5rem 0.9rem rgb(0 0 0 / 0.6)); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-img { box-shadow: 0 1rem 2.5rem -0.75rem rgb(0 0 0 / 0.7); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .plaque {
+    background: linear-gradient(180deg, #1e1432, #150d23);
+    box-shadow:
+      inset 0 0 0 0.3125rem #190f28,
+      inset 0 0 0 calc(0.3125rem + 1px) rgb(var(--line-rgb) / 0.32),
+      0 0.125rem 0.25rem rgb(0 0 0 / 0.5),
+      0 0 3.5rem -1rem rgb(138 92 230 / 0.3),
+      0 1.75rem 2.75rem -1.25rem rgb(0 0 0 / 0.8);
+  }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .tier-row { background: linear-gradient(100deg, rgb(var(--line-rgb) / 0.1), rgb(var(--line-rgb) / 0.05)); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .ledger-rank { background: linear-gradient(100deg, var(--brand), var(--brand-2)); color: #fff; box-shadow: inset 0 0 0 1px rgb(var(--line-rgb) / 0.25); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .award-card {
+    background: var(--surface); border-color: rgb(var(--line-rgb) / 0.4);
+    box-shadow: inset 0 1px 0 rgb(255 255 255 / 0.05), 0 0.125rem 0.5rem -0.125rem rgb(0 0 0 / 0.6);
+  }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .award-card:hover,
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .award-card:focus-visible { border-color: var(--ink); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .full-info {
+    background: linear-gradient(180deg, #1e1432, #170f26);
+    box-shadow: inset 0 0 0 0.1875rem #190f28, inset 0 0 0 calc(0.1875rem + 1px) rgb(var(--line-rgb) / 0.3), 0 0 1.5rem -0.5rem rgb(138 92 230 / 0.35);
+  }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .faq details,
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .faq details:first-child { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.28); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .faq details[open] { background: #1d122f; border-color: rgb(var(--line-rgb) / 0.6); box-shadow: inset 0.1875rem 0 0 #9a6bf0; }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .faq details[open] summary::after { background: var(--brand); border-color: #9a6bf0; color: #fff; }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .bio-facts { background: var(--surface); border-color: rgb(var(--line-rgb) / 0.35); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .bio-line li::before { background: #9a6bf0; }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .std-table tbody tr:hover { background: rgb(var(--line-rgb) / 0.08); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-box { background: rgb(15 8 24 / 0.985); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-close { background: var(--surface); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .dots a::before { border-color: var(--ink-soft); }
 }
-/* more-contrast / less-transparency users: the solid sheets must be dark too, not the light #fff from above */
+/* AUTO, more contrast / less transparency */
 @media screen and (prefers-color-scheme: dark) and ((prefers-reduced-transparency: reduce) or (prefers-contrast: more)) {
-  .zoom-box { background: var(--bg); }
-  .topbar { background-color: var(--bg); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-box { background: var(--bg); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .topbar { background-color: var(--bg); }
 }
+/* FORCED, more contrast / less transparency */
+@media screen and ((prefers-reduced-transparency: reduce) or (prefers-contrast: more)) {
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-box { background: var(--bg); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .topbar { background-color: var(--bg); }
+}
+/* <<< theme-css */
 
 /* v1.13.10 (owner: text looks soft on a PC when the pointer is on it): text that zooms or nudges is drawn with exact glyph geometry
    (no hinting jumps while the scale changes) and the zoom ends on the pixel grid; with the tilt now flat over text (js/tilt.js) it stays crisp. */
@@ -1353,3 +1407,59 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; heig
     scale: 1.02; transition-duration: 280ms; transition-timing-function: cubic-bezier(.22, .61, .36, 1);
   }
 }
+
+/* ==========================================================================
+   v1.13.15 (owner: «add a theme switch to the footer»): Auto / Light / Dark, between the two footer links.
+   CSS only (AGENTS.md rule 8: no script, no storage): three radio buttons, the page reads the checked one with :has().
+   Auto = the system setting (as in v1.13.9). Light / Dark = forced on this page. The choice is NOT remembered on the next page
+   (that would need storage and a script). The dark rules live in src/dark.css (copied above, between the theme-css markers).
+   Look: one 36px pill (44px tap area), hairline ring, the chosen segment filled with ink (white-on-ink in light, ink-on-ground in dark); 13px text.
+   ========================================================================== */
+:root:has(input[name="theme"][value="light"]:checked) { color-scheme: light; }   /* a forced Light page also draws scrollbars and controls light */
+.theme-switch {   /* 36px pill + 2 x 4px margin = the 44px of a footer link row, so the footer does not grow; the tap area (the inputs) is the full 44px */
+  position: relative;
+  display: inline-flex;
+  align-items: stretch;
+  margin: 0.25rem;
+  border-radius: 999px;
+}
+.theme-switch::after {   /* the ring is drawn OVER the filled segment so the pill keeps its outline */
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  box-shadow: inset 0 0 0 1px rgb(var(--line-rgb) / 0.45);
+  pointer-events: none;
+}
+.theme-opt { position: relative; display: flex; min-height: 2.25rem; min-inline-size: 44px; cursor: pointer; }
+.theme-opt input { position: absolute; inset: -0.25rem 0; inline-size: 100%; block-size: calc(100% + 0.5rem); margin: 0; opacity: 0; cursor: pointer; }   /* 36px + 4px above and below = 44px tap area */
+.theme-opt:first-child span { border-start-start-radius: 999px; border-end-start-radius: 999px; }
+.theme-opt:last-child span  { border-start-end-radius: 999px;   border-end-end-radius: 999px; }
+.theme-opt input:focus-visible { outline: none; }
+.theme-opt span {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+  padding-inline: 0.75rem;
+  font-size: var(--fs-small);
+  line-height: 1;
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+.theme-opt input:checked + span { background: var(--ink); color: var(--bg); }
+.theme-opt input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: -3px; }
+.theme-opt input:checked:focus-visible + span { outline-color: var(--bg); }
+@media (hover: hover) and (pointer: fine) { .theme-opt:hover input:not(:checked) + span { background: rgb(var(--line-rgb) / 0.12); } }
+@media (prefers-reduced-motion: no-preference) {
+  /* press = instant, release = a small hop (same feel as the footer links) */
+  .theme-opt span { transition: background-color 180ms ease, color 180ms ease, scale var(--spring); }
+  .theme-opt:active span { scale: 0.94; transition: scale var(--press), background-color 180ms ease, color 180ms ease; }
+}
+@media (prefers-reduced-motion: reduce) { .theme-opt:active span { opacity: 0.6; } }
+@media (prefers-contrast: more) { .theme-switch::after { box-shadow: inset 0 0 0 1px var(--ink); } }
+@media (forced-colors: active) {
+  .theme-opt input:checked + span { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+}
+@media print { .theme-switch { display: none; } }
+@supports not selector(:has(*)) { .theme-switch { display: none; } }   /* without :has() the switch could not work, so it is not shown */

@@ -7,10 +7,11 @@ CDRA — генератор страниц наград из одного шаб
 
 Общая разметка:  src/page.html     (плейсхолдеры {{ИМЯ}} и блоки {{#ИМЯ}} на отдельной строке)
 Данные наград:   src/pages.json    (потоки, даты, обложки, тексты)
+Также (v1.13.15): между маркерами theme-css в css/style.css лежат ДВЕ копии тёмной темы, их делает этот скрипт из src/dark.css.
 Версия берётся из файла VERSION. Руками править сгенерированные HTML нельзя — правка пропадёт
 при следующей сборке; меняй шаблон/данные и запускай этот скрипт (release.py делает это сам).
 """
-import datetime, json, pathlib, sys, urllib.parse
+import datetime, json, pathlib, re, sys, urllib.parse
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / 'src' / 'page.html'
@@ -18,6 +19,8 @@ DATA = ROOT / 'src' / 'pages.json'
 HOME = ROOT / 'src' / 'home.html'   # body of the home page; its <head> comes from src/page.html
 LEGACY_ARTIST_URLS = ['SETTWOR-1m.html']   # v1.12.0: old public URLs of the artist award, kept as redirects
 STANDARDS = ROOT / 'src' / 'standards.html'   # body of the award-standards page (v1.11.0)
+DARK_SRC = ROOT / 'src' / 'dark.css'   # v1.13.15: the one source of the dark-theme rules; copied into css/style.css by dark_region()
+STYLE = ROOT / 'css' / 'style.css'
 
 
 def esc(s):
@@ -368,6 +371,103 @@ def page_specs(d):
     return specs
 
 
+# ---------------------------------------------------------------------------------------------------------------------------
+# v1.13.15: footer theme switch (Auto / Light / Dark), CSS only. The dark rules are written ONCE in src/dark.css and copied into
+# css/style.css twice (between the theme-css markers): AUTO (system dark, unless the switch says Light) and FORCED (switch says Dark).
+# :where() keeps the specificity of every copied rule equal to the original, so the cascade order stays exactly as in v1.13.9.
+THEME_BEGIN = '/* >>> theme-css: generated from src/dark.css by scripts/build_pages.py (python scripts/build_pages.py). Do not edit between the markers. */'
+THEME_END = '/* <<< theme-css */'
+_LIGHT = 'input[name="theme"][value="light"]:checked'
+_DARK = 'input[name="theme"][value="dark"]:checked'
+SOLID_COND = '(prefers-reduced-transparency: reduce) or (prefers-contrast: more)'
+
+
+def _split_commas(sel):
+    out, depth, cur = [], 0, ''
+    for ch in sel:
+        if ch in '([': depth += 1
+        elif ch in ')]': depth -= 1
+        if ch == ',' and depth == 0:
+            out.append(cur.strip()); cur = ''
+        else:
+            cur += ch
+    out.append(cur.strip())
+    return [s for s in out if s]
+
+
+def _prefix_rules(css, scope, root):
+    """Prefix every style rule of `css` with the scope. `html`/`:root` rules (tokens, page background) become the scope's own element."""
+    css = re.sub(r'/\*.*?\*/', '', css, flags=re.S)
+    out, i = [], 0
+    while True:
+        j = css.find('{', i)
+        if j == -1:
+            assert not css[i:].strip(), 'dark.css: text after the last rule'
+            break
+        prelude, depth, k = css[i:j].strip(), 1, j + 1
+        while depth:
+            c = css[k]
+            depth += (c == '{') - (c == '}')
+            k += 1
+        body = css[j + 1:k - 1]
+        if prelude.startswith('@'):   # @supports ... { rules }
+            assert prelude.startswith('@supports'), f'dark.css: only @supports may wrap rules, found {prelude[:30]}'
+            inner = _prefix_rules(body, scope, root)
+            out.append(prelude + ' {\n' + '\n'.join('  ' + l if l else l for l in inner.split('\n')) + '\n}')
+        else:
+            sels = [root if s in (':root', 'html') else f'{scope} {s}' for s in _split_commas(prelude)]
+            body = '\n'.join(l.rstrip() for l in body.rstrip().split('\n'))
+            out.append(',\n'.join(sels) + ' {' + (body + ' }' if '\n' not in body else body + '\n}'))
+        i = k
+    return '\n'.join(out)
+
+
+def dark_region():
+    """The text between the theme-css markers of css/style.css, built from src/dark.css."""
+    src = DARK_SRC.read_text(encoding='utf-8')
+    base, _, solid = src.partition('\n/* @solid */\n')
+    assert solid, 'src/dark.css: the "/* @solid */" line is missing'
+    auto_scope, auto_root = f':where(html:not(:has({_LIGHT})))', f'html:not(:has({_LIGHT}))'
+    forced_scope, forced_root = f':where(html:has({_DARK}))', f'html:has({_DARK})'
+    blocks = [
+        ('AUTO: the system is dark and the footer switch is not on Light', 'screen and (prefers-color-scheme: dark)', base, auto_scope, auto_root),
+        ('FORCED: the footer switch is on Dark (any system setting)', 'screen', base, forced_scope, forced_root),
+        ('AUTO, more contrast / less transparency', f'screen and (prefers-color-scheme: dark) and ({SOLID_COND})', solid, auto_scope, auto_root),
+        ('FORCED, more contrast / less transparency', f'screen and ({SOLID_COND})', solid, forced_scope, forced_root),
+    ]
+    parts = [THEME_BEGIN]
+    for title, cond, css, scope, root in blocks:
+        body = _prefix_rules(css, scope, root)
+        parts.append(f'/* {title} */\n@media {cond} {{\n' + '\n'.join('  ' + l if l else l for l in body.split('\n')) + '\n}')
+    parts.append(THEME_END)
+    return '\n'.join(parts) + '\n'
+
+
+def sync_style(check=False):
+    """Write (or, with check=True, only compare) the generated dark-theme region of css/style.css. Returns True when it was out of sync."""
+    css = STYLE.read_text(encoding='utf-8')
+    a, b = css.find(THEME_BEGIN), css.find(THEME_END)
+    assert a != -1 and b != -1 and a < b, 'css/style.css: theme-css markers missing'
+    new = css[:a] + dark_region() + css[b + len(THEME_END) + 1:]
+    if new == css:
+        return False
+    if not check:
+        STYLE.write_text(new, encoding='utf-8', newline='\n')
+    return True
+
+
+def theme_switch():
+    """v1.13.15 (owner: «add a theme switch to the footer»): three radio buttons, no script. The page CSS reads the checked one with :has().
+    The choice lives only in this page (no storage, no cookie: rule 8), so it is not remembered on the next page."""
+    return [
+        '          <div class="theme-switch" role="radiogroup" aria-label="Theme">',
+        '            <label class="theme-opt"><input type="radio" name="theme" value="auto" checked><span>Auto</span></label>',
+        '            <label class="theme-opt"><input type="radio" name="theme" value="light"><span>Light</span></label>',
+        '            <label class="theme-opt"><input type="radio" name="theme" value="dark"><span>Dark</span></label>',
+        '          </div>',
+    ]
+
+
 def render(template, spec, d, version):
     og = d['base_url'] + url_quote(spec['og'])
     blocks = {
@@ -383,6 +483,7 @@ def render(template, spec, d, version):
         'HOME_ARTIST_CARD': cards_block([(d['artist_page'], {**d['heroes']['settwor'], 'disc': True})], d),
         'STD_ROWS': std_rows(d['standards']),
         'STD_DISCS': disc_row(d['standards']),
+        'THEME_SWITCH': theme_switch(),
     }
     S = lambda t: f'<span>{t}</span>'   # v1.13.1: every phrase is its own hop target
     ded = ' '.join([S('Presented to'), f"<strong>{esc(d['track']['artist'])}</strong>", S('to commemorate'), S(spec['NUM']), '<span class="nb">all-time</span>', S('streams')]
@@ -441,6 +542,8 @@ def build(check=False):
             bad.append(fname)
             if not check:
                 p.write_text(text, encoding='utf-8', newline='\n')
+    if sync_style(check):   # v1.13.15: the dark-theme copies in css/style.css follow src/dark.css
+        bad.append('css/style.css (dark theme copies differ from src/dark.css)')
     if not check:
         print(f'build_pages: {len(page_specs(d))} pages, {len(bad)} rewritten')
     return bad
@@ -451,7 +554,7 @@ if __name__ == '__main__':
     changed = build(check=check_only)
     if check_only:
         if changed:
-            print('build_pages --check: out of sync with src/page.html + src/pages.json:', ', '.join(changed))
+            print('build_pages --check: out of sync with src/ (page.html, pages.json, dark.css):', ', '.join(changed))
             print('  fix: python scripts/build_pages.py')
             sys.exit(1)
         print('build_pages --check: OK (all pages match the template)')
