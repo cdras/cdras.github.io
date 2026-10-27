@@ -151,8 +151,8 @@ HOME_HTML = """<!doctype html><meta charset="utf-8">
 
 def home_card(pg, d, fonts, logo):
     """v1.11.11 (task 13.4): own link-preview card for the home page; everything is read from pages.json, nothing typed."""
-    discs = ''.join(f'<div class="d" style="--hi:{TIERS[a["tier"]][0]};--mid:{TIERS[a["tier"]][1]};--lo:{TIERS[a["tier"]][2]}"></div>' for a in d['awards'])
-    nums = '<span class="sep">·</span>'.join(f'<span>{n}</span>' for n in [a['streams'] for a in d['awards']] + [d['artist_page']['streams']])
+    discs = ''.join(f'<div class="d" style="--hi:{TIERS[a["tier"]][0]};--mid:{TIERS[a["tier"]][1]};--lo:{TIERS[a["tier"]][2]}"></div>' for a in d['awards'] + ([d['album']] if d.get('album') else []))
+    nums = '<span class="sep">·</span>'.join(f'<span>{n}</span>' for n in [a['streams'] for a in d['awards']] + ([d['album']['streams']] if d.get('album') else []) + [d['artist_page']['streams']])
     html = HOME_HTML.format(fonts=fonts, ink=INK, discs=discs, nums=nums, artist=d['track']['artist'], logo=logo)
     with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=ROOT) as f:
         f.write(html); tmp = pathlib.Path(f.name)
@@ -174,6 +174,10 @@ def main():
         h = d['heroes'][a['hero']]
         jobs.append((f"og-{pathlib.Path(a['file']).stem}", h, a['streams'], a['tier'],
                      f'<div class="lab">Award for the track</div><div class="big">{tr["name"]}</div><div class="sub">{tr["artist"]}</div>'))
+    if d.get('album'):
+        al = d['album']
+        jobs.append((f"og-{pathlib.Path(al['file']).stem}", d['heroes'][al['hero']], al['streams'], al['tier'],
+                     f'<div class="lab">Award for the album</div><div class="big">{tr["album"]}</div><div class="sub">{tr["artist"]}</div>'))
     s = d['artist_page']
     jobs.append((f"og-{pathlib.Path(s['file']).stem}", d['heroes'][s['hero']], s['streams'], s['tier'],
                  f'<div class="lab">Award for</div><div class="big">{tr["artist"]}</div>'))

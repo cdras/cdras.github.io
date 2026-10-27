@@ -839,26 +839,31 @@ ul { list-style: none; }
 }
 /* iOS Safari fires :active on plain text only for elements it treats as clickable; on touch screens the cursor is invisible, so this is free */
 @media (hover: none) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver) { cursor: pointer; }
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver) { cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver),
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver),
   .facts dt { transition: translate var(--soft), scale var(--soft), color var(--soft); }
   :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)) { transform-origin: left center; }
   .bio p:nth-child(even) { transform-origin: right center; }
+  .ledger-top > span:first-child { transform-origin: left center; }
+  .ledger-top > span:last-child { transform-origin: right center; }
+  /* v1.13.3 (owner): the covers zoom the same way (the slow breathing is dropped while the pointer is on the cover) */
+  .cover, .thumb, .card-art { transition: scale var(--soft); }
+  @media (hover: hover) and (pointer: fine) { .cover:hover, .thumb:hover, .card-art:hover { animation: none; scale: 1.03; } }
 
   @media (hover: hover) and (pointer: fine) {
     :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)):hover { translate: 0.1875rem 0; }
     .bio p:nth-child(even):hover { translate: -0.1875rem 0; }
-    :is(.section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver):hover { scale: 1.015; }
+    :is(.section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver):hover { scale: 1.015; }
     .next:hover .arrow { scale: 1.12; }
     .award-link:hover .mini-disc { rotate: 60deg; }
     .faq summary:hover { translate: 0.1875rem 0; }
     .fact-link:hover, .foot-link:hover { text-underline-offset: 0.32em; }
   }
   /* press: instant (90 ms), release: the same soft settle as the hover transition */
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver):active {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver):active {
     scale: 0.985; transition-duration: 90ms;
   }
   .faq summary { transition: translate var(--soft), opacity 100ms; }
@@ -884,7 +889,7 @@ ul { list-style: none; }
 
 /* reduced motion: no movement, a short dim answers the press */
 @media (prefers-reduced-motion: reduce) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver):active { opacity: 0.6; }
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver):active { opacity: 0.6; }
 }
 
 /* ---------- v1.11.0: award standards page (owner: «for an artist, an album and a track the award standards differ; make a separate beautiful page») ----------
@@ -1124,3 +1129,19 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 /* short screens: the first screen must still fit (AGENTS.md §5 13c) */
 @media (max-height: 640px) { .home-plaque .home-lead { display: none; } }
 @media (orientation: landscape) and (max-height: 520px) { .home-stats, .home-plaque .home-lead { display: none; } }
+
+/* ---------- v1.11.16 (owner: the whole award block, the home «CDRA» block and the enlarged cover move with the mouse / the gyroscope) ----------
+   The movement itself is js/tilt.js (the one script of the site, owner exception to AGENTS.md rule 8): it writes an inline `transform`
+   (perspective + rotateX/rotateY, at most 6° for the block and 8° for the enlarged cover) on .s1 .plaque and .zoom-img only while they move,
+   and removes it when they rest, so at rest the text is drawn flat and sharp. `transform` is free on these two elements (their entrance and
+   breathing use translate/scale/opacity, the text inside uses translate/scale), so nothing collides.
+   apple-design › 3 Interruptibility, 4 Behavior over animation (smoothed approach from the current value, no overshoot), 14 Reduced motion
+   (the script does nothing under `reduce`; the rule below is the second lock), accessibility.md › Motion. No layout space is used. */
+@media (prefers-reduced-motion: reduce), print { .s1 .plaque, .zoom-img { transform: none !important; will-change: auto !important; } }
+
+/* ---------- v1.11.17 (owner: «fix the text "Award standards"»): the title on the standards page ----------
+   It inherited the big home-page name size and 0.16em tracking (`.home-plaque .home-name`, which beats `.std-name`), so «standards» ran
+   into the plaque frame. Own size and tracking for this long two-word title; balanced lines; the landscape-phone rule keeps it small.
+   apple-design › 15 Typography (tracking is size-specific: large text gets tighter tracking, not wider). */
+.home-plaque .std-name { font-size: clamp(1.75rem, min(9.5vw, 5.5dvh), 3rem); letter-spacing: 0.05em; text-indent: 0.05em; text-wrap: balance; }
+@media (orientation: landscape) and (max-height: 520px) { .home-plaque .std-name { font-size: 1.75rem; letter-spacing: 0.08em; text-indent: 0.08em; } }

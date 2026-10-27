@@ -33,11 +33,12 @@
     },
     "settwor": {
       "base": "images/SETTWOR_main",
+      "sleeve": "images/SETTWOR_main",
       "src": "https://settwor.github.io/images/main.jpg",
       "ext": "jpg",
-      "cls": "cover--square",
-      "w": 640,
-      "h": 640,
+      "cls": "cover--wide",
+      "w": 900,
+      "h": 668,
       "alt": "SETTWOR, portrait"
     }
   },
@@ -65,13 +66,29 @@
       "date": "July 22, 2025",
       "hero": "gold",
       "kind": "Single"
+    },
+    {
+      "key": "1m",
+      "file": "GOT-ME-UP-2-1m.html",
+      "streams": "1,000,000",
+      "date": "February 22, 2026",
+      "hero": "gold",
+      "kind": "Single"
     }
   ],
-  "artist_page": {
-    "file": "SETTWOR-1m.html",
+  "album_award": {
     "key": "1m",
+    "file": "GET-IT-Vol-1-1m.html",
     "streams": "1,000,000",
-    "date": "October 21, 2025",
+    "date": "Winter 2026",
+    "hero": "low",
+    "kind": "Album"
+  },
+  "artist_page": {
+    "file": "SETTWOR-2-5m.html",
+    "key": "2-5m",
+    "streams": "2,500,000",
+    "date": "October 2026",
     "hero": "settwor",
     "tier": null,
     "kind": "Artist"

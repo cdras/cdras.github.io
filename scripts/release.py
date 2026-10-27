@@ -25,7 +25,9 @@ DIST = ROOT / 'dist'
 SEMVER = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
 ZIP_NAME = re.compile(r'^CDRA v\d+\.\d+\.\d+\.zip$')
 REQUIRED_SKILLS = ['apple-design', 'apple-hig-review', 'claude-liquid-glass']
-REQUIRED_FILES = ['VERSION', 'css/style.css', 'index.html', 'src/page.html', 'src/pages.json', 'scripts/build_pages.py']
+TILT_TAG = '<script src="js/tilt.js" defer>'
+TILT_FILE = 'js/tilt.js'
+REQUIRED_FILES = ['VERSION', 'css/style.css', 'js/tilt.js', 'index.html', 'src/page.html', 'src/pages.json', 'scripts/build_pages.py']
 # В .gitignore: в чистом клоне репозитория их может не быть — тогда только предупреждение
 LOCAL_ONLY = ['AGENTS.md', 'CLAUDE.md', 'CHANGELOG.md']
 BASE_URL = 'https://cdras.github.io/'
@@ -154,7 +156,11 @@ def check(version):
                     if not any('https://settwor.github.io/' in (x.get('sameAs') or []) for x in g): errs.append(f'{n}: JSON-LD artist has no sameAs link to https://settwor.github.io/')
                 except ValueError as e: errs.append(f'{n}: JSON-LD is not valid JSON ({e})')
             if 'href="https://settwor.github.io/"' not in t: errs.append(f'{n}: no visible link to https://settwor.github.io/')
-        if re.search(r'<script\b(?![^>]*application/ld\+json)', t): errs.append(f'{n}: executable <script> found — site is static HTML/CSS (only JSON-LD allowed, see AGENTS.md)')
+        # rule 8 (owner exception, v1.11.16): JSON-LD plus exactly one local file, js/tilt.js, and only on pages with an award block
+        for tag in re.findall(r'<script\b[^>]*>', t):
+            if 'application/ld+json' in tag or tag == TILT_TAG: continue
+            errs.append(f'{n}: <script> not allowed (only JSON-LD and {TILT_TAG}, see AGENTS.md rule 8): {tag[:80]}')
+        if (p in pages) and (TILT_TAG in t) != (n != 'AWARD-STANDARDS.html'): errs.append(f'{n}: tilt script {"missing" if TILT_TAG not in t else "must not be here"}')
 
     sm = SITEMAP.read_text(encoding='utf-8') if SITEMAP.exists() else ''
     for p in pages:
@@ -165,6 +171,14 @@ def check(version):
     css = (ROOT / 'css' / 'style.css').read_text(encoding='utf-8')
     if re.search(r'(min|max)-device-(width|height)', css): errs.append('css/style.css: device-width/height media queries are forbidden')
     if re.search(r'@media[^{]*prefers-reduced-motion', css) is None: errs.append('css/style.css: prefers-reduced-motion block missing')
+
+    # the one allowed script stays small and harmless (owner exception to rule 8): local, no network, no storage, no libraries
+    js = (ROOT / TILT_FILE).read_text(encoding='utf-8') if (ROOT / TILT_FILE).exists() else ''
+    if len(js.encode('utf-8')) > 8192: errs.append(f'{TILT_FILE}: over 8 KB — the exception is for a small file')
+    for bad in (r'\bfetch\s*\(', r'XMLHttpRequest', r'\bimport\s*\(', r'\bWebSocket\b', r'sendBeacon', r'localStorage', r'sessionStorage', r'document\.cookie', r'\beval\s*\(', r'new\s+Function', r'https?://'):
+        # (the header comment may mention words; only code lines are checked)
+        code = re.sub(r'/\*.*?\*/', '', js, flags=re.S)
+        if re.search(bad, code): errs.append(f'{TILT_FILE}: forbidden pattern {bad}')
 
     if errs:
         print('CHECK FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
