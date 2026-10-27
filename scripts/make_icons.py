@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""CDRA — иконки сайта и ярлыка iPhone (images/icons/*, favicon.ico). Запуск: python scripts/make_icons.py
+"""CDRA — запасной вариант иконки (фиолетовый фон + золотая рамка) в images/icons/alt/v1.7-gloock-frame/; сайт его НЕ использует (активная иконка = старый images/favicon.png). Запуск: python scripts/make_icons.py
 Фон #260041, белая надпись CDRA шрифтом Gloock, тонкая золотая рамка. Без прозрачности (iOS сам скругляет углы)."""
 import pathlib, tempfile
 from playwright.sync_api import sync_playwright
 from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-OUT = ROOT / 'images' / 'icons'
+OUT = ROOT / 'images' / 'icons' / 'alt' / 'v1.7-gloock-frame'  # my icon variant, NOT used by the site
 FONTS = (ROOT / 'fonts' / 'fonts' / 'fonts-icons.css').as_uri()
 HTML = """<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="%s">
 <style>html,body{margin:0;width:1024px;height:1024px;background:#260041;overflow:hidden}
@@ -29,8 +29,8 @@ def main():
     m = Image.open(OUT / '_master.png').convert('RGB')
     for name, n in {'apple-touch-icon': 180, 'icon-512': 512, 'icon-256': 256, 'icon-192': 192, 'icon-96': 96, 'icon-48': 48, 'icon-32': 32, 'icon-16': 16}.items():
         m.resize((n, n), Image.LANCZOS).save(OUT / f'{name}.png', optimize=True)
-    m.resize((256, 256), Image.LANCZOS).save(ROOT / 'favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)])
-    m.resize((180, 180), Image.LANCZOS).save(ROOT / 'apple-touch-icon.png', optimize=True)  # iOS also looks for it in the site root
+    m.resize((256, 256), Image.LANCZOS).save(OUT / 'favicon.ico', sizes=[(16, 16), (32, 32), (48, 48)])
+    m.resize((180, 180), Image.LANCZOS).save(OUT / 'apple-touch-icon-root.png', optimize=True)  # iOS also looks for it in the site root
     (OUT / '_master.png').unlink()
     print('icons written')
 

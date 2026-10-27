@@ -90,7 +90,7 @@ def serve():
 
 def pages():
     names = sorted(p.name for p in ROOT.glob('*.html') if 'class="screen' in p.read_text(encoding='utf-8'))
-    for extra in ('404.html', 'fonts/compare.html'):
+    for extra in ('404.html',):
         if (ROOT / extra).exists(): names.append(extra)
     return names
 

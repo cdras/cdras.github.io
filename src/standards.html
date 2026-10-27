@@ -1,0 +1,113 @@
+<body>
+  <header class="topbar">
+    <a href="./" aria-label="CDRA — home"><img src="images/CDRAlogo.svg" class="logo" alt="CDRA" width="246" height="46"></a>
+  </header>
+
+  <main>
+    <section class="screen s1" id="s1" aria-label="Award standards">
+      <div class="stack">
+        <div class="plaque home-plaque std-plaque">
+          <p class="t-label std-eyebrow">CDRA</p>
+          <h1 class="t-display home-name std-name">Award standards</h1>
+          <p class="t-title">Single, album and artist</p>
+          <p class="home-lead">Every award level has its own stream numbers for a single, an album and an artist.</p>
+{{#STD_DISCS}}
+        </div>
+      </div>
+      <a class="next" href="#s2">
+        <span class="next-text"><span class="hint-touch">Swipe</span><span class="hint-mouse">Scroll</span> to see the numbers</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s2" id="s2" aria-labelledby="h-table">
+      <h2 class="section-title" id="h-table">Stream numbers</h2>
+      <div class="stack std-screen-stack">
+        <div class="std">
+          <table class="std-table">
+            <caption class="visually-hidden">All-time streams needed for each award level, for a single, an album and an artist</caption>
+            <thead>
+              <tr>
+                <th scope="col"><span class="visually-hidden">Level</span></th>
+                <th scope="col">Single</th>
+                <th scope="col">Album</th>
+                <th scope="col">Artist</th>
+              </tr>
+            </thead>
+            <tbody>
+{{#STD_ROWS}}
+            </tbody>
+          </table>
+          <p class="std-note">All-time streams, all platforms combined.<span class="std-short"> K = thousand, M = million.</span></p>
+        </div>
+      </div>
+      <a class="next" href="#s3">
+        <span class="next-text">Questions and answers</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s3 faq-screen" id="s3" aria-labelledby="h-faq">
+      <h2 class="section-title" id="h-faq">Questions and answers</h2>
+      <div class="stack">
+        <div class="faq">
+          <details>
+            <summary>What do Single, Album and Artist mean?</summary>
+            <p>An award is given for one of three things: a single track, an album or an artist. Each has its own numbers: album numbers are roughly five times the single numbers, and artist numbers are ten times.</p>
+          </details>
+          <details>
+            <summary>How are streams counted?</summary>
+            <p>All platforms combined: the number is all-time streams across every platform together.</p>
+          </details>
+          <details>
+            <summary>How is Silver set?</summary>
+            <p>Silver is exactly half of Gold, in all three columns.</p>
+          </details>
+          <details>
+            <summary>What is Multi-platinum?</summary>
+            <p>It starts at 4,000,000 streams for a single, 20,000,000 for an album and 40,000,000 for an artist. For a single, there is one more step for every further 2,000,000 after Platinum.</p>
+          </details>
+          <details>
+            <summary>Are these official certifications?</summary>
+            <p>No. The levels and the numbers are CDRA’s own. They are not the certification levels of any record-industry body.</p>
+          </details>
+        </div>
+      </div>
+      <a class="next" href="#s4">
+        <span class="next-text">More about SETTWOR</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s4" id="s4" aria-labelledby="h-bio">
+      <h2 class="section-title" id="h-bio">More about SETTWOR</h2>
+      <div class="stack">
+        <div class="bio">
+          <p>SETTWOR is a music producer specializing in phonk, hip-hop/rap, and dance/electronic music. Originally from Kryvyi Rih, Ukraine, he relocated to Poland in 2022 and manages a well-known 8D music channel.</p>
+          <p>In 2018 he began studying music and, having gained some knowledge, released his first track “Light Wave” in 2021.</p>
+          <p>SETTWOR was born on February 8, 2007, in Kryvyi Rih, Ukraine. In 2020, Daniil took the pseudonym SETTWOR and created a YouTube channel of the same name for his work and future music. On May 8, 2022, the artist’s first track in the phonk genre - Lunatic - was released.</p>
+        </div>
+        <a class="full-info" href="https://settwor.github.io/" rel="noopener">
+          <span>Full information</span>
+          <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">
+        </a>
+      </div>
+      <footer class="site-foot">
+        <p class="foot-note">CDRA: stream-milestone awards for SETTWOR, run by SETTWOR.</p>
+        <div class="foot-links">
+          <a class="foot-link" href="AWARD-STANDARDS.html" aria-current="page">Award standards</a>
+          <a class="foot-link" href="https://settwor.github.io/" rel="me noopener">Official website: settwor.github.io</a>
+        </div>
+        <p class="ver">CDRA <span data-cdra-version>v{{VERSION}}</span></p>
+      </footer>
+    </section>
+  </main>
+
+  <nav class="dots" aria-label="Screens">
+    <a href="#s1"><span class="visually-hidden">Award standards, screen 1 of 4</span></a>
+    <a href="#s2"><span class="visually-hidden">Stream numbers, screen 2 of 4</span></a>
+    <a href="#s3"><span class="visually-hidden">Questions and answers, screen 3 of 4</span></a>
+    <a href="#s4"><span class="visually-hidden">More about SETTWOR, screen 4 of 4</span></a>
+  </nav>
+</body>
+</html>

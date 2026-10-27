@@ -14,7 +14,6 @@
   },
   "heroes": {
     "gold": {
-      "base": "images/GET_IT,Vol.1/GET_IT,Vol.1_GOLD",
       "sleeve": "images/GET_IT,Vol.1/GET_IT,Vol.1_cover",
       "ext": "webp",
       "cls": "cover--wide",
@@ -23,7 +22,6 @@
       "alt": "GET IT Vol.1 album cover by SETTWOR with a gold disc"
     },
     "low": {
-      "base": "images/GET_IT,Vol.1/GET_IT,Vol.1_low",
       "sleeve": "images/GET_IT,Vol.1/GET_IT,Vol.1_cover",
       "ext": "webp",
       "cls": "cover--wide",
@@ -33,6 +31,7 @@
     },
     "settwor": {
       "base": "images/SETTWOR_main",
+      "src": "https://settwor.github.io/images/main.jpg",
       "ext": "jpg",
       "cls": "cover--square",
       "w": 640,
@@ -40,14 +39,14 @@
       "alt": "SETTWOR, portrait"
     }
   },
-  "awards": [
+  "milestones": [
     {
       "key": "100k",
       "file": "GOT-ME-UP-2-100k.html",
       "streams": "100,000",
       "date": "April 3, 2025",
       "hero": "low",
-      "tier": "bronze"
+      "kind": "Single"
     },
     {
       "key": "250k",
@@ -55,7 +54,7 @@
       "streams": "250,000",
       "date": "May 1, 2025",
       "hero": "low",
-      "tier": "silver"
+      "kind": "Single"
     },
     {
       "key": "500k",
@@ -63,7 +62,7 @@
       "streams": "500,000",
       "date": "July 22, 2025",
       "hero": "gold",
-      "tier": "gold"
+      "kind": "Single"
     }
   ],
   "artist_page": {
@@ -72,13 +71,14 @@
     "streams": "1,000,000",
     "date": "October 21, 2025",
     "hero": "settwor",
-    "tier": "platinum"
+    "tier": null,
+    "kind": "Artist"
   },
   "home": {
     "file": "index.html",
     "same_as": "500k",
-    "title": "CDRA — Stream awards for SETTWOR",
-    "desc": "CDRA — awards for SETTWOR: 100,000, 250,000, 500,000 and 1,000,000 all-time streams.",
+    "title": "CDRA — Stream awards",
+    "desc": "CDRA — stream awards: {list} all-time streams.",
     "alt_names": [
       "CDRA Awards",
       "cdras.github.io"
@@ -104,6 +104,73 @@
       "https://instagram.com/settwor",
       "https://settw0r.t.me",
       "https://www.last.fm/music/SETTWOR"
+    ]
+  },
+  "standards": {
+    "file": "AWARD-STANDARDS.html",
+    "title": "Award standards: levels for a single, an album and an artist | CDRA",
+    "desc": "CDRA award standards: all-time stream numbers for Bronze, Silver, Gold, Platinum, Multi-platinum and Diamond, set separately for a single, an album and an artist.",
+    "columns": [
+      "Single",
+      "Album",
+      "Artist"
+    ],
+    "levels": [
+      {
+        "tier": "bronze",
+        "name": "Bronze",
+        "values": [
+          250000,
+          1000000,
+          2500000
+        ]
+      },
+      {
+        "tier": "silver",
+        "name": "Silver",
+        "values": [
+          500000,
+          2500000,
+          5000000
+        ]
+      },
+      {
+        "tier": "gold",
+        "name": "Gold",
+        "values": [
+          1000000,
+          5000000,
+          10000000
+        ]
+      },
+      {
+        "tier": "platinum",
+        "name": "Platinum",
+        "values": [
+          2000000,
+          10000000,
+          20000000
+        ]
+      },
+      {
+        "tier": "platinum",
+        "name": "Multi-platinum",
+        "values": [
+          4000000,
+          20000000,
+          40000000
+        ],
+        "plus": true
+      },
+      {
+        "tier": "diamond",
+        "name": "Diamond",
+        "values": [
+          10000000,
+          50000000,
+          100000000
+        ]
+      }
     ]
   }
 }

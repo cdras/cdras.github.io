@@ -43,6 +43,7 @@
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body data-tier="{{TIER}}">
+{{ZOOM_TOGGLE}}
   <header class="topbar">
     <a href="./" aria-label="CDRA — home"><img src="images/CDRAlogo.svg" class="logo" alt="CDRA" width="246" height="46"></a>
   </header>
@@ -126,7 +127,10 @@
       </div>
       <footer class="site-foot">
         <p class="foot-note">CDRA: stream-milestone awards for SETTWOR, run by SETTWOR.</p>
-        <a class="foot-link" href="https://settwor.github.io/" rel="me noopener">Official website: settwor.github.io</a>
+        <div class="foot-links">
+          <a class="foot-link" href="AWARD-STANDARDS.html">Award standards</a>
+          <a class="foot-link" href="https://settwor.github.io/" rel="me noopener">Official website: settwor.github.io</a>
+        </div>
         <p class="ver">CDRA <span data-cdra-version>v{{VERSION}}</span></p>
       </footer>
     </section>
@@ -138,5 +142,6 @@
     <a href="#s3"><span class="visually-hidden">Other awards, screen 3 of 4</span></a>
     <a href="#s4"><span class="visually-hidden">More about SETTWOR, screen 4 of 4</span></a>
   </nav>
+{{ZOOM_BOX}}
 </body>
 </html>

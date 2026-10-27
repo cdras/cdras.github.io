@@ -29,7 +29,7 @@ REQUIRED_FILES = ['VERSION', 'css/style.css', 'index.html', 'src/page.html', 'sr
 # В .gitignore: в чистом клоне репозитория их может не быть — тогда только предупреждение
 LOCAL_ONLY = ['AGENTS.md', 'CLAUDE.md', 'CHANGELOG.md']
 BASE_URL = 'https://cdras.github.io/'
-EXTRA_PAGES = ['404.html', 'fonts/compare.html']   # несут версию, но не попадают в sitemap (noindex)
+EXTRA_PAGES = ['404.html']   # несут версию, но не попадают в sitemap (noindex)
 EXCLUDE = ['dist', '.git', '__pycache__', '*.pyc', '*.zip', '.DS_Store', 'Thumbs.db']
 
 

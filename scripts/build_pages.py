@@ -15,8 +15,8 @@ import json, pathlib, sys, urllib.parse
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / 'src' / 'page.html'
 DATA = ROOT / 'src' / 'pages.json'
-SEAL = ROOT / 'src' / 'seal.svg'
 HOME = ROOT / 'src' / 'home.html'   # body of the home page; its <head> comes from src/page.html
+STANDARDS = ROOT / 'src' / 'standards.html'   # body of the award-standards page (v1.11.0)
 
 
 def esc(s):
@@ -27,26 +27,65 @@ def url_quote(path):
     return urllib.parse.quote(path, safe='/')
 
 
+def hero_src(h):
+    return h.get('sleeve') and f'{h["sleeve"]}.{h["ext"]}' or h.get('src') or f'{h["base"]}.{h["ext"]}'
+
+
+def zoom_parts(h):
+    """v1.11.9 (task 13.2): tap the cover to enlarge it. Pure CSS: a checkbox before <main>, the cover inside a <label>, a full-screen
+    <label> as the way out. Returns (toggle, box) markup for the two placeholders; both are empty without a hero."""
+    if not h:
+        return '', ''
+    toggle = '  <input type="checkbox" id="zoom" class="zoom-toggle" aria-label="Enlarge the cover">'
+    box = ('  <label class="zoom-box" for="zoom">\n'
+           f'    <img src="{hero_src(h)}" class="zoom-img" alt="{esc(h["alt"])}" width="{h["w"] if not h.get("sleeve") else 668}" height="{h["h"] if not h.get("sleeve") else 668}" decoding="async">\n'
+           '    <span class="zoom-close">Close</span>\n'
+           '  </label>')
+    return toggle, box
+
+
 def hero_picture(h):
+    return '<label class="zoom-cover" for="zoom">' + _hero_picture(h) + '</label>'
+
+
+def _hero_picture(h):
     if h.get('sleeve'):
         # v1.9.9 (task 12.4, part 1): plain cover + a disc drawn in CSS (metal from body[data-tier]).
         # The box keeps the old 900:668 proportions, so the screen heights do not change.
         return (f'<span class="cover {h["cls"]} has-disc"><span class="disc" aria-hidden="true"></span>'
                 f'<img src="{h["sleeve"]}.{h["ext"]}" class="sleeve" alt="{esc(h["alt"])}" '
                 f'width="668" height="668" fetchpriority="high" decoding="async"></span>')
-    return (f'<img src="{h["base"]}.{h["ext"]}" class="cover {h["cls"]}" alt="{esc(h["alt"])}" '
+    return (f'<img src="{h.get("src") or h["base"] + "." + h["ext"]}" class="cover {h["cls"]}" alt="{esc(h["alt"])}" '
             f'width="{h["w"]}" height="{h["h"]}" fetchpriority="high" decoding="async">')
+
+
+def fact_link(label, url, aria=None):
+    """One link of a fact row. v1.11.10: optional aria-label (it always contains the visible label); a mailto: link opens no new tab."""
+    attrs = ' rel="noopener"' + ('' if url.startswith('mailto:') else ' target="_blank"')
+    if aria:
+        attrs += f' aria-label="{esc(aria)}"'
+    return f'<a class="fact-link" href="{esc(url)}"{attrs}>{esc(label)}</a>'
+
+
+def share_links(url, title, text):
+    """v1.11.10 (task 13.3): plain share links built from the page URL: no scripts, no trackers, no extra parameters.
+    Telegram and X open their own share pages in a new tab; e-mail opens the visitor's mail app."""
+    q = lambda v: urllib.parse.quote(v, safe='')
+    return [('Telegram', f'https://t.me/share/url?url={q(url)}&text={q(text)}', 'Share on Telegram'),
+            ('X', f'https://twitter.com/intent/tweet?text={q(text)}&url={q(url)}', 'Share on X'),
+            ('Email', f'mailto:?subject={q(title)}&body={q(text + chr(10) + url)}', 'Share by email')]
 
 
 def facts_block(facts):
     out = []
     for dt, dd, light, *href in facts:
         cls = ' class="is-light"' if light else ''
+        if dt == 'Share':   # v1.11.10: no dot separators, the links sit in a wrapping row (see css «v1.11.10»)
+            cls = ' class="is-light is-share"'
         if not href:
             text = esc(dd)
         else:   # href[0] = list of (label, url): several links in one row (v1.10.5)
-            text = ' <span aria-hidden="true">·</span> '.join(
-                f'<a class="fact-link" href="{esc(u)}" rel="noopener" target="_blank">{esc(l)}</a>' for l, u in href[0])
+            text = ' <span aria-hidden="true">·</span> '.join(fact_link(*x) for x in href[0])
         out += ['            <div>', f'              <dt>{esc(dt)}</dt>',
                 f'              <dd{cls}>{text}</dd>', '            </div>']
     return out
@@ -55,11 +94,58 @@ def facts_block(facts):
 def card_art(hero):
     """Cover of a home card; for the track awards a small CSS disc peeks out from under it (v1.9.10, task 12.4 part 2)."""
     s = min(hero["w"], hero["h"])
-    img = (f'<img src="{hero["base"]}.{hero["ext"]}" class="card-cover" alt="" width="{s}" height="{s}" '
+    img = (f'<img src="{hero.get("src") or hero["base"] + "." + hero["ext"]}" class="card-cover" alt="" width="{s}" height="{s}" '
            f'loading="lazy" decoding="async">')
     if hero.get('disc'):
         return ['                <span class="card-art has-disc"><span class="disc" aria-hidden="true"></span>' + img + '</span>']
     return ['                ' + img]
+
+
+def earned_awards(d):
+    """v1.11.2 (owner): the track awards come from the standards table. A recorded milestone (src/pages.json › milestones:
+    streams + date) becomes an award page only when its number equals the Single number of a level in `standards`; the level
+    name and the metal come from that level. Change a number in `standards` and the page appears or disappears by itself."""
+    out = []
+    for m in d['milestones']:
+        n = int(m['streams'].replace(',', ''))
+        for lv in d['standards']['levels']:
+            if lv['values'][0] == n:
+                out.append({**m, 'tier': lv['tier'], 'level': lv['name'], 'n': n})
+                break
+    return sorted(out, key=lambda a: a['n'])
+
+
+def load_data():
+    d = json.loads(DATA.read_text(encoding='utf-8'))
+    d['awards'] = earned_awards(d)
+    return d
+
+
+def join_and(items):
+    return items[0] if len(items) == 1 else ', '.join(items[:-1]) + ' and ' + items[-1]
+
+
+def home_texts(d):
+    """Home texts that list the awards: generated, so they follow the standards table."""
+    nums = [a['streams'] for a in d['awards']]; tr = d['track']; art = d['artist_page']
+    words = {1: 'One', 2: 'Two', 3: 'Three', 4: 'Four', 5: 'Five', 6: 'Six', 7: 'Seven'}
+    total = len(nums) + 1
+    lead = f"{words.get(total, total)} {'awards' if total > 1 else 'award'} for all-time streams: " \
+           + (f"{join_and(nums)} for the track, and " if nums else '') + f"{art['streams']} for the artist."
+    which = (f"The {join_and(nums)} {'awards are' if len(nums) > 1 else 'award is'} for the track “{esc(tr['name'])}” from the album {esc(tr['album'])}, "
+             f"released on {esc(tr['release'])}. " if nums else '') + f"The {art['streams']} award is for {esc(tr['artist'])} as an artist."
+    dates = '; '.join(f"{a['streams']} on {a['date']}" for a in d['awards'] + [art]) + '.'
+    return {'HOME_LEAD': lead, 'HOME_WHICH': which, 'HOME_DATES': dates}
+
+
+def level_shown(a, d):
+    """Level name of an earned award (set by earned_awards), '' for the artist award."""
+    return a.get('level', '')
+    n = int(a['streams'].replace(',', ''))
+    for lv in d['standards']['levels']:
+        if lv['tier'] == tier:
+            return tier.capitalize() if n >= lv['values'][0] else ''
+    return ''
 
 
 def cards_block(items, d):
@@ -68,18 +154,51 @@ def cards_block(items, d):
     for a, hero in items:
         out += [
             '            <li>',
-            f'              <a class="award-card" data-tier="{a["tier"]}" href="{url_quote(a["file"])}">',
+            f'              <a class="award-card"{" data-tier=" + chr(34) + a["tier"] + chr(34) if a.get("tier") else ""} href="{url_quote(a["file"])}">',
             *card_art(hero),
             '                <span class="card-text">',
+            f'                  <span class="card-kind">{esc(a.get("kind", "Single"))}</span>',
             f'                  <span class="card-num">{a["streams"]}</span>',
-            f'                  <span class="card-sub">all-time streams · {a["tier"].capitalize()}</span>',
-            f'                  <span class="card-date">{esc(a["date"])}</span>',
+            f'                  <span class="card-sub">all-time streams{" · " + level_shown(a, d) if level_shown(a, d) else ""}</span>',
+            f'                  <span class="card-date">{esc(a["date"])}{" <span class=" + chr(34) + "card-days" + chr(34) + ">· " + milestone_days(d["track"], a) + "</span>" if "n" in a else ""}</span>',
             '                </span>',
             '                <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">',
             f'                <span class="visually-hidden"> — open the award page for {a["streams"]} streams</span>',
             '              </a>',
             '            </li>']
     return out
+
+
+def short_num(n):
+    """250000 -> 250K, 2500000 -> 2.5M (the narrow-screen form of a table number; the full number stays for screen readers)."""
+    if n >= 1_000_000:
+        v = n / 1_000_000
+        return (f'{v:g}') + 'M'
+    return f'{n // 1000}K'
+
+
+def std_rows(std):
+    """Rows of the award-standards table. A value of None means «not set yet» (shown as a dash, read as «not set»)."""
+    out = []
+    for lv in std['levels']:
+        out += [f'            <tr data-tier="{lv["tier"]}">',
+                f'              <th scope="row"><span class="lvl"><span class="mini-disc" aria-hidden="true"></span><span>{esc(lv["name"])}</span></span></th>']
+        for v in lv['values']:
+            if v is None:
+                out.append('              <td><span aria-hidden="true">—</span><span class="visually-hidden">not set</span></td>')
+            else:
+                plus = '+' if lv.get('plus') else ''
+                out.append(f'              <td><span class="n-full">{v:,}{plus}</span><span class="n-short" aria-hidden="true">{short_num(v)}{plus}</span></td>')
+        out.append('            </tr>')
+    return out
+
+
+def disc_row(std):
+    """Decorative row of the five metals on the first screen of the standards page (one disc per distinct tier)."""
+    seen = []
+    for lv in std['levels']:
+        if lv['tier'] not in seen: seen.append(lv['tier'])
+    return [f'          <div class="disc-row" aria-hidden="true">'] + [f'            <span class="mini-disc" data-tier="{t}"></span>' for t in seen] + ['          </div>']
 
 
 def awards_block(awards, current):
@@ -123,7 +242,8 @@ def jsonld_graph(spec, d):
                          'inAlbum': {'@type': 'MusicAlbum', 'name': tr['album'], 'byArtist': {'@id': ar['id']}},
                          'datePublished': tr['release_iso'], 'genre': tr['genre'], 'sameAs': [tr['spotify'], tr['apple_music']]}]
     else:
-        page['about'] = {'@id': ar['id']}
+        if not spec.get('no_about'):
+            page['about'] = {'@id': ar['id']}
         graph.append(page)
     graph.append(artist)
     return {'@context': 'https://schema.org', '@graph': graph}
@@ -151,23 +271,31 @@ def page_specs(d):
             DESC=f"CDRA award: {tr['name']} by {tr['artist']} reached {a['streams']} all-time streams.",
             URL=base + url_quote(a['file']), NUM=a['streams'], DATE=a['date'], DED_TRACK=tr['name'], TIER=a['tier'], hero=h, current=a['file'],
             og=f"{d['og_dir']}/og-{a['file'][:-5]}.png",
-            group1=[('p', 't-label', 'Award for the track'), ('h1', 't-display', tr['name']), ('p', 't-title', tr['artist'])],
+            group1=[('p', 't-label', f"{a['level']} award for the track"), ('h1', 't-display', tr['name']), ('p', 't-title', tr['artist'])],
             facts=[(dt, a['date'] if dd is None else dd, lt) for dt, dd, lt in track_facts]
                   + [('Album', tr['album'], True), ('Genre', tr['genre'], True), ('Reached in', milestone_days(tr, a), True),
-                     ('Streams counted', 'All platforms combined', True), ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music'])])],
+                     ('Streams counted', 'All platforms combined', True), ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music'])]),
+                     ('Share', '', True, share_links(base + url_quote(a['file']), title, f"CDRA award: {tr['name']} by {tr['artist']} reached {a['streams']} all-time streams."))],
             award_label=None, about_track=True, is_home=False)
     s = d['artist_page']
     specs[s['file']] = dict(
         TITLE=f"{tr['artist']}: {s['streams']} streams award | CDRA",
         DESC=f"CDRA award: {tr['artist']} reached {s['streams']} all-time streams.",
-        URL=base + url_quote(s['file']), NUM=s['streams'], DATE=s['date'], DED_TRACK=None, TIER=s['tier'], hero=d['heroes'][s['hero']], current=None,
+        URL=base + url_quote(s['file']), NUM=s['streams'], DATE=s['date'], DED_TRACK=None, TIER=s.get('tier') or '', hero=d['heroes'][s['hero']], current=None,
         og=f"{d['og_dir']}/og-{s['file'][:-5]}.png",
         group1=[('p', 't-label', 'Award for'), ('h1', 't-display', tr['artist'])],
-        facts=[('Date', s['date'], True)], award_label='Awards for', about_track=False, is_home=False)
+        facts=[('Date', s['date'], True), ('Share', '', True, share_links(base + url_quote(s['file']), f"{tr['artist']}: {s['streams']} streams award | CDRA", f"CDRA award: {tr['artist']} reached {s['streams']} all-time streams."))], award_label='Awards for', about_track=False, is_home=False)
     home = d['home']
-    src = dict(specs[next(a['file'] for a in d['awards'] if a['key'] == home['same_as'])])
-    src.update(TITLE=home['title'], DESC=home['desc'], URL=base, is_home=True, about_track=False, TIER='gold')
+    src = dict(specs[d['awards'][-1]['file'] if d['awards'] else d['artist_page']['file']])
+    src.update(TITLE=home['title'], DESC=home['desc'].replace('{list}', join_and([a['streams'] for a in d['awards']] + [d['artist_page']['streams']])), URL=base, is_home=True, about_track=False, TIER='gold', body=HOME,
+               og=f"{d['og_dir']}/og-{home['file'][:-5]}.png")   # v1.11.11: own preview card (was the last award's)
     specs[home['file']] = src
+    # v1.11.0: the award-standards page: own body (src/standards.html), head from the shared template, no hero
+    st = d['standards']
+    specs[st['file']] = dict(
+        TITLE=st['title'], DESC=st['desc'], URL=base + url_quote(st['file']), NUM='', DATE='', DED_TRACK=None, TIER='', hero=None, current=None,
+        og=f"{d['og_dir']}/og-{st['file'][:-5]}.png", group1=[], facts=[], award_label=None,
+        about_track=False, is_home=False, no_about=True, body=STANDARDS)
     return specs
 
 
@@ -181,13 +309,16 @@ def render(template, spec, d, version):
         'AWARDS': awards_block(d['awards'], spec['current']),
         'HOME_TRACK_CARDS': cards_block([(a, {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True}) for a in d['awards']], d),
         'HOME_ARTIST_CARD': cards_block([(d['artist_page'], {**d['heroes']['settwor']})], d),
+        'STD_ROWS': std_rows(d['standards']),
+        'STD_DISCS': disc_row(d['standards']),
     }
     ded = f"Presented to <strong>{esc(d['track']['artist'])}</strong> to commemorate {spec['NUM']} <span class=\"nb\">all-time</span> streams"
     ded += f" of “{esc(spec['DED_TRACK'])}”" if spec['DED_TRACK'] else ''
-    inline = {'DEDICATION': ded, 'DATE': esc(spec['DATE']), 'VERSION': version, 'TITLE': esc(spec['TITLE']), 'DESC': esc(spec['DESC']), 'URL': spec['URL'],
-              'OG_IMAGE': og, 'OG_ALT': esc(spec['DESC']), 'NUM': spec['NUM'], 'TIER': spec['TIER'], 'HERO_PICTURE': hero_picture(spec['hero'])}
-    if spec.get('is_home'):
-        template = template[:template.index('<body')] + HOME.read_text(encoding='utf-8')
+    inline = {**home_texts(d), 'DEDICATION': ded, 'DATE': esc(spec['DATE']), 'VERSION': version, 'TITLE': esc(spec['TITLE']), 'DESC': esc(spec['DESC']), 'URL': spec['URL'],
+              'OG_IMAGE': og, 'OG_ALT': esc(spec['DESC']), 'NUM': spec['NUM'], 'TIER': spec['TIER'], 'HERO_PICTURE': hero_picture(spec['hero']) if spec['hero'] else '',
+              'ZOOM_TOGGLE': zoom_parts(spec['hero'])[0], 'ZOOM_BOX': zoom_parts(spec['hero'])[1]}
+    if spec.get('body'):   # home and standards pages: <head> from the shared template, body from their own file
+        template = template[:template.index('<body')] + spec['body'].read_text(encoding='utf-8')
     out = []
     for line in template.split('\n'):
         s = line.strip()
@@ -197,16 +328,23 @@ def render(template, spec, d, version):
         for k, v in inline.items():
             line = line.replace('{{' + k + '}}', v)
         out.append(line)
-    text = '\n'.join(out)
+    text = '\n'.join(out).replace('<body data-tier="">', '<body>')   # an award without a level name (the artist award) has no metal
     assert '{{' not in text, 'unfilled placeholder'
     return text
 
 
 def build(check=False):
     version = (ROOT / 'VERSION').read_text(encoding='utf-8').strip()
-    d = json.loads(DATA.read_text(encoding='utf-8'))
+    d = load_data()
     template = TEMPLATE.read_text(encoding='utf-8')
     bad = []
+    keep = {a['file'] for a in d['awards']}
+    for m in d['milestones']:   # recorded but not earned under the current standards: no page, no preview card
+        if m['file'] in keep: continue
+        for q in (ROOT / m['file'], ROOT / d['og_dir'] / f"og-{m['file'][:-5]}.png"):
+            if q.exists():
+                bad.append(f'{q.name} (not earned under the standards: remove)')
+                if not check: q.unlink()
     for fname, spec in page_specs(d).items():
         text = render(template, spec, d, version)
         p = ROOT / fname

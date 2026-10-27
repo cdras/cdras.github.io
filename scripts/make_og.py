@@ -8,18 +8,23 @@ CDRA — карточки 1200×630 для превью ссылок (Telegram, 
 Нужен Playwright + Chromium (как для audit_layout.py). Результат — обычные PNG, их коммитят вместе с сайтом.
 Запускать при смене обложки, числа потоков или шрифтов; в release.py не входит (картинки статичны).
 """
-import json, pathlib, tempfile
+import json, pathlib, sys, tempfile
 from playwright.sync_api import sync_playwright
 from PIL import Image
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUT = ROOT / 'images' / 'og'
 INK = '#260041'
+sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
+import build_pages
+
 TIERS = {  # same values as body[data-tier] in css/style.css
     'bronze':   ('#f3d3b4', '#c98a52', '#8a5226', '#8a5226', '201,138,82'),
     'silver':   ('#f6f8fb', '#c3c9d2', '#7b8594', '#66707f', '195,201,210'),
     'gold':     ('#fbeeb0', '#e0b64a', '#a67a17', '#8a6410', '224,182,74'),
     'platinum': ('#ffffff', '#d9dfea', '#8592ab', '#566684', '190,200,220'),
+    'diamond':  ('#f4fcff', '#b7e2f2', '#4f9fc2', '#2f6f8f', '183,226,242'),
+    None:       ('#fbeeb0', '#e0b64a', '#a67a17', '#8a6410', '224,182,74'),   # award without a level name: the metal is never drawn
 }
 
 HTML = """<!doctype html><meta charset="utf-8">
@@ -71,8 +76,98 @@ FIT = """() => {
 }"""
 
 
+STD_HTML = """<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="{fonts}">
+<style>
+  html,body{{margin:0;width:1200px;height:630px;background:#fff;color:{ink};overflow:hidden}}
+  .card{{position:relative;width:1200px;height:630px;box-sizing:border-box;padding:36px 84px 84px 84px;display:flex;flex-direction:column;justify-content:center;gap:28px}}
+  .lab{{font-family:'Outfit',system-ui,sans-serif;font-size:34px;letter-spacing:.3em;line-height:1.15}}
+  .big{{font-family:'Outfit',system-ui,sans-serif;font-size:104px;line-height:1.02;letter-spacing:.01em;white-space:nowrap}}
+  .sub{{font-family:'Outfit',system-ui,sans-serif;font-size:42px;line-height:1.1}}
+  .row{{display:flex;gap:30px;margin-top:6px}}
+  .d{{width:92px;height:92px;border-radius:50%;box-shadow:inset 0 0 0 2px {ink};
+    background:radial-gradient(circle closest-side,#fff 0 13%,rgba(38,0,65,.3) 14% 19%,transparent 21%),
+      radial-gradient(circle closest-side,transparent 58%,rgba(38,0,65,.14) 60%,transparent 63%),
+      conic-gradient(from -30deg,var(--lo),var(--hi) 12%,var(--mid) 26%,var(--lo) 46%,var(--hi) 63%,var(--mid) 79%,var(--lo))}}
+  .logo{{position:absolute;left:84px;bottom:46px;height:28px;width:auto}}
+  .frame{{position:absolute;inset:24px;border:2px solid {ink};border-radius:6px;box-shadow:inset 0 0 0 8px #fff,inset 0 0 0 10px rgba(38,0,65,.3)}}
+</style>
+<div class="card">
+  <div class="frame"></div>
+  <div class="lab">CDRA</div>
+  <div class="big">Award standards</div>
+  <div class="sub">Single, album and artist</div>
+  <div class="row">{discs}</div>
+  <img class="logo" src="{logo}" alt="">
+</div>"""
+
+
+def standards_card(pg, d, fonts, logo):
+    std = d['standards']; seen = []
+    for lv in std['levels']:
+        if lv['tier'] not in seen: seen.append(lv['tier'])
+    discs = ''.join(f'<div class="d" style="--hi:{TIERS[k][0]};--mid:{TIERS[k][1]};--lo:{TIERS[k][2]}"></div>' for k in seen)
+    html = STD_HTML.format(fonts=fonts, ink=INK, discs=discs, logo=logo)
+    with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=ROOT) as f:
+        f.write(html); tmp = pathlib.Path(f.name)
+    try:
+        pg.goto(tmp.as_uri()); pg.evaluate('document.fonts.ready'); pg.wait_for_timeout(200)
+        out = OUT / f"og-{pathlib.Path(std['file']).stem}.png"
+        pg.screenshot(path=str(out), clip={'x': 0, 'y': 0, 'width': 1200, 'height': 630})
+    finally:
+        tmp.unlink(missing_ok=True)
+    im = Image.open(out).convert('RGB'); im.save(out, optimize=True)
+    print(f'{out.relative_to(ROOT)}  {im.size}  {out.stat().st_size/1024:.0f} KB')
+
+
+HOME_HTML = """<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="{fonts}">
+<style>
+  html,body{{margin:0;width:1200px;height:630px;background:#fff;color:{ink};overflow:hidden}}
+  .card{{position:relative;width:1200px;height:630px;box-sizing:border-box;padding:30px 84px 96px 84px;display:flex;flex-direction:column;justify-content:center;gap:24px}}
+  .lab{{font-family:'Outfit',system-ui,sans-serif;font-size:34px;letter-spacing:.3em;line-height:1.15}}
+  .big{{font-family:'Outfit',system-ui,sans-serif;font-size:112px;line-height:1.02;letter-spacing:.01em;white-space:nowrap}}
+  .sub{{font-family:'Outfit',system-ui,sans-serif;font-size:42px;line-height:1.1}}
+  .row{{display:flex;gap:30px;margin-top:6px}}
+  .d{{width:92px;height:92px;border-radius:50%;box-shadow:inset 0 0 0 2px {ink};
+    background:radial-gradient(circle closest-side,#fff 0 13%,rgba(38,0,65,.3) 14% 19%,transparent 21%),
+      radial-gradient(circle closest-side,transparent 58%,rgba(38,0,65,.14) 60%,transparent 63%),
+      conic-gradient(from -30deg,var(--lo),var(--hi) 12%,var(--mid) 26%,var(--lo) 46%,var(--hi) 63%,var(--mid) 79%,var(--lo))}}
+  .nums{{font-family:'Outfit',system-ui,sans-serif;font-weight:700;font-size:40px;line-height:1.1;white-space:nowrap}}
+  .nums .sep{{margin:0 22px;font-weight:400}}
+  .logo{{position:absolute;left:84px;bottom:46px;height:28px;width:auto}}
+  .frame{{position:absolute;inset:24px;border:2px solid {ink};border-radius:6px;box-shadow:inset 0 0 0 8px #fff,inset 0 0 0 10px rgba(38,0,65,.3)}}
+</style>
+<div class="card">
+  <div class="frame"></div>
+  <div class="lab">CDRA</div>
+  <div class="big">Stream awards</div>
+  <div class="sub">for {artist}</div>
+  <div class="row">{discs}</div>
+  <div class="nums">{nums}</div>
+  <img class="logo" src="{logo}" alt="">
+</div>"""
+
+
+def home_card(pg, d, fonts, logo):
+    """v1.11.11 (task 13.4): own link-preview card for the home page; everything is read from pages.json, nothing typed."""
+    discs = ''.join(f'<div class="d" style="--hi:{TIERS[a["tier"]][0]};--mid:{TIERS[a["tier"]][1]};--lo:{TIERS[a["tier"]][2]}"></div>' for a in d['awards'])
+    nums = '<span class="sep">·</span>'.join(f'<span>{n}</span>' for n in [a['streams'] for a in d['awards']] + [d['artist_page']['streams']])
+    html = HOME_HTML.format(fonts=fonts, ink=INK, discs=discs, nums=nums, artist=d['track']['artist'], logo=logo)
+    with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=ROOT) as f:
+        f.write(html); tmp = pathlib.Path(f.name)
+    try:
+        pg.goto(tmp.as_uri()); pg.evaluate('document.fonts.ready'); pg.wait_for_timeout(200)
+        out = OUT / f"og-{pathlib.Path(d['home']['file']).stem}.png"
+        pg.screenshot(path=str(out), clip={'x': 0, 'y': 0, 'width': 1200, 'height': 630})
+    finally:
+        tmp.unlink(missing_ok=True)
+    im = Image.open(out).convert('RGB'); im.save(out, optimize=True)
+    print(f'{out.relative_to(ROOT)}  {im.size}  {out.stat().st_size/1024:.0f} KB')
+
+
 def main():
-    d = json.loads((ROOT / 'src' / 'pages.json').read_text(encoding='utf-8'))
+    d = build_pages.load_data()   # only earned awards (see build_pages.earned_awards)
     tr = d['track']
     jobs = []
     for a in d['awards']:
@@ -91,11 +186,11 @@ def main():
             g_hi, g_mid, g_lo, line, rgb = TIERS[tier]
             square = h['cls'] == 'cover--square'
             cw, ch = (366, 366) if square else (500, 371)
-            cover = (ROOT / f"{h['base']}.{h['ext']}").as_uri()
             if h.get('sleeve'):   # v1.9.12: plain cover + CSS disc, same look as the site
                 sl = (ROOT / f"{h['sleeve']}.{h['ext']}").as_uri()
                 cover_html = f'<div class="cover has-disc"><div class="disc"></div><img class="sleeve" src="{sl}" alt=""></div>'
             else:
+                cover = (ROOT / f"{h['base']}.{h['ext']}").as_uri()
                 cover_html = f'<img class="cover" src="{cover}" alt="">'
             html = HTML.format(fonts=fonts, ink=INK, cw=cw, ch=ch, bigfs=64, cover_html=cover_html, group1=group1, num=num, logo=logo,
                               g_hi=g_hi, g_mid=g_mid, g_lo=g_lo, line=line, rgb=rgb)
@@ -110,6 +205,8 @@ def main():
                 tmp.unlink(missing_ok=True)
             im = Image.open(out).convert('RGB'); im.save(out, optimize=True)
             print(f'{out.relative_to(ROOT)}  {im.size}  {out.stat().st_size/1024:.0f} KB')
+        standards_card(pg, d, fonts, logo)
+        home_card(pg, d, fonts, logo)
         b.close()
 
 

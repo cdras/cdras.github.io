@@ -676,6 +676,7 @@ ul { list-style: none; }
 .card-art .card-cover { display: block; position: relative; z-index: 1; }
 .card-art .disc { right: -0.5rem; animation: none; }
 .card-text { display: flex; flex-direction: column; gap: 0.125rem; flex: 1 1 auto; min-width: 0; }
+.card-kind { font-size: var(--fs-small); line-height: 1.1; font-weight: 600; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); }
 .card-num { font-family: var(--f-title); font-weight: 700; font-size: clamp(1.125rem, min(5vw, 3.2dvh), 1.5rem); line-height: 1.05; }
 .card-sub { font-size: var(--fs-small); line-height: 1.2; letter-spacing: 0.04em; }
 .card-date { font-size: var(--fs-small); line-height: 1.2; color: var(--ink-soft); }
@@ -773,3 +774,313 @@ ul { list-style: none; }
 .faq p { padding: 0 0 0.75rem; font-size: var(--fs-body); line-height: 1.35; text-wrap: pretty; }
 @media (prefers-reduced-motion: no-preference) { .faq summary:active { opacity: 0.6; } }
 @media (prefers-reduced-motion: reduce) { .faq summary:active { opacity: 0.6; } }
+
+/* ---------- v1.10.7: screens 2-4 re-balanced (owner: «More information» too tight and big, the next two too empty) ----------
+   s2: label left / value right, smaller value type, wider column, calmer rows.
+   s3, s4: larger art and type, bounded by dvh so short landscape phones still fit. */
+.s2 .info { width: min(100%, 34rem); }
+.facts { --rule-gap: clamp(0.625rem, 2.4dvh, 1.375rem); gap: var(--rule-gap); }
+.facts > div { display: grid; grid-template-columns: minmax(6.5rem, 38%) 1fr; column-gap: clamp(0.75rem, 3vw, 1.5rem); align-items: baseline; }
+.facts dt { font-size: var(--fs-small); letter-spacing: 0.1em; line-height: 1.3; }
+.facts dd, .facts dd.is-light {
+  margin-top: 0; font-family: var(--f-title); line-height: 1.25;
+  font-size: clamp(1rem, min(0.85rem + 0.9vw, 3.2dvh), 1.375rem);
+}
+.facts dd a { display: inline-flex; align-items: center; min-height: 44px; }
+
+.s3 .thumb { width: clamp(7rem, min(56vw, 30dvh), 15rem); }
+.s3 .award-head .t-display { font-size: clamp(1.375rem, min(6vw, 3.6dvh), 2rem); }
+.s3 .award-head .t-title   { font-size: clamp(1.0625rem, min(4vw, 2.6dvh), 1.375rem); }
+.s3 .awards { --rule-gap: clamp(0.5rem, 2.2dvh, 1.5rem); gap: var(--rule-gap); }
+.s3 .award-date { font-size: clamp(1rem, min(3.8vw, 2.4dvh), 1.25rem); }
+.s3 .award-num  { font-size: clamp(1.375rem, min(6.4vw, 4dvh), 2.25rem); }
+.s3 .award-unit { font-size: clamp(1.0625rem, min(4.4vw, 2.8dvh), 1.5rem); }
+.s3 .mini-disc  { width: 1.5rem; height: 1.5rem; }
+
+@media (min-width: 600px) {
+  .s3 .info { width: min(100%, 52rem); gap: clamp(2rem, 6vw, 5rem); }
+  .s3 .awards { flex: 0 0 auto; width: max-content; max-width: 100%; }
+  .s3 .thumb { width: clamp(8rem, min(26vw, 38dvh), 19rem); }
+  .s3 .award-head .t-display { font-size: clamp(1.25rem, min(2.6vw, 3.6dvh), 2rem); }
+  .s3 .award-head .t-title   { font-size: clamp(1rem, min(1.9vw, 2.6dvh), 1.375rem); }
+  .s3 .award-num  { font-size: clamp(1.375rem, min(3.2vw, 4.4dvh), 2.375rem); }
+  .s3 .award-unit { font-size: clamp(1.0625rem, min(2.2vw, 3dvh), 1.5rem); }
+  .s3 .award-date { font-size: clamp(1rem, min(1.8vw, 2.4dvh), 1.25rem); }
+}
+
+.bio { gap: clamp(0.875rem, 2.8dvh, 2.25rem); }
+@media (min-width: 600px) {
+  .bio { max-width: 40rem; }
+  .bio p { font-size: clamp(1rem, min(0.9rem + 0.55vw, 3dvh), 1.3125rem); line-height: 1.45; }
+}
+
+/* ---------- v1.10.8: a living interface, still minimal (owner: «every text reacts to touch, click and hover») ----------
+   apple-design 1 (feedback on press, instant), 3 (interruptible: transitions retarget from the live value), 4 (critically damped, no
+   bounce on text), 14 (reduced motion = no movement, only a colour/opacity answer); motion.md (brief, purposeful, cancellable).
+   Text blocks use the individual `translate` / `scale` properties: the entrance animations of the screens use `translate` + `opacity`
+   on the CONTAINERS (.stack > *, .section-title), so the targets below that are animated parents' children never fight with them,
+   and .section-title gets `scale` only (its scroll entrance holds `translate`). No JavaScript. */
+:root { interpolate-size: allow-keywords; --soft: 320ms cubic-bezier(.2, .8, .2, 1); }
+::selection { background: rgb(38 0 65 / 0.14); }
+
+/* left-aligned text: nudges toward the reading direction; right-aligned: toward its edge; centred: a tiny swell */
+/* hover = colour only here (works with reduced motion too) */
+@media (hover: hover) and (pointer: fine) {
+  .facts > div:hover dt { color: var(--ink); }
+}
+/* iOS Safari fires :active on plain text only for elements it treats as clickable; on touch screens the cursor is invisible, so this is free */
+@media (hover: none) {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver) { cursor: pointer; }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver),
+  .facts dt { transition: translate var(--soft), scale var(--soft), color var(--soft); }
+  :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)) { transform-origin: left center; }
+  .bio p:nth-child(even) { transform-origin: right center; }
+
+  @media (hover: hover) and (pointer: fine) {
+    :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)):hover { translate: 0.1875rem 0; }
+    .bio p:nth-child(even):hover { translate: -0.1875rem 0; }
+    :is(.section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver):hover { scale: 1.015; }
+    .next:hover .arrow { scale: 1.12; }
+    .award-link:hover .mini-disc { rotate: 60deg; }
+    .faq summary:hover { translate: 0.1875rem 0; }
+    .fact-link:hover, .foot-link:hover { text-underline-offset: 0.32em; }
+  }
+  /* press: instant (90 ms), release: the same soft settle as the hover transition */
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver):active {
+    scale: 0.985; transition-duration: 90ms;
+  }
+  .faq summary { transition: translate var(--soft), opacity 100ms; }
+  .next .arrow { transition: scale var(--soft); }
+  .mini-disc { transition: rotate 500ms cubic-bezier(.2, .8, .2, 1); }
+  .fact-link, .foot-link { transition: text-underline-offset var(--soft), opacity 100ms; }
+
+  /* FAQ: the answer opens and closes smoothly (progressive: where ::details-content is unsupported it simply toggles); the plus turns */
+  .faq summary::after { transition: rotate var(--soft); }
+  @supports selector(::details-content) {
+    .faq details::details-content { block-size: 0; opacity: 0; overflow: clip; transition: block-size 320ms cubic-bezier(.2, .8, .2, 1), opacity 220ms ease, content-visibility 320ms allow-discrete; }
+    .faq details[open]::details-content { block-size: auto; opacity: 1; }
+  }
+
+  /* a page change cross-fades instead of cutting (CSS-only cross-document view transition; the bar stays put) */
+  @view-transition { navigation: auto; }
+  ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 240ms; animation-timing-function: cubic-bezier(.2, .8, .2, 1); }
+  @supports (view-transition-name: none) {
+    .topbar { view-transition-name: topbar; animation: none; }
+  }
+}
+.faq details[open] summary::after { content: "+"; rotate: 45deg; }
+
+/* reduced motion: no movement, a short dim answers the press */
+@media (prefers-reduced-motion: reduce) {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top, .ledger-rank > p, .home-lead, .foot-note, .ver):active { opacity: 0.6; }
+}
+
+/* ---------- v1.11.0: award standards page (owner: «for an artist, an album and a track the award standards differ; make a separate beautiful page») ----------
+   apple-hig-review: layout.md › Visual hierarchy (most important first, grouping by space and hairlines), typography.md › Ensuring legibility
+   (>= 1rem for the numbers, regular + bold only, no light weights), color.md › Inclusive color (every level is ALSO written as text; the metal is
+   only the disc), accessibility.md › Mobility (rows 44px). apple-design 15 (tabular figures, size-specific tracking), 16 (restraint: one signature
+   element = the row of five discs; no medal, no coloured outlines, ink only, rule 13h). */
+[data-tier="diamond"] { --g-hi: #f4fcff; --g-mid: #b7e2f2; --g-lo: #4f9fc2; --g-rgb: 183 226 242; }
+
+/* first screen: the five metals in a row (decoration, aria-hidden; the level names are in the table) */
+.std-eyebrow { letter-spacing: 0.3em; text-indent: 0.3em; }
+.std-name { font-size: clamp(1.75rem, min(9vw, 5.2dvh), 2.75rem); letter-spacing: 0.03em; }
+.disc-row { display: flex; justify-content: center; gap: clamp(0.5rem, 3vw, 0.875rem); padding-top: clamp(0.25rem, 1.2dvh, 0.75rem); }
+.disc-row .mini-disc { width: clamp(1.5rem, 7vw, 2rem); height: clamp(1.5rem, 7vw, 2rem); }
+
+/* the table: level (disc + name) and three number columns; ink hairlines between rows */
+.s2 .std { width: min(100%, 24rem); }
+.std-table { width: 100%; border-collapse: collapse; font-variant-numeric: lining-nums tabular-nums; }
+.std-table thead th {
+  padding: 0.25rem 0 0.5rem 0.25rem;
+  font-size: var(--fs-small); font-weight: 400; line-height: 1.3; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--ink-soft); text-align: right; border-bottom: 1px solid var(--ink);
+}
+.std-table tbody th, .std-table tbody td { border-bottom: 1px solid rgb(var(--line-rgb) / 0.3); vertical-align: middle; }
+.std-table tbody tr:last-child th, .std-table tbody tr:last-child td { border-bottom: 0; }
+.std-table tbody tr { height: clamp(2.75rem, 7.6dvh, 3.5rem); }
+.std-table tbody th { padding: 0.25rem 0.5rem 0.25rem 0; text-align: left; font-weight: 400; font-family: var(--f-body); font-size: var(--fs-body); line-height: 1.15; }
+.std-table tbody td { padding: 0.25rem 0 0.25rem 0.25rem; text-align: right; white-space: nowrap; font-family: var(--f-title); font-weight: 700; font-size: var(--fs-body); line-height: 1.1; }
+.lvl { display: flex; align-items: center; gap: 0.625rem; }
+.lvl .mini-disc { width: 1.375rem; height: 1.375rem; }
+.std-note { padding-top: 0.5rem; font-size: var(--fs-small); line-height: 1.4; color: var(--ink-soft); }
+/* numbers: short form (250K, 2.5M) on narrow screens, the full number from 46rem; the full number is always what a screen reader reads */
+.n-short { display: inline; }
+.n-full { position: absolute; width: 1px; height: 1px; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+@media (min-width: 46rem) {
+  .stack.std-screen-stack { max-width: 44rem; }
+  .s2 .std { width: min(100%, 44rem); }
+  .n-short, .std-short { display: none; }
+  .n-full { position: static; width: auto; height: auto; margin: 0; overflow: visible; clip: auto; }
+  .std-table tbody td { font-size: clamp(1.0625rem, 0.6rem + 1.1vw, 1.375rem); }
+  .std-table tbody th { font-size: clamp(1.0625rem, 0.7rem + 0.9vw, 1.25rem); }
+  .std-table thead th { padding-left: 1.5rem; }
+  .std-table tbody td { padding-left: 1.5rem; }
+}
+@media (hover: hover) and (pointer: fine) { .std-table tbody tr:hover { background: rgb(var(--line-rgb) / 0.05); } }
+@media (prefers-reduced-motion: no-preference) and (hover: hover) and (pointer: fine) { .std-table tbody tr:hover .mini-disc { rotate: 60deg; } }
+@media (prefers-contrast: more) {
+  .std-table tbody th, .std-table tbody td { border-bottom-color: var(--ink); }
+  .std-table tbody tr:hover { background: none; }
+}
+
+/* footer: two links side by side, wrapping on narrow screens (v1.11.0) */
+.foot-links { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 0.5rem; }
+.foot-link[aria-current="page"] { text-decoration-thickness: 2px; }
+.faq-link { margin-bottom: 0.5rem; }
+.std-short { white-space: nowrap; }
+@media (max-width: 359px) { .std-table thead th { letter-spacing: 0.04em; } }
+
+/* phones turned sideways: the shared rule makes every .s1 plaque a row (cover | table); the standards plaque is text + discs, so it stays a column */
+@media (orientation: landscape) and (max-height: 520px) {
+  .s1 .std-plaque { flex-direction: column; width: min(calc(100% - 1rem), 30rem); gap: 0.25rem; }
+  .std-plaque .std-eyebrow { display: none; }
+}
+
+
+/* ---------- v1.11.5 «register» finish of the home page (owner: very beautiful, strict, status) ----------
+   Idea: the home page is a formal register of awards. Ink and hairlines only (rule 13h), Outfit 400/700 only, no new colours.
+   One signature: the wide-set CDRA wordmark on a charter plaque. Everything else is quieter. Scale grows with the screen
+   (>= 900x700) so a desktop is not a small card in white space. Decoration sits in pseudo-elements; text floors are kept. */
+.home-eyebrow { font-size: var(--fs-small); line-height: 1.2; letter-spacing: 0.32em; text-indent: 0.32em; text-transform: uppercase; color: var(--ink-soft); }
+.home-plaque { gap: clamp(0.375rem, 1.6dvh, 0.875rem); padding-inline: clamp(1rem, 5vw, 2rem); }
+.home-plaque .home-name { font-size: clamp(2.25rem, min(15vw, 9dvh), 4.25rem); letter-spacing: 0.16em; text-indent: 0.16em; line-height: 1; }
+.home-rule { display: block; width: 3rem; height: 1px; background: var(--ink); position: relative; }
+.home-rule::before, .home-rule::after { content: ""; position: absolute; top: 50%; width: 0.3125rem; height: 0.3125rem; background: var(--ink); transform: translateY(-50%) rotate(45deg); }
+.home-rule::before { left: -0.75rem; } .home-rule::after { right: -0.75rem; }
+.home-plaque .home-lead { max-width: 21rem; font-size: var(--fs-body); line-height: 1.45; }
+.home-link { display: inline-flex; align-items: center; min-height: 44px; padding-inline: 0.25rem; font-size: var(--fs-small); letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink); text-decoration: underline; text-underline-offset: 0.4em; text-decoration-thickness: 1px; }
+.home-link:hover { text-decoration-thickness: 2px; }
+.home-link:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+
+/* register: group headings are small spaced caps with a hairline, cards are plain ruled rows */
+.award-groups { width: min(100%, 26rem); gap: clamp(0.5rem, 1.6dvh, 1rem); }
+.group-title { display: flex; align-items: center; gap: 0.75rem; font-size: var(--fs-small); letter-spacing: 0.16em; text-transform: uppercase; }
+.group-title::after { content: ""; flex: 1 1 auto; height: 1px; background: rgb(var(--line-rgb) / 0.35); }
+.award-card { background: #fff; border-color: rgb(var(--line-rgb) / 0.55); box-shadow: 0 0.0625rem 0 rgb(var(--line-rgb) / 0.1); }
+.award-card:hover, .award-card:focus-visible { border-color: var(--ink); }
+.award-card:focus-visible { outline: 3px solid var(--ink); outline-offset: 2px; }
+.card-kind { letter-spacing: 0.2em; }
+.card-sub { letter-spacing: 0.06em; }
+.section-title { letter-spacing: 0.14em; text-transform: uppercase; font-size: var(--fs-label); }
+
+/* FAQ: strict ruled list */
+.faq summary { letter-spacing: 0.01em; }
+
+/* large screens: the same design, bigger */
+@media (min-width: 900px) and (min-height: 700px) {
+  .home-plaque { width: min(calc(100% - 2rem), 38rem); padding-block: clamp(2rem, 6dvh, 3.5rem); gap: clamp(0.75rem, 2dvh, 1.25rem); }
+  .home-plaque .home-name { font-size: clamp(3.5rem, 11dvh, 6rem); }
+  .home-plaque .home-lead { max-width: 28rem; font-size: 1.25rem; }
+  .s1 .home-plaque { width: min(calc(100% - 2rem), 34rem); }
+  .home-eyebrow { font-size: var(--fs-label); }
+  .home-rule { width: 4.5rem; }
+  .award-groups { width: min(100%, 38rem); gap: 1rem; }
+  .group-title { font-size: var(--fs-label); }
+  .award-card { gap: 1.25rem; padding: 0.875rem 1.25rem 0.875rem 0.875rem; }
+  .card-cover { width: 4.75rem; }
+  .card-art .disc { right: -0.75rem; }
+  .card-num { font-size: 2rem; }
+  .card-kind, .card-sub, .card-date { font-size: var(--fs-label); }
+  .faq { width: min(100%, 38rem); }
+}
+@media (orientation: landscape) and (max-height: 520px) {
+  .home-eyebrow, .home-rule, .home-link { display: none; }
+  .home-plaque .home-name { font-size: 1.75rem; letter-spacing: 0.12em; }
+}
+@media (prefers-contrast: more) { .award-card { border-color: var(--ink); } .group-title::after { background: var(--ink); } }
+
+/* ---------- v1.11.6 (owner): bigger covers and discs in «All awards»; FAQ opens one answer at a time and looks finer ----------
+   Ink and hairlines only, Outfit 400/700 only (AGENTS.md §5 13h). No JS: the FAQ exclusivity is <details name="faq">. */
+.award-card { --cs: clamp(3.5rem, min(21vw, 9.5dvh), 4.375rem); }
+.card-cover { width: var(--cs); }
+/* the disc is 82% of the cover height, so it grows with the cover; it also peeks out further (38% of the cover) */
+.card-art .disc { right: calc(var(--cs) * -0.38); }
+.card-art, .award-card > .card-cover { margin-right: calc(var(--cs) * 0.38); }
+.cover--square { object-fit: cover; }
+@media (min-width: 900px) and (min-height: 700px) {
+  .award-card { --cs: clamp(5.5rem, 12dvh, 7rem); }
+  .card-cover { width: var(--cs); }
+  .card-art .disc { right: calc(var(--cs) * -0.38); }
+}
+
+/* FAQ: numbered ruled cards; the open one gets an ink edge and a faint ink tint */
+.faq { display: flex; flex-direction: column; gap: clamp(0.375rem, 1.2dvh, 0.75rem); counter-reset: q; }
+.faq details, .faq details:first-child {
+  counter-increment: q;
+  border: 1px solid rgb(var(--line-rgb) / 0.3);
+  border-radius: 0.375rem;
+  background: #fff;
+  position: relative;
+  overflow: clip;
+}
+.faq details[open] { border-color: var(--ink); background: rgb(var(--line-rgb) / 0.04); box-shadow: inset 0.1875rem 0 0 var(--ink); }
+.faq summary { justify-content: flex-start; gap: 0.875rem; padding: 0.375rem 0.875rem; min-height: 3.25rem; }
+.faq summary::before {
+  content: counter(q, decimal-leading-zero);
+  flex: none; min-width: 1.5rem;
+  font-weight: 700; font-size: var(--fs-small); letter-spacing: 0.12em; font-variant-numeric: tabular-nums; color: var(--ink-soft);
+}
+.faq summary::after, .faq details[open] summary::after {
+  content: "+"; margin-left: auto;
+  display: grid; place-items: center; width: 1.75rem; height: 1.75rem; flex: none;
+  border: 1px solid rgb(var(--line-rgb) / 0.45); border-radius: 50%;
+  font-weight: 400; font-size: 1.125rem; line-height: 1;
+}
+.faq details[open] summary::after { rotate: 45deg; border-color: var(--ink); background: var(--ink); color: #fff; }
+.faq details[open] summary::before { color: var(--ink); }
+/* the answer lines up with the question text, under the number */
+.faq p, .faq .faq-link { margin-left: calc(0.875rem + 1.5rem + 0.875rem); margin-right: 0.875rem; padding: 0 0 0.875rem; }
+.faq .faq-link { display: inline-flex; margin-bottom: 0.25rem; padding-bottom: 0; }
+@media (prefers-contrast: more) { .faq details, .faq details[open] { border-color: var(--ink); } .faq details[open] { background: none; } }
+
+/* v1.11.7: «N days after release» on the track cards; on the very narrowest phones (<= 340px) it is left out so «All awards» still fits the screen */
+@media (max-width: 21.25rem) { .card-days { display: none; } }
+
+/* ---------- v1.11.9 (task 13.2): tap the cover to enlarge it (no JS) ----------
+   <input type="checkbox" id="zoom"> sits first in <body>; the cover is inside <label for="zoom">; the full-screen <label class="zoom-box">
+   closes it (tap anywhere or the «Close» button; with a keyboard: Space on the focused checkbox). Opacity-only fade (reduced motion: no fade),
+   interruptible (a transition, not a keyframe animation). The picture is the same file as the cover, so nothing extra is downloaded. */
+.zoom-toggle { position: fixed; inline-size: 1px; block-size: 1px; opacity: 0; pointer-events: none; }
+.zoom-cover { display: contents; }
+.zoom-cover .cover { cursor: zoom-in; }
+.zoom-cover:active .cover { opacity: 0.8; }
+.zoom-toggle:focus-visible ~ main .zoom-cover .cover { outline: 3px solid var(--ink); outline-offset: 4px; }
+.zoom-box {
+  position: fixed; inset: 0; z-index: 1100;
+  display: grid; place-items: center; align-content: center; gap: 1rem;
+  padding: max(1.5rem, var(--safe-top)) max(1.5rem, var(--safe-right)) max(1.5rem, var(--safe-bottom)) max(1.5rem, var(--safe-left));
+  background: rgb(255 255 255 / 0.985);
+  cursor: zoom-out;
+  opacity: 0; visibility: hidden;
+}
+.zoom-toggle:checked ~ .zoom-box { opacity: 1; visibility: visible; }
+html:has(.zoom-toggle:checked) { overflow: hidden; }
+.zoom-img {
+  width: min(92vw, 78dvh, 41.75rem); height: auto; aspect-ratio: 1 / 1; object-fit: cover;
+  border-radius: 0.25rem; box-shadow: 0 1rem 2.5rem -0.75rem rgb(38 0 65 / 0.45);
+}
+.zoom-close {
+  display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding-inline: 1.5rem;
+  border: 1px solid var(--ink); border-radius: 999px; background: #fff;
+  font-size: var(--fs-label); letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink);
+}
+.zoom-box:active .zoom-close { opacity: 0.6; }
+.zoom-toggle:checked:focus-visible ~ .zoom-box .zoom-close { outline: 3px solid var(--ink); outline-offset: 3px; }
+@media (prefers-reduced-motion: no-preference) {
+  .zoom-box { transition: opacity 200ms ease, visibility 0s linear 200ms; }
+  .zoom-toggle:checked ~ .zoom-box { transition: opacity 200ms ease, visibility 0s; }
+}
+@media (prefers-reduced-transparency: reduce), (prefers-contrast: more) { .zoom-box { background: #fff; } }
+@media (orientation: landscape) and (max-height: 520px) { .zoom-img { width: min(60vw, 64dvh, 41.75rem); } .zoom-box { gap: 0.5rem; } }
+
+/* ---------- v1.11.10 (task 13.3): share links in the facts list ----------
+   «Share» is one more fact row (Telegram · X · Email), same links as «Listen». A one-letter link («X») must still be a 44px target (AGENTS.md §5 item 5). */
+.fact-link { min-inline-size: 44px; justify-content: center; }
+.facts dd.is-share { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0; margin-inline-end: -0.25rem; }   /* 3 targets (44px min) must stay on one line at 320px: the 0.25rem sits in the page padding; larger text still wraps */
+.facts dd.is-share > span[aria-hidden] { display: none; }
+/* the extra row must not push «More information» past the window on short phones (320×568 was exactly full before): tighter rows under 600px of height */
+@media (max-height: 600px) { .facts { --rule-gap: 0.5rem; } }
