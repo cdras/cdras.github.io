@@ -378,7 +378,7 @@ ul { list-style: none; }
   .page-404 .stack > :nth-child(4) { animation-delay: 210ms; }
 
   /* 2. Slow ambient "breath" (tiny; individual properties, so :active still works) */
-  .cover { animation: breathe 3.6s ease-in-out infinite; }
+  /* v1.13.4: the cover no longer "breathes" (a permanent 1.4% scale kept the picture slightly soft); it zooms on hover/press instead */
   .arrow { animation: bob 2.8s ease-in-out infinite; }
 
   /* 3. Press = instant, release = a small hop. Transitions retarget from the current value, so they can be interrupted. */
@@ -718,7 +718,7 @@ ul { list-style: none; }
 @media print {
   /* v1.11.12 (task 13.5): the browser's own Print / Save as PDF gives ONE clean landscape sheet:
      logo, the plaque (name, streams, date, «Presented to SETTWOR»), the address. Screens 2-4 and all controls are not printed. */
-  @page { size: A4 landscape; margin: 12mm; }
+  @page { size: A4 portrait; margin: 6mm; }
   html, body { background: #fff; height: auto; }
   body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .topbar { position: static; height: auto; background: none; box-shadow: none; -webkit-backdrop-filter: none; backdrop-filter: none; }
@@ -727,6 +727,13 @@ ul { list-style: none; }
   .s1 { height: auto; padding-block: 0; background: none; }
   *, *::before, *::after { animation: none !important; transition: none !important; }
   .zoom-cover { cursor: default; }
+  /* v1.13.6: the plaque fills the A4 sheet to its (minimal) margins instead of floating small in the middle */
+  .s1 .stack { width: 100%; max-width: none; padding: 0; }
+  .s1 .plaque { width: 100% !important; max-width: none !important; flex-direction: column; box-shadow: none; padding: 8mm 8mm 6mm; gap: 6mm; }
+  .s1 .plaque .cover { width: min(100%, 150mm) !important; }
+  .s1 .plaque .cover--square { width: min(100%, 120mm) !important; }
+  .s1 .hero-media { width: 100%; flex: none; }
+  .s1 .ledger { width: 100%; flex: none; }
   main::after { content: "cdras.github.io"; display: block; margin-top: 4mm; text-align: center; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--ink); }
 }
 
@@ -1075,7 +1082,7 @@ ul { list-style: none; }
 html:has(.zoom-toggle:checked) { overflow: hidden; }
 .zoom-img {
   width: min(92vw, 78dvh, 41.75rem); height: auto; aspect-ratio: 1 / 1; object-fit: cover;
-  border-radius: 0.25rem; box-shadow: 0 1rem 2.5rem -0.75rem rgb(38 0 65 / 0.45);
+  border-radius: clamp(1rem, 5vw, 1.75rem); box-shadow: 0 1rem 2.5rem -0.75rem rgb(38 0 65 / 0.45);
 }
 .zoom-close {
   display: inline-flex; align-items: center; justify-content: center; min-width: 44px; min-height: 44px; padding-inline: 1.5rem;
@@ -1145,3 +1152,47 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
    apple-design › 15 Typography (tracking is size-specific: large text gets tighter tracking, not wider). */
 .home-plaque .std-name { font-size: clamp(1.75rem, min(9.5vw, 5.5dvh), 3rem); letter-spacing: 0.05em; text-indent: 0.05em; text-wrap: balance; }
 @media (orientation: landscape) and (max-height: 520px) { .home-plaque .std-name { font-size: 1.75rem; letter-spacing: 0.08em; text-indent: 0.08em; } }
+
+/* ---------- v1.13.4 (owner: «the three lines under the header react separately too», «on a phone it must react to a press as well», «sometimes it is blurry on a PC») ----------
+   1) The label / title / artist lines of the tinted row zoom each on its own (the row, its tint and its borders stay still).
+   2) Touch: there is no hover on a phone, so a press does the same zoom-in while the finger is down (text 1.5%, covers 3%) and settles back softly.
+   3) Sharpness: the cover no longer breathes (see the Motion block), the tilt script uses smaller angles and lets the card rest flat (js/tilt.js).
+   apple-design 1 (instant feedback on press), 3 (interruptible), 14 (reduced motion = no movement, a dim answers the press). */
+@media (prefers-reduced-motion: no-preference) {
+  .tier-row > :is(.t-label, .t-display, .t-title) { transform-origin: left center; transition: scale var(--soft); }
+  @media (hover: hover) and (pointer: fine) { .tier-row > :is(.t-label, .t-display, .t-title):hover { scale: 1.015; } }
+  @media (hover: none) {
+    :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active { scale: 1.015; transition-duration: 90ms; }
+    :is(.cover, .thumb, .card-art):active { scale: 1.03; transition-duration: 90ms; }
+  }
+}
+@media (hover: none) { .tier-row > :is(.t-label, .t-display, .t-title), .cover, .thumb, .card-art { cursor: pointer; } }
+@media (prefers-reduced-motion: reduce) { .tier-row > :is(.t-label, .t-display, .t-title):active, .cover:active, .thumb:active, .card-art:active { opacity: 0.6; } }
+
+/* ---------- v1.13.5 (owner: «rounder corners for the picture in the big view; when I point at a picture it should grow softly and less») ----------
+   The enlarged cover has much rounder corners (clamp 1rem to 1.75rem). Every cover (plaque, thumbnail, card, enlarged) now grows only 1.5% on hover or press,
+   over a longer, calmer curve (520 ms, no overshoot), instead of 3% in 320 ms. `scale` only, so it composes with the tilt (inline `transform`). */
+:root { --gentle: 520ms cubic-bezier(.22, .61, .36, 1); }
+@media (prefers-reduced-motion: no-preference) {
+  .cover, .thumb, .card-art, .zoom-img { transition: scale var(--gentle); }
+  @media (hover: hover) and (pointer: fine) { .cover:hover, .thumb:hover, .card-art:hover, .zoom-img:hover { scale: 1.015; } }
+  @media (hover: none) { :is(.cover, .thumb, .card-art, .zoom-img):active { scale: 1.015; transition-duration: 120ms; } }
+}
+@media (hover: none) { .zoom-img { cursor: pointer; } }
+
+/* ---------- Bio block (v1.13.6): key facts + short timeline, from the official biography. Ink only, no new scripts. ---------- */
+.bio > p:first-child { text-align: left; }
+.bio-facts { margin: 0; display: grid; grid-template-columns: 1fr 1fr; border: 1px solid rgb(var(--line-rgb) / 0.35); border-radius: 0.25rem; background: #fff; }
+.bio-facts > div { padding: 0.5rem 0.75rem; border-top: 1px solid rgb(var(--line-rgb) / 0.2); }
+.bio-facts > div:nth-child(-n+2) { border-top: 0; }
+.bio-facts > div:nth-child(odd) { border-right: 1px solid rgb(var(--line-rgb) / 0.2); }
+.bio-facts dt { font-size: 0.8125rem; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-soft); }
+.bio-facts dd { margin: 0.125rem 0 0; font-size: var(--fs-body); line-height: 1.25; color: var(--ink); }
+.bio-line { list-style: none; margin: 0; padding: 0 0 0 1.25rem; position: relative; display: flex; flex-direction: column; gap: 0.5rem; }
+.bio-line::before { content: ""; position: absolute; left: 0.3125rem; top: 0.5rem; bottom: 0.5rem; width: 1px; background: rgb(var(--line-rgb) / 0.5); }
+.bio-line li { position: relative; display: flex; gap: 0.75rem; align-items: baseline; line-height: 1.3; text-align: left; }
+.bio-line li::before { content: ""; position: absolute; left: -1.125rem; top: 0.5em; width: 0.4375rem; height: 0.4375rem; background: var(--ink); transform: rotate(45deg); }
+.bio-line b { flex: none; min-width: 2.75rem; font-weight: 700; letter-spacing: 0.04em; color: var(--ink); }
+.bio-line span { font-size: var(--fs-body); color: var(--ink-soft); }
+@media (max-width: 26rem) { .bio-facts { grid-template-columns: 1fr; } .bio-facts > div { border-right: 0 !important; border-top: 1px solid rgb(var(--line-rgb) / 0.2) !important; } .bio-facts > div:first-child { border-top: 0 !important; } }
+@media print { .bio-facts, .bio-line { break-inside: avoid; } }

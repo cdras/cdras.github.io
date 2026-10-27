@@ -18,9 +18,10 @@
   var BASE_TAU = 4;        /* seconds: the «level» position slowly follows how the phone is held */
 
   function make(el, max) { return el ? { el: el, max: max, x: 0, y: 0, on: false, seen: true } : null; }
-  var cards = { plaque: make(plaque, 6), zoom: make(zoomBox, 8) };
+  var cards = { plaque: make(plaque, 4), zoom: make(zoomBox, 5) };   /* v1.13.4: smaller angles = less resampling blur */
   var nx = 0, ny = 0;      /* input, -1..1 (right / down for the mouse) */
-  var raf = 0, last = 0;
+  var raf = 0, last = 0, idle = 0;
+  var REST_MS = 900;       /* v1.13.4: a mouse that stops lets the card settle flat, so text and cover are razor sharp at rest */
 
   if (cards.plaque && 'IntersectionObserver' in window) {
     new IntersectionObserver(function (e) { cards.plaque.seen = e[e.length - 1].isIntersecting; }).observe(plaque);
@@ -72,6 +73,8 @@
     if (e.pointerType === 'touch' || reduce.matches) return;
     nx = clamp((e.clientX / window.innerWidth - 0.5) * 2);
     ny = clamp((e.clientY / window.innerHeight - 0.5) * 2);
+    clearTimeout(idle);
+    idle = setTimeout(function () { nx = ny = 0; wake(); }, REST_MS);
     wake();
   }, { passive: true });
   document.documentElement.addEventListener('pointerleave', function () { nx = ny = 0; wake(); });
