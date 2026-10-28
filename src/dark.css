@@ -2,6 +2,7 @@
    scripts/build_pages.py copies this file into css/style.css between the "theme-css" markers, twice:
      1. AUTO   : @media (prefers-color-scheme: dark), unless the footer switch says "Light"
      2. FORCED : always, when the footer switch says "Dark"
+.rr-example { text-shadow: 0 1px 0 rgb(0 0 0 / 0.55); }
    Write plain selectors only (no @media inside; the part after the "@solid" line is the more-contrast / less-transparency part).
    Edit HERE, then run: python scripts/build_pages.py   (release.py check fails if css/style.css is out of sync).
    Not applied to print (screen only). Brand: deep violet-black ground, lavender-white ink, the deep-violet brand

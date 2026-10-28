@@ -73,7 +73,8 @@ JS = """
     }
 
     // 3. размер текста (только у элементов с собственным текстом)
-    const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim());
+    // v1.14.25 (owner): the award code on the plate is deliberately tiny and faint; the same code is full size in the facts row and the registry
+    const own = [...el.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) && !el.closest('.s1 .plaque > .award-code');
     if (own) {
       const fs = parseFloat(getComputedStyle(el).fontSize);
       if (fs < minText - tol) out.push(['text', `${label(el)}: ${fs.toFixed(2)} px`]);

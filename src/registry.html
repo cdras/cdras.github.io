@@ -1,0 +1,78 @@
+<body>
+  <header class="topbar">
+    <a href="./" aria-label="CDRA — home"><span class="logo">CDRA</span></a>
+  </header>
+
+  <main>
+    <section class="screen s1" id="s1" aria-label="Award registry">
+      <div class="stack">
+        <div class="plaque home-plaque std-plaque">
+          <p class="t-label std-eyebrow">CDRA</p>
+          <h1 class="t-display home-name std-name">Award registry</h1>
+          <p class="t-title">Every award has its own code</p>
+          <p class="home-lead">All CDRA awards given so far, each with its code, level and date.</p>
+        </div>
+      </div>
+      <a class="next" href="#s2">
+        <span class="next-text"><span class="hint-touch">Swipe</span><span class="hint-mouse">Scroll</span> to see the awards</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s2" id="s2" aria-labelledby="h-reg">
+      <h2 class="section-title" id="h-reg"><span>All awards</span></h2>
+      <div class="stack std-screen-stack">
+        <div class="rr">
+{{#REG_LIST}}
+        </div>
+      </div>
+      <a class="next" href="#s3">
+        <span class="next-text">How to read a code</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s3" id="s3" aria-labelledby="h-read">
+      <h2 class="section-title" id="h-read"><span>How to read a code</span></h2>
+      <div class="stack std-screen-stack">
+        <div class="rr">
+{{#REG_PARTS}}
+          <p class="std-note">Levels: BRZ Bronze, SLV Silver, GLD Gold, PLT Platinum, MPT Multi-platinum, DIA Diamond.</p>
+        </div>
+      </div>
+      <a class="next" href="#s4">
+        <span class="next-text">More about SETTWOR</span>
+        <img src="images/down.svg" class="arrow" alt="" width="66" height="74">
+      </a>
+    </section>
+
+    <section class="screen s4" id="s4" aria-labelledby="h-bio">
+      <h2 class="section-title" id="h-bio"><span>More about SETTWOR</span></h2>
+      <div class="stack">
+        <div class="bio">
+          <p>SETTWOR is a music producer from Ukraine, living in Poland. He has released music since 2021 and runs CDRA, the stream awards on this site.</p>
+        </div>
+        <a class="full-info" href="https://settwor.github.io/" rel="noopener">
+          <span>Full information</span>
+          <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">
+        </a>
+      </div>
+      <footer class="site-foot">
+        <div class="foot-links">
+          <a class="foot-link foot-projects" href="https://ledgertone.github.io/" rel="noopener"><span class="foot-projects-l">SETTWOR projects</span><span class="foot-projects-n">Ledgertone</span></a>
+{{#THEME_SWITCH}}
+          <a class="foot-link" href="https://settwor.github.io/" rel="me noopener">Official website: settwor.github.io</a>
+          <a class="foot-link" href="PRIVACY-POLICY.html">Privacy policy</a>
+        </div>
+        <p class="ver">CDRA <span data-cdra-version>v{{VERSION}}</span></p>
+      </footer>
+    </section>
+  </main>
+
+  <nav class="dots" aria-label="Screens">
+    <a href="#s1"><span class="visually-hidden">Award registry, screen 1 of 4</span></a>
+    <a href="#s2"><span class="visually-hidden">All awards, screen 2 of 4</span></a>
+    <a href="#s3"><span class="visually-hidden">How to read a code, screen 3 of 4</span></a>
+    <a href="#s4"><span class="visually-hidden">More about SETTWOR, screen 4 of 4</span></a>
+  </nav>
+</body>

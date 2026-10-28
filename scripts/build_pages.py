@@ -18,6 +18,7 @@ TEMPLATE = ROOT / 'src' / 'page.html'
 DATA = ROOT / 'src' / 'pages.json'
 HOME = ROOT / 'src' / 'home.html'   # body of the home page; its <head> comes from src/page.html
 LEGACY_ARTIST_URLS = ['SETTWOR-1m.html']   # v1.12.0: old public URLs of the artist award, kept as redirects
+REGISTRY = ROOT / 'src' / 'registry.html'   # body of the award-registry page (v1.14.21)
 STANDARDS = ROOT / 'src' / 'standards.html'   # body of the award-standards page (v1.11.0)
 DARK_SRC = ROOT / 'src' / 'dark.css'   # v1.13.15: the one source of the dark-theme rules; copied into css/style.css by dark_region()
 STYLE = ROOT / 'css' / 'style.css'
@@ -90,6 +91,8 @@ def facts_block(facts):
             text = esc(dd)
         else:   # href[0] = list of (label, url): several links in one row (v1.10.5)
             text = ' <span aria-hidden="true">·</span> '.join(fact_link(*x) for x in href[0])
+        if dt == 'Award code' and not href:   # v1.14.21: the code opens its line in the award registry
+            text = f'<a class="fact-link" href="AWARD-REGISTRY.html#{esc(dd)}">{esc(dd)}</a>'
         out += ['            <div class="fact-code">' if dt == 'Award code' else '            <div>', f'              <dt>{esc(dt)}</dt>',
                 f'              <dd{cls}>{text}</dd>', '            </div>']
     return out
@@ -163,7 +166,7 @@ def date_on(s):
 
 
 # v1.14.17 (owner: every award gets a code, strict-looking, with a meaning).
-# CDRA-<KIND>-<LEVEL>-<YY>-<NNNN>-<C>   e.g. CDRA-SGL-GLD-26-0003-F
+# <KIND>-<LEVEL>-<YY>-<NNNN>-<C>   e.g. SGL-GLD-26-0003-X   (v1.14.22, owner: no «CDRA» at the start; the check character was recalculated without it)
 #   KIND  SGL single / ALB album / ART artist  (the column of the standards table the award was earned in)
 #   LEVEL BRZ SLV GLD PLT MPT DIA             (the level; with KIND it fixes the stream number in the standards)
 #   YY    year of the award date
@@ -174,7 +177,7 @@ CODE_LEVEL = {'Bronze': 'BRZ', 'Silver': 'SLV', 'Gold': 'GLD', 'Platinum': 'PLT'
 
 
 def award_code(kind, level, date, no):
-    body = f"CDRA-{kind}-{CODE_LEVEL[level]}-{parse_date(date).year % 100:02d}-{int(no):04d}"
+    body = f"{kind}-{CODE_LEVEL[level]}-{parse_date(date).year % 100:02d}-{int(no):04d}"
     raw = body.replace('-', '')
     check = CODE_ALPHABET[sum((i + 1) * ord(c) for i, c in enumerate(raw)) % 32]
     return f"{body}-{check}"
@@ -253,6 +256,40 @@ def cards_block(items, d):
             '              </a>',
             '            </li>']
     return out
+
+
+def registry_items(d):
+    """v1.14.21 (owner: the award code gets a page): every award on the site, in the order of the home page (tracks, album, artist)."""
+    tr = d['track']
+    items = [(a, 'Single', tr['name']) for a in d['awards']]
+    if d.get('album'): items.append((d['album'], 'Album', tr['album']))
+    items.append((d['artist_page'], 'Artist', tr['artist']))
+    return [(a, kind, name) for a, kind, name in items if a.get('code')]
+
+
+def reg_list(d):
+    """List of the page «Award registry»: code, what it was earned for, level, date; each row opens the award page. The id of a row is the code itself, so a link can end in #CODE."""
+    out = ['          <ol class="rr-list">']
+    for a, kind, name in registry_items(d):
+        tier = f' data-tier="{a["tier"]}"' if a.get('tier') else ''
+        disc = f'<span class="mini-disc" aria-hidden="true"{tier}></span>' if a.get('tier') else ''
+        out += [f'            <li id="{esc(a["code"])}">',
+                f'              <a class="rr-row" href="{url_quote(a["file"])}">',
+                f'                <span class="rr-code">{esc(a["code"])}</span>',
+                f'                <span class="rr-what">{disc}<span>{esc(a["level"])} · {kind} · {esc(name)}</span></span>',
+                f'                <span class="rr-date">{esc(a["date"])} · {a["streams"]} streams</span>',
+                '              </a>', '            </li>']
+    return out + ['          </ol>']
+
+
+def reg_parts(d):
+    """«How to read a code»: the parts of the first code on the list, one row each (the meaning is fixed by the rule in award_code())."""
+    a, kind, _ = registry_items(d)[0]
+    k, lv, yy, no, c = a['code'].split('-')
+    kinds = {'SGL': 'Single', 'ALB': 'Album', 'ART': 'Artist'}
+    rows = [(k, f'Earned for: {kinds[k]} (SGL single, ALB album, ART artist)'), (lv, f'Level: {a["level"]}'),
+            (yy, 'Year of the award date'), (no, 'Serial number, never used twice'), (c, 'Check character: it catches a typing mistake')]
+    return [f'          <p class="rr-example">{esc(a["code"])}</p>', '          <dl class="rr-parts">'] + [f'            <div><dt>{esc(x)}</dt><dd>{esc(m)}</dd></div>' for x, m in rows] + ['          </dl>']
 
 
 def short_num(n):
@@ -428,6 +465,12 @@ def page_specs(d):
         TITLE=st['title'], DESC=st['desc'], URL=base + url_quote(st['file']), NUM='', DATE='', CODE='', DED_TRACK=None, TIER='', hero=None, current=None,
         og=f"{d['og_dir']}/og-{st['file'][:-5]}.png", group1=[], facts=[], award_label=None,
         about_track=False, is_home=False, no_about=True, body=STANDARDS)
+    # v1.14.21 (owner): the award registry page: every award with its code; own body (src/registry.html)
+    rg = d['registry']
+    specs[rg['file']] = dict(
+        TITLE=rg['title'], DESC=rg['desc'], URL=base + url_quote(rg['file']), NUM='', DATE='', CODE='', DED_TRACK=None, TIER='', hero=None, current=None,
+        og=f"{d['og_dir']}/og-{rg['file'][:-5]}.png", group1=[], facts=[], award_label=None,
+        about_track=False, is_home=False, no_about=True, body=REGISTRY)
     return specs
 
 
@@ -544,6 +587,8 @@ def render(template, spec, d, version):
         'HOME_ARTIST_CARD': cards_block([(d['artist_page'], {**d['heroes']['settwor'], 'disc': True})], d),
         'STD_ROWS': std_rows(d['standards']),
         'STD_DISCS': disc_row(d['standards']),
+        'REG_LIST': reg_list(d),
+        'REG_PARTS': reg_parts(d),
         'THEME_SWITCH': theme_switch(),
     }
     S = lambda t: f'<span>{t}</span>'   # v1.13.1: every phrase is its own hop target

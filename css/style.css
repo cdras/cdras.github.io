@@ -1132,15 +1132,11 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 /* v1.14.17 (owner: the «Listen» links looked odd, the gaps): no dot separators and no ragged wrap; the four services are an even 2×2 grid of quiet outlined buttons
    (hairline, soft radius, 44px tall, same ink as the rest). On narrow screens the label sits above the grid and the grid takes the full row, so «YouTube Music» never squeezes.
    The award code row follows the same rule so the code is never cut in the middle. */
-.facts dd.is-links:not(.is-share) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; align-items: stretch; }
-.facts dd.is-links:not(.is-share) > span[aria-hidden] { display: none; }
-.facts dd.is-links:not(.is-share) .fact-link {
-  min-height: 44px; padding: 0 0.75rem; text-align: center; text-decoration: none; white-space: nowrap;
-  font-size: var(--fs-label); line-height: 1.1; letter-spacing: 0.01em;
-  border: 1px solid rgb(var(--line-rgb) / 0.4); border-radius: 0.625rem; background: rgb(var(--line-rgb) / 0.05);
-}
-@media (hover: hover) and (pointer: fine) { .facts dd.is-links:not(.is-share) .fact-link:hover { border-color: var(--ink); } }
-@media (prefers-contrast: more) { .facts dd.is-links:not(.is-share) .fact-link { border-color: var(--ink); } }
+/* v1.14.30 (owner: «remove the buttons in More information, make them clickable text»): the «Listen» (and «Website») links are plain underlined text again, in one wrapping
+   line with a wide gap between them; no outline, no fill. Each link still keeps a 44px tall target (.fact-link min-height), so wrapped lines stay tappable. */
+.facts dd.is-links:not(.is-share) { display: flex; flex-wrap: wrap; align-items: center; column-gap: 1.25rem; }
+.facts dd.is-links:not(.is-share) > span[aria-hidden] { display: none; }   /* no dots: a dot left at the end of a wrapped line looks stray */
+.facts dd.is-links:not(.is-share) .fact-link { min-inline-size: 0; justify-content: flex-start; padding: 0; }
 .facts > .fact-code dd { font-size: var(--fs-body); letter-spacing: 0.06em; white-space: nowrap; font-variant-numeric: tabular-nums; }
 @media (max-width: 30rem) {
   .facts > div:has(> dd.is-links:not(.is-share)), .facts > .fact-code { grid-template-columns: 1fr; row-gap: 0.25rem; }
@@ -1494,56 +1490,72 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; heig
    CSS only (AGENTS.md rule 8: no script, no storage): three radio buttons, the page reads the checked one with :has().
    Auto = the system setting (as in v1.13.9). Light / Dark = forced on this page. The choice is NOT remembered on the next page
    (that would need storage and a script). The dark rules live in src/dark.css (copied above, between the theme-css markers).
-   Look: one 36px pill (44px tap area), hairline ring, the chosen segment filled with ink (white-on-ink in light, ink-on-ground in dark); 13px text.
+   Look (v1.14.31): a 28px segmented track (44px tap area), a thumb filled with ink that glides under the chosen word (white-on-ink in light, ink-on-ground in dark); 13px text.
    ========================================================================== */
 :root:has(input[name="theme"][value="light"]:checked) { color-scheme: light; }   /* a forced Light page also draws scrollbars and controls light */
-.theme-switch {   /* 36px pill + 2 x 4px margin = the 44px of a footer link row, so the footer does not grow; the tap area (the inputs) is the full 44px */
+.theme-switch {   /* v1.14.31 (owner: smaller, neater): a quiet segmented control, 28px track (2px inset) with ONE thumb that slides under the chosen word; the tap area is still 44px (the inputs); 28px + 2 x 8px margin = the 44px of a footer link row, so the footer does not grow */
   position: relative;
-  display: inline-flex;
-  align-items: stretch;
-  margin: 0.25rem;
+  display: inline-grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));   /* three equal columns, so the thumb is exactly one column wide */
+  margin: 0.5rem 0.25rem;
+  padding: 2px;
   border-radius: 999px;
+  background: rgb(var(--line-rgb) / 0.08);
+  box-shadow: inset 0 0 0 1px rgb(var(--line-rgb) / 0.22);
 }
-.theme-switch::after {   /* the ring is drawn OVER the filled segment so the pill keeps its outline */
+.theme-switch::before {   /* the thumb: ink fill, the chosen word is drawn in the page colour on top of it */
   content: "";
   position: absolute;
-  inset: 0;
-  border-radius: inherit;
-  box-shadow: inset 0 0 0 1px rgb(var(--line-rgb) / 0.45);
+  inset-block: 2px;
+  inset-inline-start: 2px;
+  inline-size: calc((100% - 4px) / 3);
+  border-radius: 999px;
+  background: var(--ink);
+  box-shadow: 0 1px 2px rgb(var(--line-rgb) / 0.35);
   pointer-events: none;
 }
-.theme-opt { position: relative; display: flex; min-height: 2.25rem; min-inline-size: 44px; cursor: pointer; }
-.theme-opt input { position: absolute; inset: -0.25rem 0; inline-size: 100%; block-size: calc(100% + 0.5rem); margin: 0; opacity: 0; cursor: pointer; }   /* 36px + 4px above and below = 44px tap area */
-.theme-opt:first-child span { border-start-start-radius: 999px; border-end-start-radius: 999px; }
-.theme-opt:last-child span  { border-start-end-radius: 999px;   border-end-end-radius: 999px; }
+.theme-switch:has(input[value="light"]:checked)::before { translate: 100% 0; }
+.theme-switch:has(input[value="dark"]:checked)::before  { translate: 200% 0; }
+.theme-opt { position: relative; display: flex; min-block-size: 1.5rem; min-inline-size: 44px; cursor: pointer; }
+.theme-opt input { position: absolute; inset: -0.625rem 0; inline-size: 100%; block-size: calc(100% + 1.25rem); margin: 0; opacity: 0; cursor: pointer; }   /* 24px + 10px above and below = 44px tap area */
 .theme-opt input:focus-visible { outline: none; }
 .theme-opt span {
   display: flex;
   flex: 1;
   align-items: center;
   justify-content: center;
-  padding-inline: 0.75rem;
+  padding-inline: 0.5rem;
+  border-radius: 999px;
   font-size: var(--fs-small);
   line-height: 1;
   letter-spacing: 0.02em;
   color: var(--ink);
 }
-.theme-opt input:checked + span { background: var(--ink); color: var(--bg); }
-.theme-opt input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: -3px; }
+.theme-opt input:checked + span { color: var(--bg); }
+.theme-opt input:focus-visible + span { outline: 2px solid var(--ink); outline-offset: -2px; }
 .theme-opt input:checked:focus-visible + span { outline-color: var(--bg); }
 @media (hover: hover) and (pointer: fine) { .theme-opt:hover input:not(:checked) + span { background: rgb(var(--line-rgb) / 0.12); } }
 @media (prefers-reduced-motion: no-preference) {
-  /* press = instant, release = a small hop (same feel as the footer links) */
+  /* the thumb glides (a short ease-out, no bounce: it is a quiet control); a press is instant, the release hops back like the footer links */
+  .theme-switch::before { transition: translate 280ms cubic-bezier(.32, .72, 0, 1); }
   .theme-opt span { transition: background-color 180ms ease, color 180ms ease, scale var(--spring); }
   .theme-opt:active span { scale: 0.94; transition: scale var(--press), background-color 180ms ease, color 180ms ease; }
 }
 @media (prefers-reduced-motion: reduce) { .theme-opt:active span { opacity: 0.6; } }
-@media (prefers-contrast: more) { .theme-switch::after { box-shadow: inset 0 0 0 1px var(--ink); } }
+@media (prefers-contrast: more) { .theme-switch { box-shadow: inset 0 0 0 1px var(--ink); } }
 @media (forced-colors: active) {
-  .theme-opt input:checked + span { forced-color-adjust: none; background: Highlight; color: HighlightText; }
+  .theme-switch { outline: 1px solid CanvasText; }
+  .theme-switch::before { forced-color-adjust: none; background: Highlight; box-shadow: none; }
+  .theme-opt input:checked + span { forced-color-adjust: none; color: HighlightText; }
 }
 @media print { .theme-switch { display: none; } }
 @supports not selector(:has(*)) { .theme-switch { display: none; } }   /* without :has() the switch could not work, so it is not shown */
+
+/* v1.14.31 (owner: «info about Ledgertone in the footer as SETTWOR projects»): ONE quiet two-line link in the footer link row, in the place of the removed «Award standards» link: a small caption «SETTWOR projects» over the project name; the whole 44px-tall item is the link (one line would not fit next to the theme switch on a 375px phone and would add a row, rule 9) */
+.foot-projects { flex-direction: column; justify-content: center; gap: 0.0625rem; line-height: 1.15; text-align: center; text-decoration: none; }
+.foot-projects-l { color: var(--ink-soft); }
+.foot-projects-n { text-decoration: underline; text-underline-offset: 0.2em; }
+.foot-projects:hover .foot-projects-n { text-underline-offset: 0.32em; }
 
 /* ---------- v1.14.0 (owner: pull the page down to refresh it, but never by accident) ----------
    js/tilt.js adds html.ptr-on on touch screens and creates ONE ring (.ptr) on the first deliberate pull at the top of the page.
@@ -1861,8 +1873,14 @@ html:has(input[name="theme"][value="dark"]:checked) {
    The share window is a native <dialog> (js/share.js opens it); the picture is images/story/*.png (made by scripts/make_story.py from the real page).
    Buttons are NOT inverted: the theme's own ink on the theme's own page colour, a thin ink outline. Tokens only, so light, dark and forced dark work.
    ========================================================================== */
-.has-share { cursor: pointer; }
-.has-share:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+/* v1.14.29 (owner: the plate is not clickable any more; the save / share window moves elsewhere): a 44px share button at the right end of the top bar
+   (iOS-style share glyph, ink, no label; shown only when js/share.js runs). It takes no layout space (absolute inside the bar), so no screen changes height (rule 9). */
+.topbar-share { position: absolute; top: var(--safe-top); bottom: 0; right: max(var(--safe-right), 0.25rem); inline-size: 44px; min-height: 44px; margin: auto 0; padding: 0; display: flex; align-items: center; justify-content: center;
+  color: var(--ink); background: none; border: 0; cursor: pointer; -webkit-tap-highlight-color: transparent; }
+.topbar-share[hidden] { display: none; }
+.topbar-share:focus-visible { outline: 3px solid var(--ink); outline-offset: -3px; border-radius: 0.5rem; }
+@media (prefers-reduced-motion: no-preference) { .topbar-share { transition: transform var(--soft, 200ms ease), opacity 100ms; } .topbar-share:active { transform: scale(0.9); } }
+@media (prefers-reduced-motion: reduce) { .topbar-share:active { opacity: 0.6; } }
 html:has(.share-dlg[open]) { overflow: hidden; }
 .share-dlg {
   box-sizing: border-box; width: min(92vw, 24rem); max-height: 94dvh; margin: auto; padding: 0;
@@ -1893,7 +1911,7 @@ html:has(.share-dlg[open]) { overflow: hidden; }
   .share-dlg[open] { animation: fade 200ms ease-out; }
 }
 @media (prefers-contrast: more) { .share-dlg, .share-img, .share-close { border-color: var(--ink); box-shadow: none; } }
-@media print { .share-dlg { display: none !important; } .has-share { cursor: default; } }
+@media print { .share-dlg, .topbar-share { display: none !important; } }
 
 /* ---------- v1.14.17 (owner: «when the picture and the award plates turn, they should also shimmer») ----------
    js/tilt.js already turns .s1 .plaque and the enlarged cover; with the same move it writes three custom properties on the turning element:
@@ -1918,3 +1936,72 @@ html:has(.share-dlg[open]) { overflow: hidden; }
 }
 .zoom-tilt::after { mix-blend-mode: soft-light; opacity: calc(var(--sh, 0) * 0.85); }
 @media (prefers-reduced-motion: reduce), (prefers-contrast: more), print { .s1 .plaque::after, .zoom-tilt::after { display: none; } }
+
+/* ---------- v1.14.21 (owner: «make the Award standards plate a little bigger so there is more room for the discs») ----------
+   Only the plate on the first screen of AWARD-STANDARDS.html (.std-plaque): a little wider, a little more air, and the five discs
+   in its row about 35% bigger with wider gaps. Sizes are limited by both the width and the height of the window (min(vw, dvh)),
+   so the screen still fits the window (rule 9); on short landscape phones the old sizes stay. Decoration only, no new text. */
+.s1:has(.std-plaque) .stack { max-width: 40rem; }
+.s1 .std-plaque { width: min(calc(100% - 0.5rem), 36rem); padding-block: clamp(1.25rem, 4.5dvh, 2.5rem); }
+.std-plaque .disc-row { gap: clamp(0.625rem, 3.6vw, 1.5rem); padding-top: clamp(0.375rem, 1.6dvh, 1rem); }
+.std-plaque .disc-row .mini-disc { width: clamp(1.75rem, min(9.5vw, 5.6dvh), 3.25rem); height: clamp(1.75rem, min(9.5vw, 5.6dvh), 3.25rem); }
+@media (orientation: landscape) and (max-height: 520px) {
+  .s1 .std-plaque { width: min(calc(100% - 1rem), 30rem); padding-block: revert-layer; }
+  .std-plaque .disc-row { gap: clamp(0.5rem, 3vw, 0.875rem); padding-top: clamp(0.25rem, 1.2dvh, 0.75rem); }
+  .std-plaque .disc-row .mini-disc { width: clamp(1.5rem, 7vw, 2rem); height: clamp(1.5rem, 7vw, 2rem); }
+}
+
+/* ---------- v1.14.25 (owner: «make the award code text on the plates smaller, put it INSIDE the award and hide it a little, barely noticeable») ----------
+   (v1.14.24 set the code into the top border line; it now sits INSIDE the frame, in the gap between the inner hairline and the cover.) A tiny, faint
+   line, centred at the top inside the plate: about 9px, soft ink at half strength, no background and no border cut. It is out of the flow (absolute), so the
+   plate and every screen keep their height (rule 9); it ignores the pointer, so a click on it still opens the plate's share window. The words «Award code» are
+   kept for screen readers only. This is a CONSCIOUS exception to the 13px text floor and the 4.5:1 contrast (the owner wants it barely visible): the same code
+   stays full size and fully readable in the «More information» row and in the Award registry, so no information is lost (audit_layout.py skips this one line). */
+.s1 .plaque > .award-code { position: absolute; top: 0.4375rem; left: 0; right: 0; margin: 0 auto; width: max-content; max-width: calc(100% - 3rem); padding: 0; display: block; z-index: 1; pointer-events: none;
+  background: none; font-size: 0.5625rem; line-height: 1; letter-spacing: 0.14em; text-indent: 0.14em; text-transform: none; color: var(--ink-soft); opacity: 0.5; }
+.award-code-v { font-variant-numeric: tabular-nums; white-space: nowrap; user-select: all; letter-spacing: 0.14em; }
+/* v1.14.26 (owner): on phones the code is smaller still (about 7px) */
+@media (max-width: 600px), (max-height: 500px) { .s1 .plaque > .award-code { top: 0.5rem; font-size: 0.4375rem; letter-spacing: 0.12em; text-indent: 0.12em; } .s1 .plaque > .award-code .award-code-v { letter-spacing: 0.12em; } }
+@media (prefers-contrast: more) { .s1 .plaque > .award-code { color: var(--ink); opacity: 0.75; } }
+
+/* the Award registry page (AWARD-REGISTRY.html): list of all awards, then how to read a code. Same ruled-list language as the FAQ and the standards table. */
+.rr { width: 100%; }
+.rr-list { list-style: none; margin: 0; padding: 0; border-top: 1px solid rgb(var(--line-rgb) / 0.3); }
+.rr-list > li { border-bottom: 1px solid rgb(var(--line-rgb) / 0.3); scroll-margin-top: 4rem; }
+.rr-row { display: grid; gap: 0.125rem; min-height: 44px; padding: 0.5rem 0.25rem; color: var(--ink); text-decoration: none; }
+.rr-code { font-family: var(--f-title); font-weight: 700; font-size: var(--fs-body); line-height: 1.2; letter-spacing: 0.06em; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.rr-what { display: flex; align-items: center; gap: 0.5rem; font-size: var(--fs-hint); line-height: 1.25; }
+.rr-what .mini-disc { flex: none; width: 1rem; height: 1rem; }
+.rr-date { font-size: var(--fs-small); line-height: 1.3; letter-spacing: 0.04em; color: var(--ink-soft); }
+.rr-list > li:target { background: rgb(var(--line-rgb) / 0.07); box-shadow: inset 0.1875rem 0 0 var(--ink); }
+@media (hover: hover) and (pointer: fine) { .rr-row:hover { background: rgb(var(--line-rgb) / 0.05); } }
+@media (prefers-contrast: more) { .rr-list, .rr-list > li { border-color: var(--ink); } .rr-date { color: var(--ink); } }
+.rr-example { margin: 0 0 0.75rem; padding: 0.75rem 0.5rem; text-align: center; font-family: var(--f-title); font-weight: 700; font-size: clamp(0.9375rem, 4.4vw, 1.375rem); letter-spacing: 0.1em; font-variant-numeric: tabular-nums; white-space: nowrap;
+  border-block: 1px solid rgb(var(--line-rgb) / 0.4); text-shadow: 0 1px 0 rgb(255 255 255 / 0.9); }
+.rr-parts { margin: 0; }
+.rr-parts > div { display: grid; grid-template-columns: 4.25rem minmax(0, 1fr); align-items: baseline; gap: 0.75rem; padding: 0.375rem 0; border-bottom: 1px solid rgb(var(--line-rgb) / 0.2); }
+.rr-parts dt { font-family: var(--f-title); font-weight: 700; font-size: var(--fs-label); letter-spacing: 0.06em; font-variant-numeric: tabular-nums; }
+.rr-parts dd { margin: 0; font-size: var(--fs-label); line-height: 1.3; color: var(--ink-soft); }
+@media (max-height: 640px) { .rr-parts > div { padding-block: 0.25rem; } .rr-example { margin-bottom: 0.375rem; padding-block: 0.375rem; } }
+.home-links { display: flex; flex-wrap: wrap; justify-content: center; column-gap: 1.25rem; }   /* v1.14.21: the two quiet links of the home plate, «Award standards» and «Award registry» */
+/* the registry page on phones turned sideways (rule 9): two columns, tighter rows; every piece of text stays */
+@media (orientation: landscape) and (max-height: 520px) {
+  .s2 .stack.std-screen-stack, .s3 .stack.std-screen-stack { max-width: 48rem; }
+  .rr-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.5rem; border-top: 0; }
+  .rr-list > li { border-top: 1px solid rgb(var(--line-rgb) / 0.3); }
+  .rr-row { padding-block: 0.25rem; gap: 0; }
+  .rr-code { font-size: var(--fs-label); }
+  .rr-what { font-size: var(--fs-hint); }
+  .rr-parts { display: grid; grid-template-columns: 1fr 1fr; column-gap: 1.5rem; }
+  .rr-parts > div { grid-template-columns: 3.25rem minmax(0, 1fr); gap: 0.5rem; padding-block: 0.25rem; }
+  .rr-parts dd, .rr-parts dt { font-size: var(--fs-hint); line-height: 1.2; }
+  .rr-example { margin-bottom: 0.25rem; padding-block: 0.25rem; font-size: 1.125rem; }
+}
+@media (max-height: 640px) and (orientation: portrait) { .rr-row { padding-block: 0.25rem; gap: 0; } .rr-code { font-size: var(--fs-label); } }
+@media (orientation: landscape) and (max-height: 340px) { .rr-parts > div { padding-block: 0.125rem; } .rr-example { padding-block: 0.125rem; margin-bottom: 0.125rem; font-size: 1rem; } .rr-row { padding-block: 0.125rem; min-height: 0; } .std-note { padding-top: 0.25rem; } }
+@media (orientation: landscape) and (max-height: 340px) {
+  .s2 .stack.std-screen-stack, .s3 .stack.std-screen-stack { padding-block: 0; }
+  .rr-row { padding-block: 0.0625rem; }
+  .rr-code, .rr-what, .rr-date { line-height: 1.15; }
+  .rr-parts > div { padding-block: 0.0625rem; }
+}

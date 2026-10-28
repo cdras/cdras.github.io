@@ -197,5 +197,10 @@
         ]
       }
     ]
+  },
+  "registry": {
+    "file": "AWARD-REGISTRY.html",
+    "title": "Award registry: every CDRA award and its code | CDRA",
+    "desc": "The CDRA award registry: every award given so far with its award code, level and date, and how to read a code."
   }
 }

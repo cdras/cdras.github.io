@@ -120,6 +120,24 @@ def standards_card(pg, d, fonts, logo):
     print(f'{out.relative_to(ROOT)}  {im.size}  {out.stat().st_size/1024:.0f} KB')
 
 
+def registry_card(pg, d, fonts, logo):
+    """v1.14.21: preview card of the award registry page: the standards card with the registry's words and the first award code instead of the five discs."""
+    code = build_pages.registry_items(d)[0][0]['code']
+    html = (STD_HTML.format(fonts=fonts, ink=INK, discs=f'<div class="reg-code">{code}</div>', logo=logo)
+            .replace('Award standards', 'Award registry').replace('Single, album and artist', 'Every award has its own code')
+            .replace('</style>', '.reg-code{font-family:Outfit,sans-serif;font-weight:700;font-size:40px;letter-spacing:.1em;color:' + INK + '}</style>', 1))
+    with tempfile.NamedTemporaryFile('w', suffix='.html', delete=False, encoding='utf-8', dir=ROOT) as f:
+        f.write(html); tmp = pathlib.Path(f.name)
+    try:
+        pg.goto(tmp.as_uri()); pg.evaluate('document.fonts.ready'); pg.wait_for_timeout(200)
+        out = OUT / f"og-{pathlib.Path(d['registry']['file']).stem}.png"
+        pg.screenshot(path=str(out), clip={'x': 0, 'y': 0, 'width': 1200, 'height': 630})
+    finally:
+        tmp.unlink(missing_ok=True)
+    im = Image.open(out).convert('RGB'); im.save(out, optimize=True)
+    print(f'{out.relative_to(ROOT)}  {im.size}  {out.stat().st_size/1024:.0f} KB')
+
+
 HOME_HTML = """<!doctype html><meta charset="utf-8">
 <link rel="stylesheet" href="{fonts}">
 <style>
@@ -210,6 +228,7 @@ def main():
             im = Image.open(out).convert('RGB'); im.save(out, optimize=True)
             print(f'{out.relative_to(ROOT)}  {im.size}  {out.stat().st_size/1024:.0f} KB')
         standards_card(pg, d, fonts, logo)
+        registry_card(pg, d, fonts, logo)
         home_card(pg, d, fonts, logo)
         b.close()
 

@@ -1,11 +1,11 @@
 /* CDRA share window (v1.14.15, owner request), the SECOND local script of the site (owner exception to AGENTS.md rule 8; only on the award pages).
-   A click / Enter on the award plaque (not on the cover, which still enlarges) opens the <dialog id="share">: the story picture (images/story/*.png),
+   (v1.14.29, owner: the plaque is no longer clickable.) The share button at the right of the top bar (shown only when this script runs) opens the <dialog id="share">: the story picture (images/story/*.png),
    "Save as photo" (a plain download link, works without this script) and, only where the browser can share a picture file, "Post to Instagram Story"
    (the system share sheet, where Instagram Stories is offered). The picture is the one already on the page, copied through a canvas: no network, no storage. */
 (function () {
   'use strict';
-  var d = document.getElementById('share'), p = document.querySelector('.s1 .plaque');
-  if (!d || !p || !d.showModal) return;
+  var d = document.getElementById('share'), o = document.querySelector('.topbar-share');
+  if (!d || !o || !d.showModal) return;
   var img = d.querySelector('.share-img'), b = d.querySelector('.share-ig'), note = d.querySelector('.share-note'), f = null;
 
   function prep() {
@@ -24,14 +24,8 @@
     if (navigator.canShare && navigator.canShare({ files: [new File([''], 'a.png', { type: 'image/png' })] })) { b.hidden = false; note.hidden = true; }
   } catch (e) { /* no file sharing here: the note stays */ }
 
-  p.classList.add('has-share');
-  p.setAttribute('role', 'button');
-  p.setAttribute('tabindex', '0');
-  p.setAttribute('aria-label', 'Share this award: save as photo or post to an Instagram story');
-  p.addEventListener('click', function (e) { if (!e.target.closest('.zoom-cover')) open(); });
-  p.addEventListener('keydown', function (e) {
-    if ((e.key === 'Enter' || e.key === ' ') && e.target === p) { e.preventDefault(); open(); }
-  });
+  o.hidden = false;
+  o.addEventListener('click', open);
   d.addEventListener('click', function (e) { if (e.target === d) d.close(); });
   b.addEventListener('click', function () {
     if (f) navigator.share({ files: [f] }).catch(function () {});
