@@ -27,7 +27,7 @@
   --safe-left: env(safe-area-inset-left, 0px);
   --safe-right: env(safe-area-inset-right, 0px);
 
-  --bar: clamp(3.25rem, 7.6vw, 4.5rem);   /* v1.14.15: taller bar (was 2.75–3.75rem) */
+  --bar: clamp(3rem, 7vw, 4.125rem);   /* v1.14.15: taller bar (was 2.75–3.75rem) */
   --bar-full: calc(var(--bar) + var(--safe-top));
   --pad: clamp(1.5rem, 4vw, 2.75rem); /* >= 1.5rem keeps text clear of the screen dots */
 
@@ -330,7 +330,7 @@ ul { list-style: none; }
 
 /* ---------- Short landscape screens (phones turned sideways) ---------- */
 @media (orientation: landscape) and (max-height: 520px) {
-  :root { --bar: 3.5rem; }
+  :root { --bar: 3.25rem; }
   /* v1.9.6 (task 12.2, first part): the plaque is wider here, so the table does not wrap and the screen fits */
   .s1 .plaque { flex-direction: row; width: min(calc(100% - 1rem), 40rem); max-width: 52rem; gap: clamp(1rem, 4vw, 3rem); }
   .s1 .hero-media { width: auto; flex: 0 1 40%; }
@@ -1720,6 +1720,30 @@ html:has(input[name="theme"][value="dark"]:checked) {
   }
 }
 
+/* v1.14.15 (owner: «the gradient background must fade out little by little towards the bottom, so under the bottom of the screen the colour is solid»):
+   the mirror of the layer under the top bar: one more fixed layer (after the shimmer layers, behind the content), the plain page colour, solid at the very bottom
+   and fading to nothing upwards with an eased curve. Screen only; taps pass through. */
+@media screen {
+  body::after {
+    content: ""; position: fixed; z-index: -1; pointer-events: none;
+    inset: auto 0 0 0;
+    height: calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem));
+    background: linear-gradient(to top,
+      var(--bg) 0, var(--bg) calc(var(--safe-bottom) + 0.75rem),
+      color-mix(in srgb, var(--bg) 96%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.1),
+      color-mix(in srgb, var(--bg) 88%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.2),
+      color-mix(in srgb, var(--bg) 76%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.3),
+      color-mix(in srgb, var(--bg) 62%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.4),
+      color-mix(in srgb, var(--bg) 48%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.5),
+      color-mix(in srgb, var(--bg) 34%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.6),
+      color-mix(in srgb, var(--bg) 22%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.7),
+      color-mix(in srgb, var(--bg) 12%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.8),
+      color-mix(in srgb, var(--bg) 5%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 0.9),
+      color-mix(in srgb, var(--bg) 1%, transparent) calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem) * 1.0),
+      transparent calc(calc(var(--safe-bottom) + 0.75rem) + clamp(4.5rem, 20vw, 9rem)));
+  }
+}
+
 /* ==========================================================================
    v1.14.11 (owner: «set the logo as text in Gloock»): the logo is the text «CDRA» in Gloock (was an SVG picture).
    Colour = --ink (light and dark themes follow it, no image filter). Size matches the old picture (cap height = old logo height).
@@ -1747,3 +1771,42 @@ html:has(input[name="theme"][value="dark"]:checked) {
 
 /* v1.14.12: the footer got a fourth item (Privacy policy): on narrow phones the links sit a little closer so the last two share one row and the screen still fits (rule 9) */
 @media (max-width: 24rem) { .foot-links { column-gap: 0.25rem; } .foot-links .foot-link { padding-inline: 0.25rem; } }
+
+/* ==========================================================================
+   v1.14.15 (owner: «a click on the award plaque opens a window: save as photo, post to an Instagram story»)
+   The share window is a native <dialog> (js/share.js opens it); the picture is images/story/*.png (made by scripts/make_story.py from the real page).
+   Buttons are NOT inverted: the theme's own ink on the theme's own page colour, a thin ink outline. Tokens only, so light, dark and forced dark work.
+   ========================================================================== */
+.has-share { cursor: pointer; }
+.has-share:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+html:has(.share-dlg[open]) { overflow: hidden; }
+.share-dlg {
+  box-sizing: border-box; width: min(92vw, 24rem); max-height: 94dvh; margin: auto; padding: 0;
+  border: 1px solid rgb(var(--line-rgb) / 0.3); border-radius: 1.25rem; background: var(--bg); color: var(--ink);
+  box-shadow: 0 1.5rem 3rem -1rem rgb(0 0 0 / 0.5); overflow: auto;
+}
+.share-dlg::backdrop { background: rgb(15 8 24 / 0.6); }
+.share-box { display: flex; flex-direction: column; align-items: center; gap: 0.75rem; padding: 1rem 1rem max(1rem, var(--safe-bottom)); }
+.share-title { margin: 0; font-family: var(--f-title); font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.06em; text-align: center; }
+.share-img { width: auto; height: min(46dvh, 26rem); max-width: 100%; aspect-ratio: 9 / 16; object-fit: contain; border-radius: 0.75rem; border: 1px solid rgb(var(--line-rgb) / 0.25); }
+.share-actions { display: flex; flex-direction: column; align-items: stretch; gap: 0.5rem; width: 100%; }
+.share-btn {
+  display: flex; align-items: center; justify-content: center; min-height: 44px; padding: 0.5rem 1.25rem;
+  border: 1px solid var(--ink); border-radius: 999px; background: color-mix(in srgb, var(--ink) 6%, transparent); color: var(--ink);
+  font: inherit; font-family: var(--f-body); font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.02em; text-align: center; text-decoration: none; cursor: pointer;
+}
+.share-btn[hidden], .share-note[hidden] { display: none; }
+.share-close { border-color: rgb(var(--line-rgb) / 0.4); background: none; font-weight: 400; }
+.share-btn:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+.share-note { margin: 0; font-size: var(--fs-small); line-height: 1.35; color: var(--ink-soft); text-align: center; text-wrap: balance; }
+@media (orientation: landscape) and (max-height: 520px) {
+  .share-dlg { width: min(92vw, 36rem); }
+  .share-box { display: grid; grid-template-columns: auto 1fr; column-gap: 1rem; row-gap: 0.5rem; align-items: center; }
+  .share-title { grid-column: 1 / -1; }
+  .share-img { height: min(62dvh, 14rem); }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .share-dlg[open] { animation: fade 200ms ease-out; }
+}
+@media (prefers-contrast: more) { .share-dlg, .share-img, .share-close { border-color: var(--ink); box-shadow: none; } }
+@media print { .share-dlg { display: none !important; } .has-share { cursor: default; } }

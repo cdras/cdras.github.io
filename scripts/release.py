@@ -27,7 +27,9 @@ ZIP_NAME = re.compile(r'^CDRA v\d+\.\d+\.\d+\.zip$')
 REQUIRED_SKILLS = ['apple-design', 'apple-hig-review', 'claude-liquid-glass']
 TILT_TAG = '<script src="js/tilt.js" defer>'
 TILT_FILE = 'js/tilt.js'
-REQUIRED_FILES = ['VERSION', 'css/style.css', 'js/tilt.js', 'index.html', 'src/page.html', 'src/pages.json', 'scripts/build_pages.py']
+SHARE_TAG = '<script src="js/share.js" defer>'   # v1.14.15 (owner): the share window on the award pages
+SHARE_FILE = 'js/share.js'
+REQUIRED_FILES = ['VERSION', 'css/style.css', 'js/tilt.js', 'js/share.js', 'index.html', 'src/page.html', 'src/pages.json', 'scripts/build_pages.py']
 # В .gitignore: в чистом клоне репозитория их может не быть — тогда только предупреждение
 LOCAL_ONLY = ['AGENTS.md', 'CLAUDE.md', 'CHANGELOG.md']
 BASE_URL = 'https://cdras.github.io/'
@@ -158,9 +160,11 @@ def check(version):
             if 'href="https://settwor.github.io/"' not in t: errs.append(f'{n}: no visible link to https://settwor.github.io/')
         # rule 8 (owner exception, v1.11.16): JSON-LD plus exactly one local file, js/tilt.js, and (v1.14.0: tilt + pull-to-refresh) on every site page
         for tag in re.findall(r'<script\b[^>]*>', t):
-            if 'application/ld+json' in tag or tag == TILT_TAG: continue
-            errs.append(f'{n}: <script> not allowed (only JSON-LD and {TILT_TAG}, see AGENTS.md rule 8): {tag[:80]}')
+            if 'application/ld+json' in tag or tag == TILT_TAG or tag == SHARE_TAG: continue
+            errs.append(f'{n}: <script> not allowed (only JSON-LD, {TILT_TAG} and, on award pages, {SHARE_TAG}; see AGENTS.md rule 8): {tag[:80]}')
         if (p in pages) and TILT_TAG not in t: errs.append(f'{n}: script js/tilt.js missing')
+        if 'class="plaque"' in t and SHARE_TAG not in t: errs.append(f'{n}: script js/share.js missing (award page)')
+        if 'class="plaque"' not in t and SHARE_TAG in t: errs.append(f'{n}: js/share.js only belongs on award pages')
 
     sm = SITEMAP.read_text(encoding='utf-8') if SITEMAP.exists() else ''
     for p in pages:
@@ -180,6 +184,13 @@ def check(version):
         code = re.sub(r'/\*.*?\*/', '', js, flags=re.S)
         # v1.14.14 (owner): the ONE allowed storage use is localStorage key 'cdra-theme' (the remembered footer theme choice); nothing else
         if re.search(bad, code): errs.append(f'{TILT_FILE}: forbidden pattern {bad}')
+
+    # v1.14.15 (owner): the second allowed script, the share window: local, small, no network, no storage
+    sjs = (ROOT / SHARE_FILE).read_text(encoding='utf-8') if (ROOT / SHARE_FILE).exists() else ''
+    if len(sjs.encode('utf-8')) > 4096: errs.append(f'{SHARE_FILE}: over 4 KB')
+    scode = re.sub(r'/\*.*?\*/', '', sjs, flags=re.S)
+    for bad in (r'\bfetch\s*\(', r'XMLHttpRequest', r'\bimport\s*\(', r'\bWebSocket\b', r'sendBeacon', r'localStorage', r'sessionStorage', r'indexedDB', r'document\.cookie', r'\beval\s*\(', r'new\s+Function', r'https?://'):
+        if re.search(bad, scode): errs.append(f'{SHARE_FILE}: forbidden pattern {bad}')
 
     code_js = re.sub(r'/\*.*?\*/', '', js, flags=re.S)
     if re.search(r'localStorage', code_js) and (len(re.findall(r'localStorage', code_js)) > 3 or "K = 'cdra-theme'" not in code_js):

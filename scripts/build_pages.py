@@ -335,8 +335,7 @@ def page_specs(d):
             group1=[('p', 't-label', f"{a['level']} award for the track"), ('h1', 't-display', tr['name']), ('p', 't-title', tr['artist'])],
             facts=[(dt, a['date'] if dd is None else dd, lt) for dt, dd, lt in track_facts]
                   + [('Album', tr['album'], True), ('Genre', tr['genre'], True), ('Reached in', milestone_days(tr, a), True),
-                     ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music']), ('YouTube Music', tr['youtube_music']), ('YouTube', tr['youtube'])]),
-                     ('Share', '', True, share_links(base + url_quote(a['file']), title, f"CDRA award: {tr['name']} by {tr['artist']} reached {a['streams']} all-time streams."))],
+                     ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music']), ('YouTube Music', tr['youtube_music']), ('YouTube', tr['youtube'])])],
             award_label=None, about_track=True, is_home=False)
     alb = d.get('album')
     if alb:   # v1.12.0: album award page (Album column of the standards); only facts the owner gave: artist, date, label
@@ -346,8 +345,7 @@ def page_specs(d):
             TITLE=atitle, DESC=adesc, URL=base + url_quote(alb['file']), NUM=alb['streams'], DATE=alb['date'], DED_TRACK=tr['album'], TIER=alb['tier'],
             hero=d['heroes'][alb['hero']], current=None, og=f"{d['og_dir']}/og-{alb['file'][:-5]}.png",
             group1=[('p', 't-label', f"{alb['level']} award for the album"), ('h1', 't-display', tr['album']), ('p', 't-title', tr['artist'])],
-            facts=[('Award for', tr['artist'], False), ('Date', alb['date'], True), ('Label', tr['label'], True),
-                   ('Share', '', True, share_links(base + url_quote(alb['file']), atitle, adesc))],
+            facts=[('Award for', tr['artist'], False), ('Date', alb['date'], True), ('Label', tr['label'], True)],
             award_label='Awards for', about_track=False, is_home=False)
     s = d['artist_page']
     specs[s['file']] = dict(
@@ -356,7 +354,7 @@ def page_specs(d):
         URL=base + url_quote(s['file']), NUM=s['streams'], DATE=s['date'], DED_TRACK=None, TIER=s.get('tier') or '', hero=d['heroes'][s['hero']], current=None,
         og=f"{d['og_dir']}/og-{s['file'][:-5]}.png",
         group1=[('p', 't-label', f"{s['level']} award for the artist" if s.get('level') else 'Award for'), ('h1', 't-display', tr['artist'])],
-        facts=[('Date', s['date'], True), ('Share', '', True, share_links(base + url_quote(s['file']), f"{tr['artist']}: {s['streams']} streams award | CDRA", f"CDRA award: {tr['artist']} reached {s['streams']} all-time streams."))], award_label='Awards for', about_track=False, is_home=False)
+        facts=[('Date', s['date'], True)], award_label='Awards for', about_track=False, is_home=False)
     home = d['home']
     src = dict(specs[d['awards'][-1]['file'] if d['awards'] else d['artist_page']['file']])
     src.update(TITLE=home['title'], DESC=home['desc'].replace('{list}', join_and([a['streams'] for a in d['awards']] + ([alb['streams']] if alb else []) + [d['artist_page']['streams']])), URL=base, is_home=True, about_track=False, TIER='gold', body=HOME,
@@ -489,7 +487,7 @@ def render(template, spec, d, version):
     ded = ' '.join([S('Presented to'), f"<strong>{esc(d['track']['artist'])}</strong>", S('to commemorate'), S(spec['NUM']), '<span class="nb">all-time</span>', S('streams')]
                    + ([S(f"of “{esc(spec['DED_TRACK'])}”")] if spec['DED_TRACK'] else []))
     inline = {**home_texts(d), 'DEDICATION': ded, 'DATE': esc(spec['DATE']), 'VERSION': version, 'TITLE': esc(spec['TITLE']), 'DESC': esc(spec['DESC']), 'URL': spec['URL'],
-              'OG_IMAGE': og, 'OG_ALT': esc(spec['DESC']), 'NUM': spec['NUM'], 'TIER': spec['TIER'], 'HERO_PICTURE': hero_picture(spec['hero']) if spec['hero'] else '',
+              'OG_IMAGE': og, 'STORY': 'images/story/' + og.rsplit('/og-', 1)[-1], 'OG_ALT': esc(spec['DESC']), 'NUM': spec['NUM'], 'TIER': spec['TIER'], 'HERO_PICTURE': hero_picture(spec['hero']) if spec['hero'] else '',
               'ZOOM_TOGGLE': zoom_parts(spec['hero'])[0], 'ZOOM_BOX': zoom_parts(spec['hero'])[1]}
     if spec.get('body'):   # home and standards pages: <head> from the shared template, body from their own file
         template = template[:template.index('<body')] + spec['body'].read_text(encoding='utf-8')

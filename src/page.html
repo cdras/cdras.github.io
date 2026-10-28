@@ -152,6 +152,20 @@
     </section>
   </main>
 
+  <dialog class="share-dlg" id="share" aria-labelledby="share-t">
+    <form method="dialog" class="share-box">
+      <h2 class="share-title" id="share-t">Share this award</h2>
+      <img class="share-img" src="{{STORY}}" alt="{{OG_ALT}}" width="1080" height="1920" loading="lazy" decoding="async">
+      <div class="share-actions">
+        <a class="share-btn" href="{{STORY}}" download>Save as photo</a>
+        <button type="button" class="share-btn share-ig" hidden>Post to Instagram Story</button>
+        <p class="share-note">For an Instagram story: save the photo, then add it from your gallery.</p>
+        <button class="share-btn share-close" value="close">Close</button>
+      </div>
+    </form>
+  </dialog>
+  <script src="js/share.js" defer></script>
+
   <nav class="dots" aria-label="Screens">
     <a href="#s1"><span class="visually-hidden">Award, screen 1 of 4</span></a>
     <a href="#s2"><span class="visually-hidden">More information, screen 2 of 4</span></a>
