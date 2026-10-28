@@ -1,4 +1,0 @@
-Instrument Serif — Copyright The Instrument Serif Project Authors.
-Licensed under the SIL Open Font License, Version 1.1.
-Full licence text and FAQ: https://openfontlicense.org
-(The licence text file was not available in the offline toolkit used to prepare this archive; add the official OFL.txt from the font's Google Fonts / GitHub page before publishing.)

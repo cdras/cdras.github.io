@@ -1,16 +1,17 @@
-/* CDRA site font: Outfit (SIL OFL 1.1, licence text next to the files). Regular 400 for text, Bold 700 for numbers. */
+/* v1.14.17: font-display is `block` (was `swap`): the first paint no longer shows a system font that then jumps to Outfit while the entrance animation runs. The three fonts are preloaded, so the wait is a few ms.
+   CDRA site font: Outfit (SIL OFL 1.1, licence text next to the files). Regular 400 for text, Bold 700 for numbers. */
 @font-face {
   font-family: 'Outfit';
   font-style: normal;
   font-weight: 400;
-  font-display: swap;
+  font-display: block;
   src: url('Outfit-Regular.woff') format('woff');
 }
 @font-face {
   font-family: 'Outfit';
   font-style: normal;
   font-weight: 700;
-  font-display: swap;
+  font-display: block;
   src: url('Outfit-Bold.woff') format('woff');
 }
 

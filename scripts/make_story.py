@@ -16,6 +16,14 @@ OUT = ROOT / 'images' / 'story'
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import build_pages
 
+# v1.14.17: the artist page shows the portrait from settwor.github.io; offline (or on a slow network) it never loaded and the story picture had a broken image.
+# The same file lives in images/, so any request for the remote portrait is answered from the local copy.
+REMOTE = 'https://settwor.github.io/images/main.jpg'
+LOCAL = ROOT / 'images' / 'SETTWOR_main.jpg'
+
+def local_portrait(route):
+    route.fulfill(path=str(LOCAL), content_type='image/jpeg')
+
 def pages():
     return sorted(p for p in ROOT.glob('*.html') if 'class="plaque"' in p.read_text(encoding='utf-8'))
 
@@ -26,9 +34,11 @@ def main():
         ctx = b.new_context(viewport={'width': 405, 'height': 720}, device_scale_factor=8 / 3, color_scheme='light', reduced_motion='reduce')
         for p in pages():
             pg = ctx.new_page()
+            pg.route(REMOTE, local_portrait)
             pg.goto(p.as_uri())
             pg.add_style_tag(content='.next,.dots,.share-dlg{display:none!important}html{scroll-snap-type:none!important}')
             pg.evaluate('document.fonts.ready')
+            pg.wait_for_function('Array.from(document.images).filter(i => !i.closest(\'dialog\') && i.loading !== \'lazy\').every(i => i.complete && i.naturalWidth > 0)')
             pg.wait_for_timeout(900)
             dst = OUT / (p.stem + '.png')
             pg.screenshot(path=str(dst))

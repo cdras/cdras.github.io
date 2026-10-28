@@ -69,6 +69,7 @@
             </div>
           </div>
           <p class="dedication">{{DEDICATION}}</p>
+          <p class="award-code"><span>Award code</span> <span class="award-code-v">{{CODE}}</span></p>
         </div>
       </div>
       <a class="next" href="#s2">
@@ -95,18 +96,8 @@
     <section class="screen s3" id="s3" aria-labelledby="h-awards">
       <h2 class="section-title" id="h-awards"><span>Other awards</span></h2>
       <div class="stack">
-        <div class="info">
-          <div class="award-intro">
-            <img src="images/GET_IT,Vol.1/GET_IT,Vol.1_cover.webp" class="thumb" alt="GET IT Vol.1 album cover by SETTWOR" width="668" height="668" loading="lazy" decoding="async">
-            <div class="award-head">
-{{#AWARD_LABEL}}
-              <p class="t-display">GOT ME UP 2</p>
-              <p class="t-title">by SETTWOR</p>
-            </div>
-          </div>
-          <ul class="awards">
-{{#AWARDS}}
-          </ul>
+        <div class="reg">
+{{#AWARD_GROUPS}}
         </div>
       </div>
       <a class="next" href="#s4">
@@ -140,14 +131,13 @@
         </a>
       </div>
       <footer class="site-foot">
-        <p class="foot-note">CDRA: stream-milestone awards for SETTWOR, run by SETTWOR.</p>
         <div class="foot-links">
           <a class="foot-link" href="AWARD-STANDARDS.html">Award standards</a>
 {{#THEME_SWITCH}}
           <a class="foot-link" href="https://settwor.github.io/" rel="me noopener">Official website: settwor.github.io</a>
           <a class="foot-link" href="PRIVACY-POLICY.html">Privacy policy</a>
         </div>
-        <p class="ver">CDRA <span data-cdra-version>v{{VERSION}}</span></p>
+        <p class="ver">CDRA: stream-milestone awards · <span data-cdra-version>v{{VERSION}}</span></p>
       </footer>
     </section>
   </main>

@@ -1,9 +1,8 @@
-/* CDRA script (v1.14.14), the ONLY script on the site (owner exception to AGENTS.md rule 8). Three small jobs:
-   1) TILT: the award block (.s1 .plaque) and the enlarged cover (.zoom-img) lean toward the MOUSE (decoration; no gyroscope).
-   2) THEME (owner): the footer Light / Dark choice is remembered in localStorage key "cdra-theme" (the ONLY thing ever stored) and applied on every page;
-      the status-bar colour (meta theme-color) follows it; Auto clears it and goes back to the system.
-   3) PULL TO REFRESH (touch): a slow pull-down at the very top reloads; a flick never does.
-   Never: network, cookies, tracking, libraries. */
+/* CDRA script (v1.14.17), the ONLY script on the site (owner exception to AGENTS.md rule 8). Three small jobs:
+   1) TILT: the award block (.s1 .plaque) and the enlarged cover (.zoom-tilt) lean toward the MOUSE; the same move shifts an iridescent sheen
+      (CSS vars --sx --sy --sh; decoration only, no gyroscope).
+   2) THEME: the footer Light / Dark choice is kept in localStorage key "cdra-theme" (the ONLY thing stored); meta theme-color follows it.
+   3) PULL TO REFRESH (touch): a slow pull-down at the very top reloads. No network, cookies, tracking, libraries. */
 (function () {
   'use strict';
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -12,7 +11,7 @@
 
   /* ================= 1. tilt (mouse / pen only) ================= */
   var plaque = document.querySelector('.s1 .plaque');
-  var zoomBox = document.querySelector('.zoom-img');
+  var zoomBox = document.querySelector('.zoom-tilt');
   if (plaque || zoomBox) (function () {
     var TAU = 0.14;
     var PERSPECTIVE = '60rem';
@@ -30,11 +29,14 @@
       return cards.plaque && cards.plaque.seen ? cards.plaque : null;
     }
     function clear(c) {
-      if (c && c.on) { c.el.style.transform = ''; c.el.style.willChange = ''; c.on = false; }
+      if (c && c.on) { c.el.style.transform = ''; c.el.style.willChange = ''; c.el.style.removeProperty('--sh'); c.on = false; }
     }
     function apply(c) {
-      if (!c.on) { c.el.style.willChange = 'transform'; c.on = true; }
-      c.el.style.transform = 'perspective(' + PERSPECTIVE + ') rotateX(' + (-c.y * c.max).toFixed(2) + 'deg) rotateY(' + (c.x * c.max).toFixed(2) + 'deg)';
+      var st = c.el.style;
+      if (!c.on) { st.willChange = 'transform'; c.on = true; }
+      st.setProperty('--sx', ((c.x + 1) * 50).toFixed(0) + '%'); st.setProperty('--sy', ((c.y + 1) * 50).toFixed(0) + '%');
+      st.setProperty('--sh', Math.min(1, Math.hypot(c.x, c.y)).toFixed(2));
+      st.transform = 'perspective(' + PERSPECTIVE + ') rotateX(' + (-c.y * c.max).toFixed(2) + 'deg) rotateY(' + (c.x * c.max).toFixed(2) + 'deg)';
     }
     function frame(t) {
       raf = 0;

@@ -53,6 +53,7 @@
     },
     {
       "key": "250k",
+      "no": 1,
       "file": "GOT-ME-UP-2-250k.html",
       "streams": "250,000",
       "date": "May 1, 2025",
@@ -61,6 +62,7 @@
     },
     {
       "key": "500k",
+      "no": 2,
       "file": "GOT-ME-UP-2-500k.html",
       "streams": "500,000",
       "date": "July 22, 2025",
@@ -70,15 +72,18 @@
     {
       "key": "1m",
       "file": "GOT-ME-UP-2-1m.html",
+      "no": 3,
       "streams": "1,000,000",
       "date": "February 22, 2026",
       "hero": "gold",
       "kind": "Single"
     }
   ],
+  "album_spotify": "https://open.spotify.com/album/7i5NMlp0MM3p8v4jPKZ2DO",
   "album_award": {
     "key": "1m",
     "file": "GET-IT-Vol-1-1m.html",
+    "no": 4,
     "streams": "1,000,000",
     "date": "Winter 2026",
     "hero": "low",
@@ -86,6 +91,7 @@
   },
   "artist_page": {
     "file": "SETTWOR-2-5m.html",
+    "no": 5,
     "key": "2-5m",
     "streams": "2,500,000",
     "date": "October 2026",

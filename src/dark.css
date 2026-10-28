@@ -27,7 +27,7 @@ body { background: transparent; }
 
 /* top bar */
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .topbar { background-color: rgba(21, 12, 33, 0.9); }   /* v1.14.2: = the dark theme-color (#150c21), so the phone's status bar and the bar are ONE colour */
+  .topbar { background-color: #150c21; -webkit-backdrop-filter: none; backdrop-filter: none; }   /* v1.14.17: OPAQUE and exactly = the dark theme-color (#150c21). Before: 90% fill + blur + saturate over the violet glow, so the bar looked lighter than the status bar (a hard step on iPhone) */
 }
 /* ink-coloured artwork becomes light */
 .logo, .arrow, .icon { filter: brightness(0) invert(1); }
@@ -72,6 +72,9 @@ body { background: transparent; }
 .zoom-close { background: var(--surface); }
 .zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
 .dots a::before { border-color: var(--ink-soft); }
+
+/* v1.14.17: the sheen on a dark plate: light colours are added (screen), softer than on white */
+.s1 .plaque::after, .zoom-tilt::after { mix-blend-mode: screen; opacity: calc(var(--sh, 0) * 0.3); }
 
 /* @solid */
 /* more-contrast / less-transparency users: the solid sheets must be dark too, not the light #fff from above */

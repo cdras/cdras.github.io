@@ -360,7 +360,7 @@ ul { list-style: none; }
    Small and purposeful: a quiet entrance, content that settles in as a screen arrives,
    a hop on release, a slow "breath" on the cover and the arrow. CSS only.
    Everything is inside no-preference; reduced motion gets opacity feedback only. */
-@keyframes rise   { from { opacity: 0; translate: 0 0.75rem; } to { opacity: 1; translate: 0 0; } }
+@keyframes rise   { from { opacity: 0; transform: translateY(0.75rem); } to { opacity: 1; transform: none; } }   /* v1.14.17: transform (was translate): runs on the GPU in every mobile browser */
 @keyframes settle { from { opacity: 0; translate: 0 1rem; }    to { opacity: 1; translate: 0 0; } }
 @keyframes fade   { from { opacity: 0; } to { opacity: 1; } }
 @keyframes breathe { 0%, 100% { scale: 1; } 50% { scale: 1.014; } }
@@ -368,10 +368,11 @@ ul { list-style: none; }
 
 @media (prefers-reduced-motion: no-preference) {
   /* 1. Entrance of the first screen (fill: backwards, so nothing is left holding a value) */
-  .topbar        { animation: fade 400ms ease-out backwards; }
+  /* v1.14.17: the top bar no longer fades in: fading an element that has backdrop-filter makes iOS Safari flicker. It is simply there from the first frame. */
   .s1 .hero-media           { animation: rise 560ms var(--ease) 60ms  backwards; }
   .s1 .ledger               { animation: rise 560ms var(--ease) 160ms backwards; }
   .s1 .dedication           { animation: rise 560ms var(--ease) 240ms backwards; }
+  .s1 .award-code           { animation: rise 560ms var(--ease) 280ms backwards; }
   .s1 .next                 { animation: fade 500ms ease-out 480ms backwards; }
   .page-404 .stack > *      { animation: rise 520ms var(--ease) backwards; }
   .page-404 .stack > :nth-child(2) { animation-delay: 70ms; }
@@ -578,6 +579,28 @@ ul { list-style: none; }
 .dedication strong { font-weight: 700; }
 .dedication .nb { white-space: nowrap; }   /* v1.9.1: «all-time» never breaks at the hyphen */
 @media (max-height: 640px) { .dedication { display: none; } }   /* the table already says it */
+
+/* v1.14.17 (owner): the award code, a quiet registry line under the dedication: CDRA-<KIND>-<LEVEL>-<YY>-<NNNN>-<C>. Hidden where the dedication is hidden (short screens). */
+.award-code {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;   /* always two lines: the label, then the code, so every award looks the same */
+  align-items: center;
+  gap: 0.125rem;
+  font-size: var(--fs-small);
+  line-height: 1.4;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+.award-code { opacity: 0.85; }
+.award-code-v { font-variant-numeric: tabular-nums; letter-spacing: 0.1em; white-space: nowrap; user-select: all; }   /* v1.14.17: quiet, same soft ink as the date line, no bold */
+/* the same code, very quiet, on the home page cards: only where the screen is tall enough (rule 9) */
+.card-code { display: none; font-size: var(--fs-small); line-height: 1.2; letter-spacing: 0.08em; font-variant-numeric: tabular-nums; color: var(--ink-soft); opacity: 0.8; white-space: nowrap; }
+@media (min-height: 960px) { .card-code { display: block; } }
+@media (max-height: 640px) { .award-code, .facts > .fact-code { display: none; } }   /* no room on 320×568 screens (rule 9) */
+@media (orientation: landscape) and (max-height: 520px) { .s1 .award-code { display: none; } }
 
 /* section titles with gilt rules on both sides */
 .section-title { display: flex; align-items: center; justify-content: center; gap: 0.75rem; }
@@ -1105,6 +1128,23 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 .fact-link { min-inline-size: 44px; justify-content: center; }
 .facts dd.is-share { display: flex; flex-wrap: wrap; align-items: center; column-gap: 0; margin-inline-end: -0.25rem; }   /* 3 targets (44px min) must stay on one line at 320px: the 0.25rem sits in the page padding; larger text still wraps */
 .facts dd.is-share > span[aria-hidden] { display: none; }
+
+/* v1.14.17 (owner: the «Listen» links looked odd, the gaps): no dot separators and no ragged wrap; the four services are an even 2×2 grid of quiet outlined buttons
+   (hairline, soft radius, 44px tall, same ink as the rest). On narrow screens the label sits above the grid and the grid takes the full row, so «YouTube Music» never squeezes.
+   The award code row follows the same rule so the code is never cut in the middle. */
+.facts dd.is-links:not(.is-share) { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; align-items: stretch; }
+.facts dd.is-links:not(.is-share) > span[aria-hidden] { display: none; }
+.facts dd.is-links:not(.is-share) .fact-link {
+  min-height: 44px; padding: 0 0.75rem; text-align: center; text-decoration: none; white-space: nowrap;
+  font-size: var(--fs-label); line-height: 1.1; letter-spacing: 0.01em;
+  border: 1px solid rgb(var(--line-rgb) / 0.4); border-radius: 0.625rem; background: rgb(var(--line-rgb) / 0.05);
+}
+@media (hover: hover) and (pointer: fine) { .facts dd.is-links:not(.is-share) .fact-link:hover { border-color: var(--ink); } }
+@media (prefers-contrast: more) { .facts dd.is-links:not(.is-share) .fact-link { border-color: var(--ink); } }
+.facts > .fact-code dd { font-size: var(--fs-body); letter-spacing: 0.06em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+@media (max-width: 30rem) {
+  .facts > div:has(> dd.is-links:not(.is-share)), .facts > .fact-code { grid-template-columns: 1fr; row-gap: 0.25rem; }
+}
 /* the extra row must not push «More information» past the window on short phones (320×568 was exactly full before): tighter rows under 600px of height */
 @media (max-height: 600px) { .facts { --rule-gap: 0.5rem; } }
 
@@ -1148,7 +1188,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
    breathing use translate/scale/opacity, the text inside uses translate/scale), so nothing collides.
    apple-design › 3 Interruptibility, 4 Behavior over animation (smoothed approach from the current value, no overshoot), 14 Reduced motion
    (the script does nothing under `reduce`; the rule below is the second lock), accessibility.md › Motion. No layout space is used. */
-@media (prefers-reduced-motion: reduce), print { .s1 .plaque, .zoom-img { transform: none !important; will-change: auto !important; } }
+@media (prefers-reduced-motion: reduce), print { .s1 .plaque, .zoom-tilt { transform: none !important; will-change: auto !important; } }
 
 /* ---------- v1.11.17 (owner: «fix the text "Award standards"»): the title on the standards page ----------
    It inherited the big home-page name size and 0.16em tracking (`.home-plaque .home-name`, which beats `.std-name`), so «standards» ran
@@ -1201,6 +1241,44 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 @media (max-width: 26rem) { .bio-facts { grid-template-columns: 1fr; } .bio-facts > div { border-right: 0 !important; border-top: 1px solid rgb(var(--line-rgb) / 0.2) !important; } .bio-facts > div:first-child { border-top: 0 !important; } }
 @media print { .bio-facts, .bio-line { break-inside: avoid; } }
 
+/* ==========================================================================
+   v1.14.17 (owner: «Other awards» prettier, and ALL the awards, not only one release): a register of every award, in three groups (the track, the album, the artist).
+   Each group has a hairline title (name left, kind right); each award is one quiet row: metal disc, the number, the level and the date in a soft second line, the link icon.
+   The open page is marked (aria-current): a soft tint and a short ink bar. Rows are 44px+ targets. On short screens the date line goes, so everything still fits (rule 9).
+   ========================================================================== */
+.reg { width: min(100%, 26rem); display: flex; flex-direction: column; gap: clamp(0.375rem, 1.8dvh, 1.125rem); }
+.reg-group { display: flex; flex-direction: column; gap: clamp(0.125rem, 0.6dvh, 0.375rem); }
+.reg-title {
+  display: flex; justify-content: space-between; align-items: baseline; gap: 0.75rem; margin: 0;
+  padding: 0 0.5rem 0.25rem; border-bottom: 1px solid rgb(var(--line-rgb) / 0.28);
+  font-size: var(--fs-small); line-height: 1.3; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft);
+}
+.reg-name { min-width: 0; overflow-wrap: anywhere; }
+.reg-kind { flex: none; }
+.reg-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
+.reg-row {
+  position: relative; display: grid; grid-template-columns: auto 1fr auto; column-gap: 0.875rem; align-items: center;
+  min-height: 44px; padding: 0.25rem 0.5rem; border-radius: 0.5rem;
+}
+.reg-row .mini-disc { grid-row: 1 / span 2; grid-column: 1; width: 1.625rem; height: 1.625rem; }
+.reg-row .icon { grid-row: 1 / span 2; grid-column: 3; opacity: 0.75; }
+.reg-main { grid-column: 2; display: flex; align-items: baseline; gap: 0.4rem; min-width: 0; white-space: nowrap; }
+.reg-num { font-family: var(--f-title); font-weight: 700; font-size: clamp(1.125rem, min(5vw, 3dvh), 1.5rem); line-height: 1.1; font-variant-numeric: lining-nums tabular-nums; letter-spacing: 0.01em; }
+.reg-unit { font-size: var(--fs-small); color: var(--ink-soft); letter-spacing: 0.04em; }
+.reg-meta { grid-column: 2; font-size: var(--fs-small); line-height: 1.25; color: var(--ink-soft); letter-spacing: 0.03em; }
+.reg-row[aria-current="page"] { background: rgb(var(--line-rgb) / 0.07); }
+.reg-row[aria-current="page"]::before { content: ""; position: absolute; inset-block: 0.5rem; inset-inline-start: 0; width: 0.1875rem; border-radius: 2px; background: var(--ink); }
+@media (hover: hover) and (pointer: fine) { .reg-row:hover { background: rgb(var(--line-rgb) / 0.07); } }
+@media (prefers-contrast: more) { .reg-row[aria-current="page"] { outline: 1px solid var(--ink); } .reg-title { border-bottom-color: var(--ink); } }
+@media (max-height: 700px) { .reg-meta { display: none; } .reg-main { grid-row: 1 / span 2; align-self: center; } }
+/* phones turned sideways: two columns (the singles on the left, the album and the artist on the right), so all five awards fit the short screen */
+@media (orientation: landscape) and (max-height: 520px) {
+  .reg { width: min(100%, 44rem); display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(1rem, 4vw, 2.5rem); row-gap: 0.25rem; align-items: start; }
+  .reg-group:first-child { grid-row: 1 / span 2; }
+  .reg-row { padding-block: 0; }
+}
+@media (min-width: 600px) and (min-height: 760px) { .reg { width: min(100%, 30rem); } .reg-num { font-size: clamp(1.375rem, min(2.4vw, 3.4dvh), 1.75rem); } }
+
 /* >>> theme-css: generated from src/dark.css by scripts/build_pages.py (python scripts/build_pages.py). Do not edit between the markers. */
 /* AUTO: the system is dark and the footer switch is not on Light */
 @media screen and (prefers-color-scheme: dark) {
@@ -1221,7 +1299,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) body { background: transparent; }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) ::selection { background: rgb(160 120 235 / 0.35); }
   @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-    :where(html:not(:has(input[name="theme"][value="light"]:checked))) .topbar { background-color: rgba(21, 12, 33, 0.9); }
+    :where(html:not(:has(input[name="theme"][value="light"]:checked))) .topbar { background-color: #150c21; -webkit-backdrop-filter: none; backdrop-filter: none; }
   }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) .logo,
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) .arrow,
@@ -1262,6 +1340,8 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-close { background: var(--surface); }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) .dots a::before { border-color: var(--ink-soft); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .s1 .plaque::after,
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .zoom-tilt::after { mix-blend-mode: screen; opacity: calc(var(--sh, 0) * 0.3); }
 }
 /* FORCED: the footer switch is on Dark (any system setting) */
 @media screen {
@@ -1282,7 +1362,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
   :where(html:has(input[name="theme"][value="dark"]:checked)) body { background: transparent; }
   :where(html:has(input[name="theme"][value="dark"]:checked)) ::selection { background: rgb(160 120 235 / 0.35); }
   @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-    :where(html:has(input[name="theme"][value="dark"]:checked)) .topbar { background-color: rgba(21, 12, 33, 0.9); }
+    :where(html:has(input[name="theme"][value="dark"]:checked)) .topbar { background-color: #150c21; -webkit-backdrop-filter: none; backdrop-filter: none; }
   }
   :where(html:has(input[name="theme"][value="dark"]:checked)) .logo,
   :where(html:has(input[name="theme"][value="dark"]:checked)) .arrow,
@@ -1323,6 +1403,8 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
   :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-close { background: var(--surface); }
   :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
   :where(html:has(input[name="theme"][value="dark"]:checked)) .dots a::before { border-color: var(--ink-soft); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .s1 .plaque::after,
+  :where(html:has(input[name="theme"][value="dark"]:checked)) .zoom-tilt::after { mix-blend-mode: screen; opacity: calc(var(--sh, 0) * 0.3); }
 }
 /* AUTO, more contrast / less transparency */
 @media screen and (prefers-color-scheme: dark) and ((prefers-reduced-transparency: reduce) or (prefers-contrast: more)) {
@@ -1689,8 +1771,10 @@ html:has(input[name="theme"][value="dark"]:checked) {
   }
 }
 @media screen and (prefers-reduced-motion: no-preference) {
-  html::before { animation: fx-drift-a 46s ease-in-out infinite alternate; }
-  html::after  { animation: fx-drift-b 71s ease-in-out infinite alternate; }
+  /* v1.14.17: the background starts to move only after the entrance of the first screen (1.2 s), so the two big layers do not compete with it on a phone;
+     `backwards` keeps the first keyframe during the wait, so nothing jumps when the drift starts */
+  html::before { animation: fx-drift-a 46s ease-in-out 1.2s infinite alternate backwards; }
+  html::after  { animation: fx-drift-b 71s ease-in-out 1.2s infinite alternate backwards; }
   @keyframes fx-drift-a { from { translate: -5% -4%; rotate: -8deg; scale: 1; }    to { translate: 6% 5%;  rotate: 14deg; scale: 1.12; } }
   @keyframes fx-drift-b { from { translate: 6% 3%;   rotate: 10deg; scale: 1.1; }  to { translate: -6% -5%; rotate: -12deg; scale: 0.98; } }
 }
@@ -1810,3 +1894,27 @@ html:has(.share-dlg[open]) { overflow: hidden; }
 }
 @media (prefers-contrast: more) { .share-dlg, .share-img, .share-close { border-color: var(--ink); box-shadow: none; } }
 @media print { .share-dlg { display: none !important; } .has-share { cursor: default; } }
+
+/* ---------- v1.14.17 (owner: «when the picture and the award plates turn, they should also shimmer») ----------
+   js/tilt.js already turns .s1 .plaque and the enlarged cover; with the same move it writes three custom properties on the turning element:
+   --sx / --sy (where the light is, 0-100%) and --sh (how strong, 0 at rest to 1 at the full turn). The sheen is ONE pseudo-element over the element:
+   a soft white glint at the light + a wide pastel rainbow band whose position follows the turn, so the colours really slide as it leans.
+   Light theme: `multiply` (colour can only darken white, so ink text never gets lighter: contrast stays above 13:1); dark theme: `screen` (src/dark.css).
+   At rest --sh is unset, so opacity is 0: nothing is drawn, text is flat and sharp. No layout space, no pointer events.
+   The enlarged cover is wrapped in <span class="zoom-tilt"> (img pseudo-elements do not exist), the wrapper is what turns; same corner radius as the picture.
+   apple-design › 14 Reduced motion (the script does not run under `reduce`; the rule below hides the layer as the second lock; also off for more-contrast),
+   apple-design › 11 Frame-level smoothness (only opacity/background-position, driven by the script's own smoothed value), motion.md › Best practices
+   («Add motion purposefully … without overshadowing»: the sheen is capped at 0.34 opacity and only exists while the mouse leans the block). */
+.zoom-tilt { position: relative; display: grid; isolation: isolate; border-radius: clamp(1rem, 5vw, 1.75rem); }
+.s1 .plaque::after, .zoom-tilt::after {
+  content: ""; position: absolute; inset: 0; border-radius: inherit; pointer-events: none;
+  background:
+    radial-gradient(circle at var(--sx, 50%) var(--sy, 50%), rgb(255 255 255 / 0.9), transparent 42%),
+    linear-gradient(115deg, #ff8fd0 0%, #ffd27a 20%, #8dffb0 40%, #7fd6ff 60%, #b49bff 80%, #ff8fd0 100%);
+  background-size: 100% 100%, 320% 320%;
+  background-position: 0 0, var(--sx, 50%) var(--sy, 50%);
+  mix-blend-mode: multiply;
+  opacity: calc(var(--sh, 0) * 0.34);
+}
+.zoom-tilt::after { mix-blend-mode: soft-light; opacity: calc(var(--sh, 0) * 0.85); }
+@media (prefers-reduced-motion: reduce), (prefers-contrast: more), print { .s1 .plaque::after, .zoom-tilt::after { display: none; } }

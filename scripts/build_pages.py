@@ -42,7 +42,7 @@ def zoom_parts(h):
         return '', ''
     toggle = '  <input type="checkbox" id="zoom" class="zoom-toggle" aria-label="Enlarge the cover">'
     box = ('  <label class="zoom-box" for="zoom">\n'
-           f'    <img src="{hero_src(h)}" class="zoom-img" alt="{esc(h["alt"])}" width="{h["w"] if not h.get("sleeve") else 668}" height="{h["h"] if not h.get("sleeve") else 668}" decoding="async">\n'
+           f'    <span class="zoom-tilt"><img src="{hero_src(h)}" class="zoom-img" alt="{esc(h["alt"])}" width="{h["w"] if not h.get("sleeve") else 668}" height="{h["h"] if not h.get("sleeve") else 668}" decoding="async"></span>\n'
            '    <span class="zoom-close">Close</span>\n'
            '  </label>')
     return toggle, box
@@ -58,9 +58,9 @@ def _hero_picture(h):
         # The box keeps the old 900:668 proportions, so the screen heights do not change.
         return (f'<span class="cover {h["cls"]} has-disc"><span class="disc" aria-hidden="true"></span>'
                 f'<img src="{h.get("src") or h["sleeve"] + "." + h["ext"]}" class="sleeve" alt="{esc(h["alt"])}" '
-                f'width="668" height="668" fetchpriority="high" decoding="async"></span>')
+                f'width="668" height="668" fetchpriority="high" decoding="sync"></span>')
     return (f'<img src="{h.get("src") or h["base"] + "." + h["ext"]}" class="cover {h["cls"]}" alt="{esc(h["alt"])}" '
-            f'width="{h["w"]}" height="{h["h"]}" fetchpriority="high" decoding="async">')
+            f'width="{h["w"]}" height="{h["h"]}" fetchpriority="high" decoding="sync">')
 
 
 def fact_link(label, url, aria=None):
@@ -90,7 +90,7 @@ def facts_block(facts):
             text = esc(dd)
         else:   # href[0] = list of (label, url): several links in one row (v1.10.5)
             text = ' <span aria-hidden="true">·</span> '.join(fact_link(*x) for x in href[0])
-        out += ['            <div>', f'              <dt>{esc(dt)}</dt>',
+        out += ['            <div class="fact-code">' if dt == 'Award code' else '            <div>', f'              <dt>{esc(dt)}</dt>',
                 f'              <dd{cls}>{text}</dd>', '            </div>']
     return out
 
@@ -162,11 +162,35 @@ def date_on(s):
     return ('on ' if ',' in s else 'in ') + s
 
 
+# v1.14.17 (owner: every award gets a code, strict-looking, with a meaning).
+# CDRA-<KIND>-<LEVEL>-<YY>-<NNNN>-<C>   e.g. CDRA-SGL-GLD-26-0003-F
+#   KIND  SGL single / ALB album / ART artist  (the column of the standards table the award was earned in)
+#   LEVEL BRZ SLV GLD PLT MPT DIA             (the level; with KIND it fixes the stream number in the standards)
+#   YY    year of the award date
+#   NNNN  permanent serial number of the award (src/pages.json "no"; never reused, never renumbered)
+#   C     check character: sum of (position * ASCII code) over the characters before it without the dashes, positions from 1, modulo 32, written in the alphabet 0-9 A-Z without I L O U; a typo in a code is detectable
+CODE_ALPHABET = '0123456789ABCDEFGHJKMNPQRSTVWXYZ'
+CODE_LEVEL = {'Bronze': 'BRZ', 'Silver': 'SLV', 'Gold': 'GLD', 'Platinum': 'PLT', 'Multi-platinum': 'MPT', 'Diamond': 'DIA'}
+
+
+def award_code(kind, level, date, no):
+    body = f"CDRA-{kind}-{CODE_LEVEL[level]}-{parse_date(date).year % 100:02d}-{int(no):04d}"
+    raw = body.replace('-', '')
+    check = CODE_ALPHABET[sum((i + 1) * ord(c) for i, c in enumerate(raw)) % 32]
+    return f"{body}-{check}"
+
+
+def with_code(a, kind):
+    if a and a.get('level') and a.get('no'):
+        a['code'] = award_code(kind, a['level'], a['date'], a['no'])
+    return a
+
+
 def load_data():
     d = json.loads(DATA.read_text(encoding='utf-8'))
-    d['awards'] = earned_awards(d)
-    d['album'] = earned_album(d)
-    d['artist_page'] = earned_artist(d)
+    d['awards'] = [with_code(a, 'SGL') for a in earned_awards(d)]
+    d['album'] = with_code(earned_album(d), 'ALB')
+    d['artist_page'] = with_code(earned_artist(d), 'ART')
     return d
 
 
@@ -222,6 +246,7 @@ def cards_block(items, d):
             f'                  <span class="card-num">{a["streams"]}</span>',
             f'                  <span class="card-sub">all-time streams{" · " + level_shown(a, d) if level_shown(a, d) else ""}</span>',
             f'                  <span class="card-date"><span>{esc(a["date"])}</span>{" <span class=" + chr(34) + "card-days" + chr(34) + ">· " + milestone_days(d["track"], a) + "</span>" if "n" in a else ""}</span>',
+            *([f'                  <span class="card-code">{esc(a["code"])}</span>'] if a.get('code') else []),
             '                </span>',
             '                <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">',
             f'                <span class="visually-hidden"> — open the award page for {a["streams"]} streams</span>',
@@ -260,6 +285,38 @@ def disc_row(std):
     for lv in std['levels']:
         if lv['tier'] not in seen: seen.append(lv['tier'])
     return [f'          <div class="disc-row" aria-hidden="true">'] + [f'            <span class="mini-disc" data-tier="{t}"></span>' for t in seen] + ['          </div>']
+
+
+def award_groups(d, url):
+    """v1.14.17 (owner: «Other awards» must hold ALL the awards, not only one release): the register of every award on the site, grouped by what it was earned for
+    (the track, the album, the artist). Same data as the home cards; the award of the open page is marked (aria-current)."""
+    tr = d['track']
+    groups = [(tr['name'], 'Single', d['awards']),
+              (tr['album'], 'Album', [d['album']] if d.get('album') else []),
+              (tr['artist'], 'Artist', [d['artist_page']])]
+    out = []
+    for name, kind, items in groups:
+        if not items:
+            continue
+        out += ['            <section class="reg-group">',
+                f'              <p class="reg-title"><span class="reg-name">{esc(name)}</span><span class="reg-kind">{kind}</span></p>',
+                '              <ul class="reg-list">']
+        for a in items:
+            cur = ' aria-current="page"' if url.endswith(url_quote(a['file'])) else ''
+            tier = f' data-tier="{a["tier"]}"' if a.get('tier') else ''
+            level = esc(a['level']) if a.get('level') else ''
+            meta = ' · '.join(x for x in (level, esc(a['date'])) if x)
+            out += [f'                <li{tier}>',
+                    f'                  <a class="reg-row" href="{url_quote(a["file"])}"{cur}>',
+                    '                    <span class="mini-disc" aria-hidden="true"></span>',
+                    f'                    <span class="reg-main"><span class="reg-num">{a["streams"]}</span> <span class="reg-unit">streams</span></span>',
+                    f'                    <span class="reg-meta">{meta}</span>',
+                    '                    <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">',
+                    f'                    <span class="visually-hidden"> — {level + " " if level else ""}{kind.lower()} award, {a["streams"]} streams{", this page" if cur else ""}</span>',
+                    '                  </a>',
+                    '                </li>']
+        out += ['              </ul>', '            </section>']
+    return out
 
 
 def awards_block(awards, current):
@@ -330,11 +387,13 @@ def page_specs(d):
         specs[a['file']] = dict(
             TITLE=title,
             DESC=f"CDRA award: {tr['name']} by {tr['artist']} reached {a['streams']} all-time streams.",
-            URL=base + url_quote(a['file']), NUM=a['streams'], DATE=a['date'], DED_TRACK=tr['name'], TIER=a['tier'], hero=h, current=a['file'],
+            URL=base + url_quote(a['file']), NUM=a['streams'], DATE=a['date'], CODE=a.get('code', ''), DED_TRACK=tr['name'], TIER=a['tier'], hero=h, current=a['file'],
             og=f"{d['og_dir']}/og-{a['file'][:-5]}.png",
             group1=[('p', 't-label', f"{a['level']} award for the track"), ('h1', 't-display', tr['name']), ('p', 't-title', tr['artist'])],
             facts=[(dt, a['date'] if dd is None else dd, lt) for dt, dd, lt in track_facts]
-                  + [('Album', tr['album'], True), ('Genre', tr['genre'], True), ('Reached in', milestone_days(tr, a), True),
+                  + [('Album', tr['album'], True), ('Genre', tr['genre'], True), ('Reached in', milestone_days(tr, a), True)]
+                  + ([('Award code', a['code'], True)] if a.get('code') else [])
+                  + [
                      ('Listen', '', True, [('Spotify', tr['spotify']), ('Apple Music', tr['apple_music']), ('YouTube Music', tr['youtube_music']), ('YouTube', tr['youtube'])])],
             award_label=None, about_track=True, is_home=False)
     alb = d.get('album')
@@ -342,19 +401,22 @@ def page_specs(d):
         atitle = f"{tr['album']} by {tr['artist']}: {alb['streams']} streams award | CDRA"
         adesc = f"CDRA award: the album {tr['album']} by {tr['artist']} reached {alb['streams']} all-time streams."
         specs[alb['file']] = dict(
-            TITLE=atitle, DESC=adesc, URL=base + url_quote(alb['file']), NUM=alb['streams'], DATE=alb['date'], DED_TRACK=tr['album'], TIER=alb['tier'],
+            TITLE=atitle, DESC=adesc, URL=base + url_quote(alb['file']), NUM=alb['streams'], DATE=alb['date'], CODE=alb.get('code', ''), DED_TRACK=tr['album'], TIER=alb['tier'],
             hero=d['heroes'][alb['hero']], current=None, og=f"{d['og_dir']}/og-{alb['file'][:-5]}.png",
             group1=[('p', 't-label', f"{alb['level']} award for the album"), ('h1', 't-display', tr['album']), ('p', 't-title', tr['artist'])],
-            facts=[('Award for', tr['artist'], False), ('Date', alb['date'], True), ('Label', tr['label'], True)],
+            facts=[('Award for', tr['artist'], False), ('Date', alb['date'], True), ('Label', tr['label'], True)] + ([('Award code', alb['code'], True)] if alb.get('code') else [])
+                  + ([('Listen', '', True, [('Spotify', d['album_spotify'])])] if d.get('album_spotify') else []),   # v1.14.18 (owner gave the album link)
             award_label='Awards for', about_track=False, is_home=False)
     s = d['artist_page']
     specs[s['file']] = dict(
         TITLE=f"{tr['artist']}: {s['streams']} streams award | CDRA",
         DESC=f"CDRA award: {tr['artist']} reached {s['streams']} all-time streams.",
-        URL=base + url_quote(s['file']), NUM=s['streams'], DATE=s['date'], DED_TRACK=None, TIER=s.get('tier') or '', hero=d['heroes'][s['hero']], current=None,
+        URL=base + url_quote(s['file']), NUM=s['streams'], DATE=s['date'], CODE=s.get('code', ''), DED_TRACK=None, TIER=s.get('tier') or '', hero=d['heroes'][s['hero']], current=None,
         og=f"{d['og_dir']}/og-{s['file'][:-5]}.png",
         group1=[('p', 't-label', f"{s['level']} award for the artist" if s.get('level') else 'Award for'), ('h1', 't-display', tr['artist'])],
-        facts=[('Date', s['date'], True)], award_label='Awards for', about_track=False, is_home=False)
+        facts=[('Date', s['date'], True)] + ([('Award code', s['code'], True)] if s.get('code') else [])
+              + [('Listen', '', True, [('Spotify', [u for u in d['artist']['same_as'] if 'open.spotify.com/artist' in u][0])]), ('Website', '', True, [('settwor.github.io', d['artist']['url'])])],   # v1.14.18 (owner gave the artist links)
+        award_label='Awards for', about_track=False, is_home=False)
     home = d['home']
     src = dict(specs[d['awards'][-1]['file'] if d['awards'] else d['artist_page']['file']])
     src.update(TITLE=home['title'], DESC=home['desc'].replace('{list}', join_and([a['streams'] for a in d['awards']] + ([alb['streams']] if alb else []) + [d['artist_page']['streams']])), URL=base, is_home=True, about_track=False, TIER='gold', body=HOME,
@@ -363,7 +425,7 @@ def page_specs(d):
     # v1.11.0: the award-standards page: own body (src/standards.html), head from the shared template, no hero
     st = d['standards']
     specs[st['file']] = dict(
-        TITLE=st['title'], DESC=st['desc'], URL=base + url_quote(st['file']), NUM='', DATE='', DED_TRACK=None, TIER='', hero=None, current=None,
+        TITLE=st['title'], DESC=st['desc'], URL=base + url_quote(st['file']), NUM='', DATE='', CODE='', DED_TRACK=None, TIER='', hero=None, current=None,
         og=f"{d['og_dir']}/og-{st['file'][:-5]}.png", group1=[], facts=[], award_label=None,
         about_track=False, is_home=False, no_about=True, body=STANDARDS)
     return specs
@@ -476,6 +538,7 @@ def render(template, spec, d, version):
         'FACTS': facts_block(spec['facts']),
         'AWARD_LABEL': [f'                <p class="t-label">{spec["award_label"]}</p>'] if spec['award_label'] else [],
         'AWARDS': awards_block(d['awards'], spec['current']),
+        'AWARD_GROUPS': award_groups(d, spec['URL']),
         'HOME_TRACK_CARDS': cards_block([(a, {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True}) for a in d['awards']], d),
         'HOME_ALBUM_CARD': cards_block([(d['album'], {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True})], d) if d.get('album') else [],
         'HOME_ARTIST_CARD': cards_block([(d['artist_page'], {**d['heroes']['settwor'], 'disc': True})], d),
@@ -486,7 +549,7 @@ def render(template, spec, d, version):
     S = lambda t: f'<span>{t}</span>'   # v1.13.1: every phrase is its own hop target
     ded = ' '.join([S('Presented to'), f"<strong>{esc(d['track']['artist'])}</strong>", S('to commemorate'), S(spec['NUM']), '<span class="nb">all-time</span>', S('streams')]
                    + ([S(f"of “{esc(spec['DED_TRACK'])}”")] if spec['DED_TRACK'] else []))
-    inline = {**home_texts(d), 'DEDICATION': ded, 'DATE': esc(spec['DATE']), 'VERSION': version, 'TITLE': esc(spec['TITLE']), 'DESC': esc(spec['DESC']), 'URL': spec['URL'],
+    inline = {**home_texts(d), 'DEDICATION': ded, 'DATE': esc(spec['DATE']), 'CODE': esc(spec.get('CODE', '')), 'VERSION': version, 'TITLE': esc(spec['TITLE']), 'DESC': esc(spec['DESC']), 'URL': spec['URL'],
               'OG_IMAGE': og, 'STORY': 'images/story/' + og.rsplit('/og-', 1)[-1], 'OG_ALT': esc(spec['DESC']), 'NUM': spec['NUM'], 'TIER': spec['TIER'], 'HERO_PICTURE': hero_picture(spec['hero']) if spec['hero'] else '',
               'ZOOM_TOGGLE': zoom_parts(spec['hero'])[0], 'ZOOM_BOX': zoom_parts(spec['hero'])[1]}
     if spec.get('body'):   # home and standards pages: <head> from the shared template, body from their own file
