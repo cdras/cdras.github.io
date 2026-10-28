@@ -180,6 +180,23 @@ def check(version):
         code = re.sub(r'/\*.*?\*/', '', js, flags=re.S)
         if re.search(bad, code): errs.append(f'{TILT_FILE}: forbidden pattern {bad}')
 
+    # rule 9 (v1.14.3): the Q&A screens are never in the fit debt, every question is built the same way (panel parts for the compact steps)
+    debt_file = ROOT / 'scripts' / 'fit_debt.json'
+    if not debt_file.exists(): errs.append('scripts/fit_debt.json missing (rule 9: write it with python scripts/audit_layout.py --write-debt)')
+    else:
+        try:
+            debt = json.loads(debt_file.read_text(encoding='utf-8'))
+            for k in debt:
+                if k.split('|')[0] in ('index.html', 'AWARD-STANDARDS.html') and k.split('|')[1] == 's3': errs.append(f'fit_debt.json: the Q&A screen must always fit, not in debt: {k}')
+        except ValueError as e: errs.append(f'scripts/fit_debt.json is not valid JSON ({e})')
+    for p in pages:
+        t = p.read_text(encoding='utf-8')
+        if 'class="faq"' in t:
+            nd = len(re.findall(r'<details name="faq">', t))
+            if nd != len(re.findall(r'<details', t)): errs.append(f'{p.name}: every FAQ <details> needs name="faq" (one answer open at a time)')
+            if nd != t.count('class="faq-a"') or nd != t.count('class="faq-q"'): errs.append(f'{p.name}: every FAQ question needs a .faq-a answer box with a .faq-q heading (rule 9, AGENTS.md 13(y))')
+            if t.count('class="faq-hint"') != 1: errs.append(f'{p.name}: the FAQ needs exactly one .faq-hint')
+
     if errs:
         print('CHECK FAILED:'); [print('  -', e) for e in errs]; sys.exit(1)
     print(f'check: OK (version {version}, {len(pages)} pages, {len(names)} skills)')

@@ -885,10 +885,7 @@ ul { list-style: none; }
 
   /* FAQ: the answer opens and closes smoothly (progressive: where ::details-content is unsupported it simply toggles); the plus turns */
   .faq summary::after { transition: rotate var(--soft); }
-  @supports selector(::details-content) {
-    .faq details::details-content { block-size: 0; opacity: 0; overflow: clip; transition: block-size 320ms cubic-bezier(.2, .8, .2, 1), opacity 220ms ease, content-visibility 320ms allow-discrete; }
-    .faq details[open]::details-content { block-size: auto; opacity: 1; }
-  }
+  /* (v1.14.3: the FAQ answer motion moved to the v1.14.3 block at the end of this file) */
 
   /* a page change cross-fades instead of cutting (CSS-only cross-document view transition; the bar stays put) */
   @view-transition { navigation: auto; }
@@ -1518,3 +1515,83 @@ html.ptr-on { overscroll-behavior-y: contain; }
 @media (prefers-contrast: more) { .ptr { box-shadow: 0 0 0 1px var(--ink); } }
 @media (forced-colors: active) { .ptr { forced-color-adjust: none; background: Canvas; border: 2px solid CanvasText; } .ptr::after { background: Canvas; } .ptr::before { border-color: CanvasText; } }
 @media print { .ptr { display: none; } }
+
+/* ---------- v1.14.3 (owner: «questions do not fit the phone screen; everything must fit one screen on computer and phone; switching between questions must be smooth») ----------
+   AGENTS.md rule 9 (strict fit) + §5 13(y). CSS only, no script.
+   1) The Q&A screen is a fixed stage: .stack takes exactly the room between the title and the arrow (flex-basis 0) and is a size container,
+      so the list is sized against the room that really exists (any phone, any browser bar, landscape), not against a guess.
+   2) The list compacts in steps by that room: roomy -> compact rows -> tight rows -> «chips» (numbers + one panel). Every step shows all the text.
+   3) Opening / switching: the answer height and opacity animate together on one curve; the old answer closes while the new one opens, so the
+      list below keeps moving as ONE motion. Reduced motion: opacity only. Browsers without ::details-content simply toggle. */
+.faq { --q-h: 3.25rem; --q-gap: clamp(0.375rem, 1.2dvh, 0.75rem); --a-fs: var(--fs-body); --a-lh: 1.35; --a-indent: calc(0.875rem + 1.5rem + 0.875rem); --faq-t: 360ms; --faq-e: cubic-bezier(.2, .8, .2, 1); gap: var(--q-gap); }
+.faq summary { min-height: var(--q-h); }
+.faq .faq-a { min-height: 0; }
+.faq .faq-a p, .faq .faq-a .faq-link { margin-left: var(--a-indent); }
+.faq .faq-a p { font-size: var(--a-fs); line-height: var(--a-lh); }
+.faq .faq-a .faq-link { margin-block: -0.25rem 0.25rem; }
+
+@supports (container-type: size) {
+  .faq-screen .stack { flex: 1 1 0; min-height: 0; container-type: size; container-name: faqbox; padding-block: clamp(0.125rem, 1.2dvh, 1.25rem); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .faq details { transition: border-color 240ms ease, background-color 240ms ease, box-shadow 240ms ease; }
+  .faq summary::before { transition: color 240ms ease; }
+  @supports selector(::details-content) {
+    .faq details::details-content {
+      display: grid; grid-template-rows: 0fr; opacity: 0;
+      transition: grid-template-rows var(--faq-t) var(--faq-e), opacity 160ms ease, content-visibility var(--faq-t) allow-discrete;
+    }
+    .faq details[open]::details-content {
+      grid-template-rows: 1fr; opacity: 1;
+      transition: grid-template-rows var(--faq-t) var(--faq-e), opacity 260ms ease 90ms, content-visibility var(--faq-t) allow-discrete;
+    }
+    .faq .faq-a { overflow: hidden; }
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  @supports selector(::details-content) {
+    .faq details::details-content { opacity: 0; transition: opacity 160ms ease, content-visibility 160ms allow-discrete; }
+    .faq details[open]::details-content { opacity: 1; }
+  }
+}
+
+/* v1.14.3 — step 2: compact rows, then «chips». Sizes come from the room of the Q&A box (.stack, a size container), not from the viewport. */
+.faq-q, .faq-hint { display: none; }
+@supports (container-type: size) {
+  /* step A1: compact rows (44px targets stay), smaller gaps, answer at label size */
+  @container faqbox (max-height: 38.5rem) {
+    .faq { --q-h: 2.75rem; --q-gap: 0.375rem; --a-fs: 0.9375rem; --a-lh: 1.3; --a-indent: 2.375rem; }
+    .faq summary { padding-block: 0; gap: 0.75rem; }
+    .faq .faq-a p { padding-bottom: 0.625rem; }
+  }
+  /* step B: the list becomes number «chips» (44px) + ONE answer panel; the question text of the open one is the panel's heading */
+  @container faqbox (max-height: 30rem) {
+    .faq { --chips-h: 6.0625rem; position: relative; flex: 1 1 0; min-height: 0; width: min(100%, 26rem); flex-direction: row; flex-wrap: wrap; justify-content: center; align-content: flex-end; gap: 0.375rem; counter-reset: q; }
+    .faq details, .faq details:first-child, .faq details[open] { flex: 0 0 2.75rem; position: static; overflow: visible; border: 0; background: none; box-shadow: none; }
+    .faq summary { inline-size: 2.75rem; block-size: 2.75rem; min-block-size: 0; padding: 0; justify-content: center; border: 1px solid rgb(var(--line-rgb) / 0.3); border-radius: 0.375rem; background: var(--surface, #fff); }
+    .faq summary > span { position: absolute; inline-size: 1px; block-size: 1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+    .faq summary::before { min-width: 0; font-size: var(--fs-label); letter-spacing: 0.04em; color: var(--ink); }
+    .faq summary::after, .faq details[open] summary::after { display: none; }
+    .faq details[open] summary { background: var(--ink); border-color: var(--ink); }
+    .faq details[open] summary::before { color: var(--bg, #fff); }
+    /* the panel: every answer sits in the same box, above the chips; switching = a cross-fade */
+    .faq .faq-a { position: absolute; inset: 0 0 var(--chips-h) 0; display: flex; flex-direction: column; justify-content: flex-start; gap: 0.5rem; padding: 0.75rem 0.875rem; border: 1px solid rgb(var(--line-rgb) / 0.3); border-left: 0.1875rem solid var(--ink); border-radius: 0.375rem; background: var(--surface, #fff); overflow: hidden; }
+    .faq .faq-q { display: block; font-weight: 700; font-size: var(--fs-body); line-height: 1.2; }
+    .faq .faq-a p, .faq .faq-a .faq-link { margin: 0; padding: 0; }
+    .faq .faq-a .faq-link { align-self: flex-start; margin-block: 0; }
+    .faq details::details-content { grid-template-rows: 1fr; }
+    .faq-hint { display: grid; place-items: center; position: absolute; inset: 0 0 var(--chips-h) 0; margin: 0; padding: 0.75rem 0.875rem; text-align: center; color: var(--ink-soft); font-size: var(--fs-body); line-height: 1.3; border: 1px dashed rgb(var(--line-rgb) / 0.3); border-radius: 0.375rem; opacity: 1; transition: opacity 200ms ease; }
+    .faq:has(details[open]) .faq-hint { opacity: 0; visibility: hidden; transition: opacity 120ms ease, visibility 0s 120ms; }
+  }
+  /* a wide box holds all seven chips in ONE row, so the panel may grow */
+  @container faqbox (max-height: 30rem) and (min-width: 20.75rem) { .faq { --chips-h: 3.125rem; } }
+  /* short and wide (a phone on its side): the panel is two columns, the question and the link on the left, the answer on the right */
+  @container faqbox (max-height: 14rem) and (min-width: 20.75rem) {
+    .faq { width: min(100%, 38rem); }
+    .faq .faq-a { display: grid; grid-template-columns: minmax(0, 30%) minmax(0, 1fr); grid-template-areas: "q p" "l p"; align-content: center; align-items: start; column-gap: 1rem; row-gap: 0.25rem; padding: 0.5rem 0.75rem; }
+    .faq .faq-q { grid-area: q; font-size: var(--fs-label); }
+    .faq .faq-a p:not(.faq-q) { grid-area: p; font-size: var(--fs-hint); line-height: 1.3; align-self: center; }
+    .faq .faq-a .faq-link { grid-area: l; }
+  }
+}
