@@ -175,10 +175,16 @@ def check(version):
     # the one allowed script stays small and harmless (owner exception to rule 8): local, no network, no storage, no libraries
     js = (ROOT / TILT_FILE).read_text(encoding='utf-8') if (ROOT / TILT_FILE).exists() else ''
     if len(js.encode('utf-8')) > 8192: errs.append(f'{TILT_FILE}: over 8 KB — the exception is for a small file')
-    for bad in (r'\bfetch\s*\(', r'XMLHttpRequest', r'\bimport\s*\(', r'\bWebSocket\b', r'sendBeacon', r'localStorage', r'sessionStorage', r'document\.cookie', r'\beval\s*\(', r'new\s+Function', r'https?://'):
+    for bad in (r'\bfetch\s*\(', r'XMLHttpRequest', r'\bimport\s*\(', r'\bWebSocket\b', r'sendBeacon', r'sessionStorage', r'document\.cookie', r'\beval\s*\(', r'new\s+Function', r'https?://'):
         # (the header comment may mention words; only code lines are checked)
         code = re.sub(r'/\*.*?\*/', '', js, flags=re.S)
+        # v1.14.14 (owner): the ONE allowed storage use is localStorage key 'cdra-theme' (the remembered footer theme choice); nothing else
         if re.search(bad, code): errs.append(f'{TILT_FILE}: forbidden pattern {bad}')
+
+    code_js = re.sub(r'/\*.*?\*/', '', js, flags=re.S)
+    if re.search(r'localStorage', code_js) and (len(re.findall(r'localStorage', code_js)) > 3 or "K = 'cdra-theme'" not in code_js):
+        errs.append(f'{TILT_FILE}: localStorage may only be used for the key cdra-theme (theme choice)')
+    if re.search(r'sessionStorage|indexedDB|document\.cookie', code_js): errs.append(f'{TILT_FILE}: no other storage allowed')
 
     # rule 9 (v1.14.3): the Q&A screens are never in the fit debt, every question is built the same way (panel parts for the compact steps)
     debt_file = ROOT / 'scripts' / 'fit_debt.json'

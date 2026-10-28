@@ -1,8 +1,9 @@
-/* CDRA script (v1.14.13), the ONLY script on the site (owner exception to AGENTS.md rule 8). Three small jobs, nothing else:
-   1) TILT: the award block (.s1 .plaque) and the enlarged cover (.zoom-img) lean toward the MOUSE on a computer. Decoration only; no gyroscope.
-   2) THEME COLOUR (v1.14.13): when the footer Light / Dark switch is used, the browser's status-bar colour (meta theme-color) follows it; Auto goes back to the system colour.
-   3) PULL TO REFRESH (touch screens): a slow, deliberate pull-down at the very top reloads the page; a quick flick never does.
-   Never: network requests, storage, cookies, tracking, libraries. The tilt stops under prefers-reduced-motion: reduce. */
+/* CDRA script (v1.14.14), the ONLY script on the site (owner exception to AGENTS.md rule 8). Three small jobs:
+   1) TILT: the award block (.s1 .plaque) and the enlarged cover (.zoom-img) lean toward the MOUSE (decoration; no gyroscope).
+   2) THEME (owner): the footer Light / Dark choice is remembered in localStorage key "cdra-theme" (the ONLY thing ever stored) and applied on every page;
+      the status-bar colour (meta theme-color) follows it; Auto clears it and goes back to the system.
+   3) PULL TO REFRESH (touch): a slow pull-down at the very top reloads; a flick never does.
+   Never: network, cookies, tracking, libraries. */
 (function () {
   'use strict';
   var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -15,10 +16,10 @@
   if (plaque || zoomBox) (function () {
     var TAU = 0.14;
     var PERSPECTIVE = '60rem';
-    var REST_MS = 600;       /* a resting mouse lets the card settle flat (sharp text) */
+    var REST_MS = 600;
     function make(el, max) { return el ? { el: el, max: max, x: 0, y: 0, on: false, seen: true } : null; }
     var cards = { plaque: make(plaque, 4), zoom: make(zoomBox, 5) };
-    var nx = 0, ny = 0;      /* pointer -1..1 */
+    var nx = 0, ny = 0;
     var raf = 0, last = 0, idle = 0;
 
     if (cards.plaque && 'IntersectionObserver' in window) {
@@ -47,7 +48,7 @@
         var live = !reduce.matches && c === active;
         var tx = live ? nx : 0, ty = live ? ny : 0;
         var dx = tx - c.x, dy = ty - c.y;
-        if (Math.abs(dx) < 0.002 && Math.abs(dy) < 0.002) {   /* arrived: stop the loop */
+        if (Math.abs(dx) < 0.002 && Math.abs(dy) < 0.002) {
           c.x = tx; c.y = ty;
           if (tx === 0 && ty === 0) clear(c); else apply(c);
           continue;
@@ -61,7 +62,6 @@
     function wake() { if (!raf) raf = requestAnimationFrame(frame); }
     function clamp(v) { return v < -1 ? -1 : v > 1 ? 1 : v; }
 
-    /* touch is ignored: a finger drag scrolls the page */
     window.addEventListener('pointermove', function (e) {
       if (e.pointerType === 'touch' || reduce.matches) return;
       /* on TEXT of the block the card settles flat */
@@ -74,19 +74,22 @@
     }, { passive: true });
     root.addEventListener('pointerleave', function () { nx = ny = 0; wake(); });
     window.addEventListener('blur', function () { nx = ny = 0; wake(); });
-    /* the enlarged cover starts from rest */
     if (zoomToggle) zoomToggle.addEventListener('change', function () { nx = ny = 0; if (cards.zoom) { clear(cards.zoom); cards.zoom.x = cards.zoom.y = 0; } wake(); });
     if (reduce.addEventListener) reduce.addEventListener('change', function () { nx = ny = 0; wake(); });
   })();
 
-  /* ================= 2. status-bar colour follows the footer theme switch ================= */
+  /* ================= 2. theme: remembered, status bar follows ================= */
   (function () {
     var radios = document.querySelectorAll('input[name="theme"]');
     var metas = document.querySelectorAll('meta[name="theme-color"]');
     if (!radios.length || metas.length < 2) return;
-    var light = metas[0], dark = metas[1], lm = light.media, dm = dark.media, lc = light.content, dc = dark.content;
+    var light = metas[0], dark = metas[1], lm = light.media, dm = dark.media, lc = light.content, dc = dark.content, K = 'cdra-theme', sv, t;
+    try { sv = localStorage.getItem(K); } catch (e) {}
+    t = document.querySelector('input[name="theme"][value="' + sv + '"]');
+    if (t && sv !== 'auto') t.checked = true;
     function sync() {
       var r = document.querySelector('input[name="theme"]:checked'), v = r ? r.value : 'auto';
+      try { if (v === 'auto') localStorage.removeItem(K); else localStorage.setItem(K, v); } catch (e) {}
       if (v === 'auto') { light.media = lm; dark.media = dm; light.content = lc; dark.content = dc; return; }
       light.media = 'all'; light.content = v === 'dark' ? dc : lc; dark.media = 'not all';
     }
@@ -100,14 +103,14 @@
   var HOLD = 450;    /* ms the pull must last: a flick never reloads */
   var SLOP = 10;     /* px before the direction is decided */
   var st = null, ring = null, loop = 0;
-  root.classList.add('ptr-on');   /* CSS switches off the browser's own pull-to-refresh */
+  root.classList.add('ptr-on');
 
   function top() { return (window.pageYOffset || root.scrollTop) <= 0; }
   function paint() {
     var d = Math.max(st.d, 0);
     var p = Math.min(1, d / PULL, (performance.now() - st.t) / HOLD);
     if (p >= 1) st.armed = true; else if (d < PULL * 0.7) st.armed = false;
-    var y = d * 88 / (160 + d * 0.55);   /* rubber band */
+    var y = d * 88 / (160 + d * 0.55);
     ring.style.setProperty('--ptr-y', y.toFixed(1) + 'px');
     ring.style.setProperty('--p', (st.armed ? 1 : p).toFixed(3));
     ring.style.opacity = Math.min(1, d / 40).toFixed(2);

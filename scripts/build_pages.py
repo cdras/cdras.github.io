@@ -458,7 +458,7 @@ def sync_style(check=False):
 
 def theme_switch():
     """v1.13.15 (owner: «add a theme switch to the footer»): three radio buttons, no script. The page CSS reads the checked one with :has().
-    The choice lives only in this page (no storage, no cookie: rule 8), so it is not remembered on the next page."""
+    The choice is remembered by js/tilt.js in localStorage key 'cdra-theme' (v1.14.14, owner); without the script it lives only in this page."""
     return [
         '          <div class="theme-switch" role="radiogroup" aria-label="Theme">',
         '            <label class="theme-opt"><input type="radio" name="theme" value="auto" checked><span>Auto</span></label>',
