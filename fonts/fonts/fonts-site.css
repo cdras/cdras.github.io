@@ -13,3 +13,12 @@
   font-display: swap;
   src: url('Outfit-Bold.woff') format('woff');
 }
+
+/* v1.14.11: Gloock (SIL OFL 1.1, licence text next to the file) is now also used for the CDRA logo, which is set as real text. */
+@font-face {
+  font-family: 'Gloock';
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url('Gloock-Regular.woff') format('woff');
+}

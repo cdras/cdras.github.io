@@ -140,7 +140,7 @@ def serve():
 
 def pages():
     names = sorted(p.name for p in ROOT.glob('*.html') if 'class="screen' in p.read_text(encoding='utf-8'))
-    for extra in ('404.html',):
+    for extra in ('404.html', 'PRIVACY-POLICY.html'):
         if (ROOT / extra).exists(): names.append(extra)
     return names
 
@@ -181,7 +181,7 @@ def main():
                 for kind, msg in found: problems.append((name, f'{w}×{h}', kind, msg))
 
                 # правило 9: каждый экран влезает в окно
-                if name != '404.html':
+                if name not in ('404.html', 'PRIVACY-POLICY.html'):
                     for r in page.evaluate(FIT_JS):
                         if r['h'] > r['vh'] + 1:
                             fit_found.add(f"{name}|{r['id']}|{w}x{h}")

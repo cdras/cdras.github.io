@@ -1595,3 +1595,138 @@ html.ptr-on { overscroll-behavior-y: contain; }
     .faq .faq-a .faq-link { grid-area: l; }
   }
 }
+
+/* ==========================================================================
+   v1.14.5 (owner: text MUST react to a press, as before; and it must be copyable on a phone)
+   The press swell is back exactly as before (instant swell, 1.02). If the finger STAYS down (a long press = the user wants to select),
+   the text eases back to its normal size after 0.3 s and stays still, so the selection handles can work. A tap (released early) looks as before.
+   ========================================================================== */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active {
+    animation: press-hold 700ms cubic-bezier(.22, .61, .36, 1) both;
+  }
+  @keyframes press-hold { 0% { scale: 1; } 25% { scale: 1.02; } 40% { scale: 1.02; } 75%, 100% { scale: 1; } }
+}
+@media (hover: none) {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title), .home-stats dt, .home-stats dd) {
+    -webkit-user-select: text; user-select: text;
+  }
+}
+
+/* ==========================================================================
+   v1.14.7 (owner: «make the Full information button prettier»)
+   A solid ink pill (white text in the light theme, dark text in the dark theme) with a fine inner ring and a soft shadow;
+   the arrow sits in a small round chip. Same size and position as before (still 44 px high), so no screen changes height.
+   Colours only from the tokens --ink / --bg (no new colours, rule 13h).
+   ========================================================================== */
+.full-info {
+  gap: 0.75rem;
+  padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+  border: 1px solid var(--ink);
+  background: var(--ink);
+  color: var(--bg);
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  box-shadow: inset 0 0 0 0.1875rem var(--ink), inset 0 0 0 calc(0.1875rem + 1px) color-mix(in srgb, var(--bg) 38%, transparent), 0 0.625rem 1.25rem -0.875rem rgb(var(--line-rgb) / 0.7);
+}
+.full-info .icon {
+  box-sizing: content-box;
+  width: 0.75rem; height: 0.75rem;
+  padding: 0.4375rem;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--bg) 18%, transparent);
+  filter: brightness(0) invert(1);
+}
+@media (prefers-color-scheme: dark) {
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) .full-info .icon { filter: brightness(0); }
+}
+:where(html:has(input[name="theme"][value="dark"]:checked)) .full-info .icon { filter: brightness(0); }
+@media (prefers-contrast: more) { .full-info { box-shadow: none; } }
+
+/* v1.14.8 (owner: «also add that I run the Ledgertone project»): a plain underlined link inside the bio sentence (inline text link, not a stand-alone button) */
+.inline-link { padding-block: 0.875rem; margin-block: -0.875rem; color: var(--ink); text-decoration: underline; text-underline-offset: 0.2em; text-decoration-thickness: 1px; }
+@media (hover: hover) and (pointer: fine) { .inline-link:hover { text-underline-offset: 0.32em; } }
+
+/* v1.14.8: the bio sentence got longer (Ledgertone): on the shortest phones (about 640 px) the facts and the timeline sit a little tighter so «More about SETTWOR» still fits one window (rule 9) */
+@media (max-width: 899px) and (max-height: 660px) {
+  .bio { gap: 0.3125rem; }
+  .bio p { line-height: 1.3; }
+  .bio-line { gap: 0.1875rem; }
+  .bio-facts > div { padding-block: 0.125rem !important; }
+}
+
+/* ==========================================================================
+   v1.14.10 (owner: «make the page background shimmer smoothly and beautifully»)
+   Two fixed layers of soft colour blobs behind the pages (html::before / ::after) drift, turn and breathe very slowly, on different, long, never-synchronised
+   cycles (46 s and 71 s, alternating, ease-in-out), so the colours melt into each other and the pattern practically never repeats. Pale lilac / sky / rose / mint in the light
+   theme, deep violet / indigo / magenta in the dark theme. CSS only; individual properties translate / rotate / scale (no `transform`, no filter, no blur: cheap on phones).
+   prefers-reduced-motion: the blobs stay still (a static soft gradient). Print: off. Text, cards and covers sit above it, contrast is unchanged (the tints stay under ~25% opacity).
+   ========================================================================== */
+:root {
+  --fx-a1: rgb(176 140 255 / 0.30);  --fx-a2: rgb(122 190 255 / 0.26);  --fx-a3: rgb(255 154 205 / 0.22);
+  --fx-b1: rgb(140 236 222 / 0.20);  --fx-b2: rgb(190 150 255 / 0.22);  --fx-b3: rgb(255 190 150 / 0.16);
+}
+@media screen and (prefers-color-scheme: dark) {
+  html:not(:has(input[name="theme"][value="light"]:checked)) {
+    --fx-a1: rgb(122 72 214 / 0.34);  --fx-a2: rgb(58 92 224 / 0.26);   --fx-a3: rgb(196 74 186 / 0.20);
+    --fx-b1: rgb(60 170 200 / 0.14);  --fx-b2: rgb(150 90 235 / 0.26);  --fx-b3: rgb(220 90 150 / 0.14);
+  }
+}
+html:has(input[name="theme"][value="dark"]:checked) {
+  --fx-a1: rgb(122 72 214 / 0.34);  --fx-a2: rgb(58 92 224 / 0.26);   --fx-a3: rgb(196 74 186 / 0.20);
+  --fx-b1: rgb(60 170 200 / 0.14);  --fx-b2: rgb(150 90 235 / 0.26);  --fx-b3: rgb(220 90 150 / 0.14);
+}
+@media screen {
+  body { background: transparent; }   /* the page colour is the html background; the shimmer layers sit between it and the body */
+  html::before, html::after {
+    content: ""; position: fixed; inset: -28%; z-index: -1; pointer-events: none;
+    will-change: translate, rotate, scale;
+  }
+  html::before {
+    background:
+      radial-gradient(ellipse 34% 30% at 22% 24%, var(--fx-a1), transparent 70%),
+      radial-gradient(ellipse 30% 34% at 78% 36%, var(--fx-a2), transparent 70%),
+      radial-gradient(ellipse 36% 30% at 40% 82%, var(--fx-a3), transparent 70%);
+  }
+  html::after {
+    background:
+      radial-gradient(ellipse 32% 32% at 70% 14%, var(--fx-b1), transparent 70%),
+      radial-gradient(ellipse 34% 30% at 12% 62%, var(--fx-b2), transparent 70%),
+      radial-gradient(ellipse 30% 34% at 86% 84%, var(--fx-b3), transparent 70%);
+  }
+}
+@media screen and (prefers-reduced-motion: no-preference) {
+  html::before { animation: fx-drift-a 46s ease-in-out infinite alternate; }
+  html::after  { animation: fx-drift-b 71s ease-in-out infinite alternate; }
+  @keyframes fx-drift-a { from { translate: -5% -4%; rotate: -8deg; scale: 1; }    to { translate: 6% 5%;  rotate: 14deg; scale: 1.12; } }
+  @keyframes fx-drift-b { from { translate: 6% 3%;   rotate: 10deg; scale: 1.1; }  to { translate: -6% -5%; rotate: -12deg; scale: 0.98; } }
+}
+@media print { html::before, html::after { display: none; } }
+
+/* ==========================================================================
+   v1.14.11 (owner: «set the logo as text in Gloock»): the logo is the text «CDRA» in Gloock (was an SVG picture).
+   Colour = --ink (light and dark themes follow it, no image filter). Size matches the old picture (cap height = old logo height).
+   ========================================================================== */
+.logo {
+  display: inline-block; width: auto; height: auto; aspect-ratio: auto;
+  font-family: 'Gloock', Georgia, 'Times New Roman', serif; font-weight: 400; font-synthesis: none;
+  font-size: clamp(1.625rem, 3.2vw, 2.3125rem); line-height: 1; letter-spacing: 0.03em; white-space: nowrap;
+  color: var(--ink); filter: none !important;
+}
+@media (max-height: 560px) { .logo { font-size: 1.5rem; } }
+@media print { .topbar .logo { width: auto !important; font-size: 1.6rem; } }
+
+/* ==========================================================================
+   v1.14.12 (owner: «add a privacy policy»): PRIVACY-POLICY.html, a plain reading page (no screens, no snap), same type and colours as the site.
+   ========================================================================== */
+.page-legal { display: flex; flex-direction: column; align-items: center; min-height: 100dvh; padding: calc(var(--bar-full) + 1rem) calc(var(--pad) + var(--safe-right)) max(12px, var(--safe-bottom)) calc(var(--pad) + var(--safe-left)); }
+.legal { width: 100%; max-width: 38rem; flex: 1 0 auto; text-align: left; }
+.legal h1 { margin: 0 0 0.25rem; text-align: left; font-family: var(--f-title); font-weight: 700; font-size: clamp(1.75rem, 6vw, 2.25rem); line-height: 1.1; }
+.legal h2 { margin: 1.75rem 0 0.5rem; font-size: var(--fs-label); font-weight: 700; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink); }
+.legal p { margin: 0 0 0.875rem; font-size: var(--fs-body); line-height: 1.5; text-wrap: pretty; }
+.legal .legal-date { color: var(--ink-soft); font-size: var(--fs-small); margin-bottom: 1.25rem; }
+.legal code { font-family: ui-monospace, Menlo, Consolas, monospace; font-size: 0.9em; }
+.page-legal .site-foot { margin-top: 2rem; }
+
+/* v1.14.12: the footer got a fourth item (Privacy policy): on narrow phones the links sit a little closer so the last two share one row and the screen still fits (rule 9) */
+@media (max-width: 24rem) { .foot-links { column-gap: 0.25rem; } .foot-links .foot-link { padding-inline: 0.25rem; } }
