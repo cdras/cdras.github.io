@@ -156,11 +156,11 @@ def check(version):
                     if not any('https://settwor.github.io/' in (x.get('sameAs') or []) for x in g): errs.append(f'{n}: JSON-LD artist has no sameAs link to https://settwor.github.io/')
                 except ValueError as e: errs.append(f'{n}: JSON-LD is not valid JSON ({e})')
             if 'href="https://settwor.github.io/"' not in t: errs.append(f'{n}: no visible link to https://settwor.github.io/')
-        # rule 8 (owner exception, v1.11.16): JSON-LD plus exactly one local file, js/tilt.js, and only on pages with an award block
+        # rule 8 (owner exception, v1.11.16): JSON-LD plus exactly one local file, js/tilt.js, and (v1.14.0: tilt + pull-to-refresh) on every site page
         for tag in re.findall(r'<script\b[^>]*>', t):
             if 'application/ld+json' in tag or tag == TILT_TAG: continue
             errs.append(f'{n}: <script> not allowed (only JSON-LD and {TILT_TAG}, see AGENTS.md rule 8): {tag[:80]}')
-        if (p in pages) and (TILT_TAG in t) != (n != 'AWARD-STANDARDS.html'): errs.append(f'{n}: tilt script {"missing" if TILT_TAG not in t else "must not be here"}')
+        if (p in pages) and TILT_TAG not in t: errs.append(f'{n}: script js/tilt.js missing')
 
     sm = SITEMAP.read_text(encoding='utf-8') if SITEMAP.exists() else ''
     for p in pages:

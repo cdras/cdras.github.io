@@ -851,11 +851,11 @@ ul { list-style: none; }
 }
 /* iOS Safari fires :active on plain text only for elements it treats as clickable; on touch screens the cursor is invisible, so this is free */
 @media (hover: none) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver) { cursor: pointer; }
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver) { cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver),
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver),
   .facts dt { transition: translate var(--soft), scale var(--soft), color var(--soft); }
   :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)) { transform-origin: left center; }
   .bio p:nth-child(even) { transform-origin: right center; }
@@ -868,14 +868,14 @@ ul { list-style: none; }
   @media (hover: hover) and (pointer: fine) {
     :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)):hover { translate: 0.1875rem 0; }
     .bio p:nth-child(even):hover { translate: -0.1875rem 0; }
-    :is(.section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver):hover { scale: 1.015; }
+    :is(.section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):hover { scale: 1.015; }
     .next:hover .arrow { scale: 1.12; }
     .award-link:hover .mini-disc { rotate: 60deg; }
     .faq summary:hover { translate: 0.1875rem 0; }
     .fact-link:hover, .foot-link:hover { text-underline-offset: 0.32em; }
   }
   /* press: instant (90 ms), release: the same soft settle as the hover transition */
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver):active {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):active {
     scale: 0.985; transition-duration: 90ms;
   }
   .faq summary { transition: translate var(--soft), opacity 100ms; }
@@ -901,7 +901,7 @@ ul { list-style: none; }
 
 /* reduced motion: no movement, a short dim answers the press */
 @media (prefers-reduced-motion: reduce) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver):active { opacity: 0.6; }
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):active { opacity: 0.6; }
 }
 
 /* ---------- v1.11.0: award standards page (owner: «for an artist, an album and a track the award standards differ; make a separate beautiful page») ----------
@@ -1124,12 +1124,14 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 .home-stats dd { margin: 0; font-family: var(--f-title); font-weight: 700; font-size: clamp(1.125rem, 5.2vw, 1.5rem); line-height: 1.1; letter-spacing: 0; font-variant-numeric: tabular-nums; color: var(--ink); white-space: nowrap; }
 .home-stats dt { font-size: var(--fs-small); line-height: 1.25; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-soft); white-space: nowrap; }
 @media (hover: none) { .home-stats > div { cursor: pointer; } }
+/* v1.14.1 (owner): only the TEXT of «Awards / Top award / Latest» reacts to hover and press; the lines of the table (top, bottom and the dividers) stay still.
+   So the scale sits on each dt / dd, never on the cell that carries the divider. */
 @media (prefers-reduced-motion: no-preference) {
-  .home-stats > div { transition: scale var(--soft), color var(--soft); }
-  @media (hover: hover) and (pointer: fine) { .home-stats > div:hover { scale: 1.04; } }
-  .home-stats > div:active { scale: 0.96; transition-duration: 90ms; }
+  .home-stats dt, .home-stats dd { transition: scale var(--soft), color var(--soft); }
+  @media (hover: hover) and (pointer: fine) { .home-stats > div:hover dt, .home-stats > div:hover dd { scale: 1.04; } }
+  .home-stats > div:active dt, .home-stats > div:active dd { scale: 0.96; transition-duration: 90ms; }
 }
-@media (prefers-reduced-motion: reduce) { .home-stats > div:active { opacity: 0.6; } }
+@media (prefers-reduced-motion: reduce) { .home-stats > div:active dt, .home-stats > div:active dd { opacity: 0.6; } }
 @media (prefers-contrast: more) { .home-stats, .home-stats > div + div { border-color: var(--ink); } .home-plaque .home-lead, .home-stats dt { color: var(--ink); } }
 @media (min-width: 900px) and (min-height: 700px) {
   .home-plaque .home-lead { max-width: 26rem; font-size: var(--fs-body); }
@@ -1167,7 +1169,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
   .tier-row > :is(.t-label, .t-display, .t-title) { transform-origin: left center; transition: scale var(--soft); }
   @media (hover: hover) and (pointer: fine) { .tier-row > :is(.t-label, .t-display, .t-title):hover { scale: 1.015; } }
   @media (hover: none) {
-    :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active { scale: 1.015; transition-duration: 90ms; }
+    :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active { scale: 1.015; transition-duration: 90ms; }
     :is(.cover, .thumb, .card-art):active { scale: 1.03; transition-duration: 90ms; }
   }
 }
@@ -1218,11 +1220,11 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
     --brand-2: #2a0c52;
     --dot-rgb: 241 234 252;
   }
-  html:not(:has(input[name="theme"][value="light"]:checked)) { background: var(--bg); }
-  :where(html:not(:has(input[name="theme"][value="light"]:checked))) body { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+  html:not(:has(input[name="theme"][value="light"]:checked)) { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+  :where(html:not(:has(input[name="theme"][value="light"]:checked))) body { background: transparent; }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) ::selection { background: rgb(160 120 235 / 0.35); }
   @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-    :where(html:not(:has(input[name="theme"][value="light"]:checked))) .topbar { background-color: rgba(15, 8, 24, 0.72); }
+    :where(html:not(:has(input[name="theme"][value="light"]:checked))) .topbar { background-color: rgba(21, 12, 33, 0.9); }
   }
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) .logo,
   :where(html:not(:has(input[name="theme"][value="light"]:checked))) .arrow,
@@ -1279,11 +1281,11 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
     --brand-2: #2a0c52;
     --dot-rgb: 241 234 252;
   }
-  html:has(input[name="theme"][value="dark"]:checked) { background: var(--bg); }
-  :where(html:has(input[name="theme"][value="dark"]:checked)) body { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+  html:has(input[name="theme"][value="dark"]:checked) { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+  :where(html:has(input[name="theme"][value="dark"]:checked)) body { background: transparent; }
   :where(html:has(input[name="theme"][value="dark"]:checked)) ::selection { background: rgb(160 120 235 / 0.35); }
   @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-    :where(html:has(input[name="theme"][value="dark"]:checked)) .topbar { background-color: rgba(15, 8, 24, 0.72); }
+    :where(html:has(input[name="theme"][value="dark"]:checked)) .topbar { background-color: rgba(21, 12, 33, 0.9); }
   }
   :where(html:has(input[name="theme"][value="dark"]:checked)) .logo,
   :where(html:has(input[name="theme"][value="dark"]:checked)) .arrow,
@@ -1340,7 +1342,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 /* v1.13.10 (owner: text looks soft on a PC when the pointer is on it): text that zooms or nudges is drawn with exact glyph geometry
    (no hinting jumps while the scale changes) and the zoom ends on the pixel grid; with the tilt now flat over text (js/tilt.js) it stays crisp. */
 @media (hover: hover) and (pointer: fine) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver),
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver),
   .tier-row > :is(.t-label, .t-display, .t-title), .facts dt { text-rendering: geometricPrecision; -webkit-font-smoothing: subpixel-antialiased; }
 }
 
@@ -1403,7 +1405,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 html { scrollbar-width: none; -ms-overflow-style: none; }
 html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
 @media (hover: none) and (prefers-reduced-motion: no-preference) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active {
     scale: 1.02; transition-duration: 280ms; transition-timing-function: cubic-bezier(.22, .61, .36, 1);
   }
 }
@@ -1463,3 +1465,56 @@ html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; heig
 }
 @media print { .theme-switch { display: none; } }
 @supports not selector(:has(*)) { .theme-switch { display: none; } }   /* without :has() the switch could not work, so it is not shown */
+
+/* ---------- v1.14.0 (owner: pull the page down to refresh it, but never by accident) ----------
+   js/tilt.js adds html.ptr-on on touch screens and creates ONE ring (.ptr) on the first deliberate pull at the top of the page.
+   The browser's own instant pull-to-refresh is switched off only while the script is running, so without it nothing changes.
+   Ring = a conic fill (--p, 0..1) around a disc in the page colours; the chevron points down while pulling and up when armed (let go = reload).
+   Tokens only (--ink, --bg, --line-rgb), so light, dark and forced-dark work with no extra rules. Not in print. */
+html.ptr-on { overscroll-behavior-y: contain; }
+.ptr {
+  position: fixed;
+  z-index: 900;                       /* under the top bar (1000): the ring slides out from beneath it */
+  inset-inline-start: 50%;
+  inset-block-start: calc(var(--bar-full) + 0.25rem);
+  inline-size: 2.75rem;
+  block-size: 2.75rem;
+  margin-inline-start: -1.375rem;
+  border-radius: 50%;
+  background: conic-gradient(var(--ink) calc(var(--p, 0) * 1turn), rgb(var(--line-rgb) / 0.22) 0);
+  box-shadow: 0 0.25rem 1rem rgb(var(--line-rgb) / 0.22);
+  translate: 0 calc(var(--ptr-y, 0px) - 2.75rem);
+  opacity: 0;
+  pointer-events: none;
+}
+.ptr::after {                          /* the disc inside the ring */
+  content: "";
+  position: absolute;
+  inset: 0.1875rem;
+  border-radius: 50%;
+  background: var(--bg);
+}
+.ptr::before {                         /* the chevron (drawn in CSS: no glyph, no picture) */
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset-inline-start: 50%;
+  inset-block-start: 50%;
+  inline-size: 0.625rem;
+  block-size: 0.625rem;
+  margin: -0.4375rem 0 0 -0.3125rem;
+  border: solid var(--ink);
+  border-width: 0 0.125rem 0.125rem 0;
+  rotate: 45deg;
+}
+.ptr.is-armed::before { rotate: 225deg; margin-block-start: -0.1875rem; }
+@media (prefers-reduced-motion: no-preference) {
+  .ptr::before { transition: rotate 220ms var(--ease), margin 220ms var(--ease); }
+  .ptr.is-back { transition: translate 280ms var(--ease), opacity 220ms ease-out; }   /* let go early: it slides back up */
+}
+@media (prefers-reduced-motion: reduce) {
+  .ptr { translate: 0 0; }                                                            /* no travel, only the fade */
+}
+@media (prefers-contrast: more) { .ptr { box-shadow: 0 0 0 1px var(--ink); } }
+@media (forced-colors: active) { .ptr { forced-color-adjust: none; background: Canvas; border: 2px solid CanvasText; } .ptr::after { background: Canvas; } .ptr::before { border-color: CanvasText; } }
+@media print { .ptr { display: none; } }

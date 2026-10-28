@@ -20,13 +20,14 @@
   --brand-2: #2a0c52;
   --dot-rgb: 241 234 252;     /* screen-dots fill (was a second @keyframes in v1.13.9) */
 }
-html { background: var(--bg); }
-body { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+/* v1.14.1: the violet glow is painted by <html> itself (the page canvas), so when a hard swipe pulls the page past its top or bottom the SAME background continues, no flat seam. The body stays transparent. */
+html { background: radial-gradient(ellipse 120% 60% at 50% 0%, #1a0f2c, var(--bg) 62%) fixed, var(--bg); }
+body { background: transparent; }
 ::selection { background: rgb(160 120 235 / 0.35); }
 
 /* top bar */
 @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))) {
-  .topbar { background-color: rgba(15, 8, 24, 0.72); }
+  .topbar { background-color: rgba(21, 12, 33, 0.9); }   /* v1.14.2: = the dark theme-color (#150c21), so the phone's status bar and the bar are ONE colour */
 }
 /* ink-coloured artwork becomes light */
 .logo, .arrow, .icon { filter: brightness(0) invert(1); }

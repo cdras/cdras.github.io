@@ -472,8 +472,8 @@ def render(template, spec, d, version):
     og = d['base_url'] + url_quote(spec['og'])
     blocks = {
         'JSONLD': ['  <script type="application/ld+json">' + json.dumps(jsonld_graph(spec, d), separators=(',', ':'), ensure_ascii=False) + '</script>'],
-        # v1.11.16 (owner exception to rule 8): the one local tilt script, only on pages with an award block (award pages, home)
-        'TILT_JS': ['  <script src="js/tilt.js" defer></script>'] if (spec.get('hero') or spec.get('is_home')) else [],
+        # v1.11.16 (owner exception to rule 8): the one local script (js/tilt.js). v1.14.0: it also does pull-to-refresh, so it is on EVERY page (home, awards, standards)
+        'TILT_JS': ['  <script src="js/tilt.js" defer></script>'],
         'HERO_GROUP1': [f'            <{t} class="{c}">{esc(x)}</{t}>' for t, c, x in spec['group1']],
         'FACTS': facts_block(spec['facts']),
         'AWARD_LABEL': [f'                <p class="t-label">{spec["award_label"]}</p>'] if spec['award_label'] else [],
