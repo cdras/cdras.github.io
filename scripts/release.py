@@ -155,7 +155,9 @@ def check(version):
             else:
                 try:
                     g = json.loads(lds[0]).get('@graph', [])
-                    if not any('https://settwor.github.io/' in (x.get('sameAs') or []) for x in g): errs.append(f'{n}: JSON-LD artist has no sameAs link to https://settwor.github.io/')
+                    aid = 'https://settwor.github.io/#artist'
+                    if any(x.get('@id') == aid for x in g): errs.append(f'{n}: JSON-LD must not define the entity {aid} (reference it by @id only, docs/SEO.md)')
+                    if not any((x.get('creator') or {}).get('@id') == aid for x in g): errs.append(f'{n}: JSON-LD creator must be {{"@id": "{aid}"}}')
                 except ValueError as e: errs.append(f'{n}: JSON-LD is not valid JSON ({e})')
             if 'href="https://settwor.github.io/"' not in t: errs.append(f'{n}: no visible link to https://settwor.github.io/')
         # rule 8 (owner exception, v1.11.16): JSON-LD plus exactly one local file, js/tilt.js, and (v1.14.0: tilt + pull-to-refresh) on every site page

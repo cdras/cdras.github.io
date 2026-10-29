@@ -30,6 +30,13 @@ EMBED_THEMES = ('light', 'dark')
 EMBED_W, EMBED_H_DEFAULT = 504, 626                   # 31.5rem at 16px; the height is measured per award, this is the fallback
 
 
+# v1.16.13 (owner: the «own award, not an official certification» statement must be on the FIRST screen, not only in the
+# collapsed Q&A, so nobody (an AI included) can write «got gold» without «from himself»). ONE source for the visible line
+# (every page's #s1) and for the plain-text tail of the meta descriptions of the award pages and the home page.
+OWN_NOTE = '<strong>Self-awarded by SETTWOR.</strong> Not an official certification.'
+OWN_NOTE_DESC = ' Self-awarded by SETTWOR, not an official certification.'
+
+
 def esc(s):
     return s.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
 
@@ -432,17 +439,18 @@ def jsonld_graph(spec, d):
     """Structured data (JSON-LD) for one page. Every fact here must also be visible on the page."""
     base, tr, ar = d['base_url'], d['track'], d['artist']
     og = base + url_quote(spec['og'])
-    artist = {'@type': ['Person', 'MusicGroup'], '@id': ar['id'], 'name': ar['name'], 'url': ar['url'],
-              'jobTitle': ar['job'], 'genre': ar['genres'], 'sameAs': ar['same_as']}
+    # v1.16.16: the SETTWOR entity (type, sameAs, jobTitle) is defined ONCE, on https://settwor.github.io/ (see docs/SEO.md).
+    # CDRA only references it by @id and never redefines its type; ar['same_as'] in pages.json is the master copy for that site.
     page = {'@type': 'WebPage', '@id': spec['URL'] + '#webpage', 'url': spec['URL'], 'name': spec['TITLE'],
             'description': spec['DESC'], 'inLanguage': 'en',
             'isPartOf': {'@type': 'WebSite', '@id': base + '#website', 'name': 'CDRA', 'url': base},
-            'primaryImageOfPage': {'@type': 'ImageObject', 'url': og}}
+            'primaryImageOfPage': {'@type': 'ImageObject', 'url': og},
+            'creator': {'@id': ar['id']}}
     graph = []
     if spec.get('is_home'):
         graph.append({'@type': 'WebSite', '@id': base + '#website', 'name': 'CDRA',
                       'alternateName': d['home']['alt_names'], 'url': base, 'inLanguage': 'en',
-                      'publisher': {'@id': ar['id']}})
+                      'publisher': {'@id': ar['id']}, 'creator': {'@id': ar['id']}})
     if spec.get('about_track'):
         rec_id = base + '#' + tr['id']
         page['about'] = {'@id': rec_id}
@@ -454,7 +462,6 @@ def jsonld_graph(spec, d):
         if not spec.get('no_about'):
             page['about'] = {'@id': ar['id']}
         graph.append(page)
-    graph.append(artist)
     return {'@context': 'https://schema.org', '@graph': graph}
 
 
@@ -477,7 +484,7 @@ def page_specs(d):
         title = f"{tr['name']} by {tr['artist']}: {a['streams']} streams award | CDRA"
         specs[a['file']] = dict(
             TITLE=title,
-            DESC=f"CDRA award: {tr['name']} by {tr['artist']} reached {a['streams']} all-time streams.",
+            DESC=f"CDRA award: {tr['name']} by {tr['artist']} reached {a['streams']} all-time streams." + OWN_NOTE_DESC,
             URL=base + url_quote(a['file']), NUM=a['streams'], DATE=a['date'], CODE=a.get('code', ''), DED_TRACK=tr['name'], TIER=a['tier'], hero=h, current=a['file'],
             og=f"{d['og_dir']}/og-{a['file'][:-5]}.png",
             group1=[('p', 't-label', f"{a['level']} award for the track"), ('h1', 't-display', tr['name']), ('p', 't-title', tr['artist'])],
@@ -490,7 +497,7 @@ def page_specs(d):
     alb = d.get('album')
     if alb:   # v1.12.0: album award page (Album column of the standards); only facts the owner gave: artist, date, label
         atitle = f"{tr['album']} by {tr['artist']}: {alb['streams']} streams award | CDRA"
-        adesc = f"CDRA award: the album {tr['album']} by {tr['artist']} reached {alb['streams']} all-time streams."
+        adesc = f"CDRA award: the album {tr['album']} by {tr['artist']} reached {alb['streams']} all-time streams." + OWN_NOTE_DESC
         specs[alb['file']] = dict(
             TITLE=atitle, DESC=adesc, URL=base + url_quote(alb['file']), NUM=alb['streams'], DATE=alb['date'], CODE=alb.get('code', ''), DED_TRACK=tr['album'], TIER=alb['tier'],
             hero=d['heroes'][alb['hero']], current=None, og=f"{d['og_dir']}/og-{alb['file'][:-5]}.png",
@@ -501,7 +508,7 @@ def page_specs(d):
     s = d['artist_page']
     specs[s['file']] = dict(
         TITLE=f"{tr['artist']}: {s['streams']} streams award | CDRA",
-        DESC=f"CDRA award: {tr['artist']} reached {s['streams']} all-time streams.",
+        DESC=f"CDRA award: {tr['artist']} reached {s['streams']} all-time streams." + OWN_NOTE_DESC,
         URL=base + url_quote(s['file']), NUM=s['streams'], DATE=s['date'], CODE=s.get('code', ''), DED_TRACK=None, TIER=s.get('tier') or '', hero=d['heroes'][s['hero']], current=None,
         og=f"{d['og_dir']}/og-{s['file'][:-5]}.png",
         group1=[('p', 't-label', f"{s['level']} award for the artist" if s.get('level') else 'Award for'), ('h1', 't-display', tr['artist'])],
@@ -510,7 +517,7 @@ def page_specs(d):
         award_label='Awards for', about_track=False, is_home=False)
     home = d['home']
     src = dict(specs[d['awards'][-1]['file'] if d['awards'] else d['artist_page']['file']])
-    src.update(TITLE=home['title'], DESC=home['desc'].replace('{list}', join_and([a['streams'] for a in d['awards']] + ([alb['streams']] if alb else []) + [d['artist_page']['streams']])), URL=base, is_home=True, about_track=False, TIER='gold', body=HOME,
+    src.update(TITLE=home['title'], DESC=home['desc'].replace('{list}', join_and([a['streams'] for a in d['awards']] + ([alb['streams']] if alb else []) + [d['artist_page']['streams']])) + OWN_NOTE_DESC, URL=base, is_home=True, about_track=False, TIER='gold', body=HOME,
                og=f"{d['og_dir']}/og-{home['file'][:-5]}.png")   # v1.11.11: own preview card (was the last award's)
     specs[home['file']] = src
     # v1.11.0: the award-standards page: own body (src/standards.html), head from the shared template, no hero
@@ -648,7 +655,7 @@ def render(template, spec, d, version):
     S = lambda t: f'<span>{t}</span>'   # v1.13.1: every phrase is its own hop target
     ded = ' '.join([S('Presented to'), f"<strong>{esc(d['track']['artist'])}</strong>", S('to commemorate'), S(spec['NUM']), '<span class="nb">all-time</span>', S('streams')]
                    + ([S(f"of “{esc(spec['DED_TRACK'])}”")] if spec['DED_TRACK'] else []))
-    inline = {**home_texts(d), 'DEDICATION': ded, 'DATE': esc(spec['DATE']), 'CODE': esc(spec.get('CODE', '')), 'VERSION': version, 'TITLE': esc(spec['TITLE']), 'DESC': esc(spec['DESC']), 'URL': spec['URL'],
+    inline = {**home_texts(d), 'OWN_NOTE': OWN_NOTE, 'DEDICATION': ded, 'DATE': esc(spec['DATE']), 'CODE': esc(spec.get('CODE', '')), 'VERSION': version, 'TITLE': esc(spec['TITLE']), 'DESC': esc(spec['DESC']), 'URL': spec['URL'],
               'OG_IMAGE': og, 'STORY': 'images/story/' + og.rsplit('/og-', 1)[-1], 'OG_ALT': esc(spec['DESC']), 'NUM': spec['NUM'], 'TIER': spec['TIER'], 'HERO_PICTURE': hero_picture(spec['hero']) if spec['hero'] else '',
               'ZOOM_TOGGLE': zoom_parts(spec['hero'])[0], 'ZOOM_BOX': zoom_parts(spec['hero'])[1]}
     if spec.get('body'):   # home and standards pages: <head> from the shared template, body from their own file
