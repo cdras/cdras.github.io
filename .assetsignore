@@ -1,0 +1,12 @@
+.assetsignore
+wrangler.jsonc
+.git
+.github
+.gitignore
+node_modules
+TODO.md
+AGENTS.md
+*.md
+tools
+docs
+*.zip
