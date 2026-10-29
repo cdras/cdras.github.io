@@ -1,0 +1,91 @@
+/* ==========================================================================
+   CDRA — embed.css (v1.15.0, owner: "make the award plaque embeddable on other sites, identical to this site")
+   Loaded AFTER css/style.css, only by the pages in /embed/ and by EMBED.html.
+   The widget is the real plaque from the award pages: same markup, same fonts, same css/style.css rules. This file only
+     1. pins the plaque to the proportions it has on a desktop screen (30rem wide, cover 24.64rem, same paddings and type
+        sizes: the same values as the print block of style.css), so the iframe size does not change the look;
+     2. scales the whole thing by the ROOT FONT SIZE (everything is in rem), so one widget fits any container width;
+     3. removes the page chrome (top bar, arrow, dots, scroll snap) and makes the background transparent.
+   No script, no network, no storage (AGENTS.md rule 8). Text sizes below the 13px floor happen only when the host
+   container is narrower than ~410px: the widget is then a proportional scale-down of the desktop plaque, like the print sheet.
+   ========================================================================== */
+
+/* 1 + 2: the root size. 31.5rem = the 30rem plaque + 0.75rem of air on each side (room for the shadow). At 504px and wider the widget is 1:1. */
+html:has(body.embed) {
+  font-size: min(16px, calc(100vw / 31.5));
+  scroll-snap-type: none;
+  scroll-behavior: auto;
+  background: transparent !important;   /* the dark theme paints html (colour + radial haze): the widget must stay transparent */
+}
+body.embed {
+  min-height: 0;
+  background: transparent;
+  overflow: hidden;
+}
+/* 3: no chrome, no screen box */
+.embed .s1 {
+  min-height: 0;
+  height: auto;
+  display: block;
+  padding: 0.75rem 0.75rem 1.75rem;   /* top air; bottom air for the plaque shadow (0 1.75rem 2.75rem -1.25rem) */
+  background: none;
+  scroll-snap-align: none;
+}
+.embed .stack { width: 100%; max-width: none; padding: 0; gap: 0; }
+.embed .embed-link { display: block; width: 30rem; max-width: 100%; margin: 0 auto; border-radius: 0.25rem; cursor: pointer; }
+.embed .embed-link:focus-visible { outline: 3px solid var(--ink); outline-offset: 4px; }
+
+/* 1: pinned plaque. !important because style.css changes these values with vw/dvh clamps and media queries (iframe size must not matter). */
+.embed .s1 .plaque {
+  width: 30rem !important;
+  max-width: none !important;
+  margin: 0 auto;
+  flex-direction: column !important;
+  padding: 1.375rem 1.5rem 1.125rem !important;
+  gap: 0.75rem !important;
+}
+.embed .s1 .plaque .cover { width: 24.637rem !important; }
+.embed .s1 .plaque .cover--square { width: 20.59rem !important; }
+.embed .s1 .hero-media, .embed .s1 .ledger { width: 100% !important; flex: none !important; }
+.embed .s1 .tier-row .t-display { font-size: 2.125rem !important; }
+.embed .s1 .tier-row .t-title { font-size: 1.0625rem !important; }
+.embed .s1 .ledger-rank .t-num { font-size: 2.5rem !important; }
+.embed .s1 .ledger-top, .embed .s1 .tier-row .t-label, .embed .s1 .ledger-unit { font-size: 0.875rem !important; }
+.embed .s1 .ledger-top { padding: 0.3rem 0.625rem !important; letter-spacing: 0.16em !important; }
+.embed .s1 .tier-row { padding: 0.5rem 0.625rem !important; }
+.embed .s1 .ledger-rank { gap: 0.75rem !important; padding: 0.4rem 0.625rem !important; }
+.embed .s1 .ledger-unit { letter-spacing: 0.14em !important; white-space: normal; }
+/* short or narrow iframes must not hide parts of the plaque (style.css hides them on short screens) */
+.embed .s1 .dedication { display: block !important; }
+.embed .s1 .plaque > .award-code { display: block !important; top: 0.4375rem !important; font-size: 0.5625rem !important; letter-spacing: 0.14em !important; text-indent: 0.14em !important; }
+.embed .s1 .plaque > .award-code .award-code-v { letter-spacing: 0.14em !important; }
+
+/* the plaque is a link to the award page: no zoom, no tilt script here */
+.embed .zoom-cover { cursor: inherit; }
+
+/* ---------- EMBED.html (the "how to add it" page): code boxes ---------- */
+.embed-guide .legal { max-width: 44rem; }
+.embed-guide .embed-demo { display: flex; justify-content: center; margin: 0.5rem 0 1rem; }
+.embed-guide .embed-demo iframe { display: block; width: 100%; max-width: 504px; border: 0; }
+.embed-guide .embed-code {
+  margin: 0 0 1.25rem;
+  padding: 0.875rem 1rem;
+  overflow-x: auto;
+  border: 1px solid rgb(var(--line-rgb, 38 0 65) / 0.3);
+  border-radius: 0.5rem;
+  background: rgb(var(--dot-rgb) / 0.04);
+  font: 0.8125rem/1.5 ui-monospace, Menlo, Consolas, monospace;
+  white-space: pre-wrap;
+  word-break: break-word;
+  user-select: all;           /* one tap or click selects the whole snippet; then copy */
+  -webkit-user-select: all;
+}
+.embed-guide .embed-code code { font: inherit; }
+.embed-guide .embed-hint { color: var(--ink-soft); font-size: var(--fs-small); margin: -0.5rem 0 1.5rem; }
+.embed-guide h3 { margin: 1.25rem 0 0.5rem; font-size: var(--fs-body); font-weight: 700; }
+
+@media (prefers-reduced-motion: reduce), print { .embed * { animation: none !important; transition: none !important; } }
+
+/* The page background of the site (the drifting colour haze, html::before/::after, and the fades under the bar, body::before/::after) is page decoration,
+   not part of the plaque: switched off in the widget so it stays a clean card on any host background. */
+html:has(body.embed)::before, html:has(body.embed)::after, body.embed::before, body.embed::after { display: none !important; }

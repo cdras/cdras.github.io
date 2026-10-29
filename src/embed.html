@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en" data-version="{{VERSION}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+  <meta name="color-scheme" content="{{THEME}}">
+  <meta name="cdra-version" content="{{VERSION}}">
+  <title>{{TITLE}}</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="canonical" href="{{URL}}">
+  <link rel="preload" href="../fonts/fonts/Outfit-Regular.woff" as="font" type="font/woff" crossorigin>
+  <link rel="preload" href="../fonts/fonts/Outfit-Bold.woff" as="font" type="font/woff" crossorigin>
+  <link rel="stylesheet" href="../fonts/fonts/fonts-site.css">
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="stylesheet" href="../css/embed.css">
+</head>
+<body class="embed" data-tier="{{TIER}}">
+  <input type="radio" name="theme" value="{{THEME}}" checked class="visually-hidden" tabindex="-1" aria-hidden="true">
+  <main>
+    <section class="screen s1" aria-label="Award">
+      <div class="stack">
+        <a class="embed-link" href="{{URL}}" target="_blank" rel="noopener" aria-label="{{LINK_LABEL}}">
+        <div class="plaque">
+          <p class="award-code"><span class="visually-hidden">Award code </span><span class="award-code-v">{{CODE}}</span></p>
+          <div class="hero-media">
+            {{HERO_PICTURE}}
+          </div>
+          <div class="ledger">
+            <p class="ledger-top"><span>CDRA Award</span><span>{{DATE}}</span></p>
+            <div class="hero-group tier-row">
+{{#HERO_GROUP1}}
+            </div>
+            <div class="ledger-rank">
+              <p class="t-num">{{NUM}}</p>
+              <p class="ledger-unit">all-time streams</p>
+            </div>
+          </div>
+          <p class="dedication">{{DEDICATION}}</p>
+        </div>
+        </a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

@@ -33,7 +33,7 @@
   function apply(c) {
    var st = c.el.style;
    if (!c.on) { st.willChange = 'transform'; c.on = true; }
-   st.setProperty('--sx', ((c.x + 1) * 50).toFixed(0) + '%'); st.setProperty('--sy', ((c.y + 1) * 50).toFixed(0) + '%');
+   st.setProperty('--sx', (clamp(c.x) + 1) * 50 + '%'); st.setProperty('--sy', (clamp(c.y) + 1) * 50 + '%');
    st.setProperty('--sh', Math.min(1, Math.hypot(c.x, c.y)).toFixed(2));
    st.transform = 'perspective(' + PERSPECTIVE + ') rotateX(' + (-c.y * c.max).toFixed(2) + 'deg) rotateY(' + (c.x * c.max).toFixed(2) + 'deg)';
   }
@@ -133,7 +133,7 @@
 
  document.addEventListener('touchstart', function (e) {
   st = null;
-  if (e.touches.length !== 1 || !top() || (zoomToggle && zoomToggle.checked)) return;
+  if (e.touches.length !== 1 || !top() || tc || (zoomToggle && zoomToggle.checked)) return;
   st = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: 0, d: 0, on: false, dead: false, armed: false };
   if (ring) ring.classList.remove('is-back');
  }, { passive: true });

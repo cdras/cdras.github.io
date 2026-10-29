@@ -17,11 +17,17 @@ ROOT = pathlib.Path(__file__).resolve().parent.parent
 TEMPLATE = ROOT / 'src' / 'page.html'
 DATA = ROOT / 'src' / 'pages.json'
 HOME = ROOT / 'src' / 'home.html'   # body of the home page; its <head> comes from src/page.html
-LEGACY_ARTIST_URLS = ['SETTWOR-1m.html']   # v1.12.0: old public URLs of the artist award, kept as redirects
+STORY_DIR = 'images/story'   # v1.16.0: story pictures (make_story.py); an absorbed award loses its picture
 REGISTRY = ROOT / 'src' / 'registry.html'   # body of the award-registry page (v1.14.21)
 STANDARDS = ROOT / 'src' / 'standards.html'   # body of the award-standards page (v1.11.0)
 DARK_SRC = ROOT / 'src' / 'dark.css'   # v1.13.15: the one source of the dark-theme rules; copied into css/style.css by dark_region()
 STYLE = ROOT / 'css' / 'style.css'
+EMBED_TPL = ROOT / 'src' / 'embed.html'              # v1.15.0: the embeddable plaque widget (iframe page), one per award and theme
+EMBED_GUIDE_TPL = ROOT / 'src' / 'embed-guide.html'  # v1.15.0: EMBED.html, the "how to add an award to your site" page
+EMBED_SIZES = ROOT / 'src' / 'embed-sizes.json'      # measured widget height per award at the 504 px width (scripts/measure_embed.py)
+EMBED_DIR = 'embed'
+EMBED_THEMES = ('light', 'dark')
+EMBED_W, EMBED_H_DEFAULT = 504, 626                   # 31.5rem at 16px; the height is measured per award, this is the fallback
 
 
 def esc(s):
@@ -191,10 +197,44 @@ def with_code(a, kind):
 
 def load_data():
     d = json.loads(DATA.read_text(encoding='utf-8'))
-    d['awards'] = [with_code(a, 'SGL') for a in earned_awards(d)]
+    earned = earned_awards(d)
+    # v1.16.0 (owner: "a new, stronger award fully replaces and covers the old one"): ABSORPTION. Of all the track awards a track has earned,
+    # only the strongest one is alive: it takes the old ones over. The weaker ones get no card, no place in the lists, no code row and no
+    # preview picture; their old page and widget addresses are not broken, they show the strongest award instead (see redirects()).
+    d['awards'] = [with_code(a, 'SGL') for a in earned[-1:]]
+    d['absorbed'] = earned[:-1]
     d['album'] = with_code(earned_album(d), 'ALB')
     d['artist_page'] = with_code(earned_artist(d), 'ART')
+    d['redirects'] = redirects(d)
     return d
+
+
+def redirects(d):
+    """v1.16.0: every old award address that must lead to the award that replaced it: {file, to, what, streams, widget}.
+    (1) track awards absorbed by the strongest one (computed: all earned milestones except the top one; their widget pages existed, so they are kept as
+    copies of the new widget); (2) `superseded` in src/pages.json: older album/artist (or track) awards the owner replaced by hand
+    (`category` = track | album | artist; `widget: true` only if that award had a widget page)."""
+    tr = d['track']
+    top = {'track': d['awards'][-1] if d['awards'] else None, 'album': d.get('album'), 'artist': d['artist_page']}
+    what = {'track': tr['name'], 'album': tr['album'], 'artist': tr['artist']}
+    alive = {a['file'] for a in d['awards']} | ({d['album']['file']} if d.get('album') else set()) | {d['artist_page']['file']}
+    out = []
+    for a in d['absorbed']:
+        if top['track']:
+            out.append({'file': a['file'], 'to': top['track']['file'], 'what': what['track'], 'streams': top['track']['streams'], 'widget': True})
+    for s in d.get('superseded', []):
+        t = top.get(s['category'])
+        if t:
+            out.append({'file': s['file'], 'to': t['file'], 'what': what[s['category']], 'streams': t['streams'], 'widget': bool(s.get('widget'))})
+    return [r for r in out if r['file'] not in alive]
+
+
+def redirect_stub(d, r):
+    """Tiny static redirect page (meta refresh + canonical, noindex; not in the sitemap: it has no screens, rule 6a keeps the address alive)."""
+    to = url_quote(r['to'])
+    return ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Moved | CDRA</title>\n<meta name="robots" content="noindex">\n'
+            f'<meta http-equiv="refresh" content="0; url={to}">\n<link rel="canonical" href="{d["base_url"] + to}">\n</head>\n'
+            f'<body>\n<p>This page moved to <a href="{to}">{esc(r["what"])}, {r["streams"]} streams award</a>.</p>\n</body>\n</html>\n')
 
 
 def join_and(items):
@@ -223,7 +263,14 @@ def home_texts(d):
     ld = parse_date(last['date'])
     return {'HOME_LEAD': lead, 'HOME_WHICH': which, 'HOME_DATES': dates,
             'HOME_COUNT': str(total), 'HOME_TOP': short_n(top), 'HOME_TOP_FULL': f'{top:,}',
-            'HOME_LATEST': ld.strftime('%b %Y'), 'HOME_LATEST_FULL': last['date']}
+            'HOME_LATEST': ld.strftime('%b %Y'), 'HOME_LATEST_FULL': last['date'],
+            # v1.16.3 (owner: «more information on the first-screen plaque»): the newest award as a strip with its disc, level, name, streams and registry code
+            'HOME_NEWEST_TIER': (f' data-tier="{last["tier"]}"' if last.get('tier') else ''),
+            'HOME_NEWEST_WHAT': esc(' · '.join(x for x in [last.get('level', ''), last.get('kind', 'Single')] if x)),
+            'HOME_NEWEST_NAME': esc({'Single': tr['name'], 'Album': tr['album']}.get(last.get('kind', 'Single'), tr['artist'])),
+            'HOME_NEWEST_STREAMS': last['streams'],
+            'HOME_NEWEST_CODE': esc(last.get('code', '')),
+            'HOME_NEWEST_HREF': 'AWARD-REGISTRY.html#' + esc(last.get('code', ''))}
 
 
 def level_shown(a, d):
@@ -331,28 +378,35 @@ def award_groups(d, url):
     groups = [(tr['name'], 'Single', d['awards']),
               (tr['album'], 'Album', [d['album']] if d.get('album') else []),
               (tr['artist'], 'Artist', [d['artist_page']])]
-    out = []
+    # v1.14.33/36 (owner: small pictures of the releases in «Other awards», v1.14.36: next to EACH disc, not in the group title): the track and the album show the album cover (as the home cards do),
+    # the artist shows the artist photo (the owner's own site, `src` of the settwor hero). Decorative (alt=""): the name stands next to it.
+    album_cover = hero_src(d['heroes']['low'])
+    art = {'Single': album_cover, 'Album': album_cover, 'Artist': hero_src(d['heroes']['settwor'])}
+    # v1.16.9 (owner: «in Other awards remove the split by track; just plaques, and inside say whether it is a track, an album or an artist, and whose single or album it is, SETTWOR»):
+    # one flat list; every award is its own plaque: number of streams, «Single · GOT ME UP 2 · SETTWOR» (the artist: «Artist · SETTWOR»), level and date.
+    out = ['            <ul class="reg-list">']
     for name, kind, items in groups:
-        if not items:
-            continue
-        out += ['            <section class="reg-group">',
-                f'              <p class="reg-title"><span class="reg-name">{esc(name)}</span><span class="reg-kind">{kind}</span></p>',
-                '              <ul class="reg-list">']
         for a in items:
             cur = ' aria-current="page"' if url.endswith(url_quote(a['file'])) else ''
             tier = f' data-tier="{a["tier"]}"' if a.get('tier') else ''
             level = esc(a['level']) if a.get('level') else ''
             meta = ' · '.join(x for x in (level, esc(a['date'])) if x)
-            out += [f'                <li{tier}>',
-                    f'                  <a class="reg-row" href="{url_quote(a["file"])}"{cur}>',
-                    '                    <span class="mini-disc" aria-hidden="true"></span>',
-                    f'                    <span class="reg-main"><span class="reg-num">{a["streams"]}</span> <span class="reg-unit">streams</span></span>',
-                    f'                    <span class="reg-meta">{meta}</span>',
-                    '                    <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">',
-                    f'                    <span class="visually-hidden"> — {level + " " if level else ""}{kind.lower()} award, {a["streams"]} streams{", this page" if cur else ""}</span>',
-                    '                  </a>',
-                    '                </li>']
-        out += ['              </ul>', '            </section>']
+            what = esc(f'{kind} · {name}' if kind != 'Artist' else f'Artist · {name}')
+            if kind != 'Artist':
+                what += ' · ' + esc(tr['artist'])
+            whose = f' by {esc(tr["artist"])}' if kind != 'Artist' else ''
+            out += [f'              <li{tier}>',
+                    f'                <a class="reg-row" href="{url_quote(a["file"])}"{cur}>',
+                    '                  <span class="mini-disc" aria-hidden="true"></span>',
+                    f'                  <img src="{art[kind]}" class="reg-cover" alt="" width="668" height="668" loading="lazy" decoding="async">',
+                    f'                  <span class="reg-main"><span class="reg-num">{a["streams"]}</span> <span class="reg-unit">streams</span></span>',
+                    f'                  <span class="reg-what">{what}</span>',
+                    f'                  <span class="reg-meta">{meta}</span>',
+                    '                  <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">',
+                    f'                  <span class="visually-hidden"> — {level + " " if level else ""}{kind.lower()} award for {esc(name)}{whose}, {a["streams"]} streams{", this page" if cur else ""}</span>',
+                    '                </a>',
+                    '              </li>']
+    out += ['            </ul>']
     return out
 
 
@@ -613,33 +667,127 @@ def render(template, spec, d, version):
     return text
 
 
+# ---------------------------------------------------------------------------------------------------------------------------
+# v1.15.0 (owner: "make the award plaque embeddable on other sites, identical to this site, easy to paste"):
+# every earned award gets a tiny page in embed/ that holds ONLY the plaque (same markup, same css/style.css, same fonts),
+# in two fixed themes (light, dark; the same hidden radio the footer switch uses forces the theme, no script).
+# Sites paste an <iframe> that points at it; EMBED.html lists the ready-made code. Rule 8 stays intact: no script anywhere.
+def embed_name(fname, theme):
+    stem = fname[:-5]
+    return f"{stem}.html" if theme == 'light' else f"{stem}-dark.html"
+
+
+def embed_specs(d):
+    """Pages that have an award plaque: the earned track awards, the album award and the artist award (not home, standards, registry)."""
+    return [(f, sp) for f, sp in page_specs(d).items() if not sp.get('body') and sp.get('hero')]
+
+
+def embed_sizes():
+    try:
+        return json.loads(EMBED_SIZES.read_text(encoding='utf-8'))
+    except (OSError, ValueError):
+        return {}
+
+
+def embed_iframe(d, fname, spec, theme, sizes):
+    h = sizes.get(fname, EMBED_H_DEFAULT)
+    name = spec['group1'][1][2]
+    title = f"CDRA Award: {name}, {spec['NUM']} streams"
+    src = d['base_url'] + EMBED_DIR + '/' + url_quote(embed_name(fname, theme))
+    return (f'<iframe src="{src}" title="{esc(title)}" loading="lazy" '
+            f'style="display:block;width:100%;max-width:{EMBED_W}px;height:auto;aspect-ratio:{EMBED_W}/{h};border:0;color-scheme:{theme}"></iframe>')
+
+
+def render_embed(spec, d, version, theme):
+    tpl = EMBED_TPL.read_text(encoding='utf-8')
+    S = lambda t: f'<span>{t}</span>'
+    ded = ' '.join([S('Presented to'), f"<strong>{esc(d['track']['artist'])}</strong>", S('to commemorate'), S(spec['NUM']), '<span class="nb">all-time</span>', S('streams')]
+                   + ([S(f"of “{esc(spec['DED_TRACK'])}”")] if spec['DED_TRACK'] else []))
+    pic = _hero_picture(spec['hero'])
+    pic = re.sub(r'src="(?!https?:)', 'src="../', pic)   # the page lives in embed/, the pictures in ../images/
+    name = spec['group1'][1][2]
+    inline = {'VERSION': version, 'THEME': theme, 'TITLE': esc(f"Widget: {spec['TITLE']}"), 'URL': spec['URL'], 'TIER': spec['TIER'], 'CODE': esc(spec.get('CODE', '')),
+              'DATE': esc(spec['DATE']), 'NUM': spec['NUM'], 'DEDICATION': ded, 'HERO_PICTURE': pic,
+              'LINK_LABEL': esc(f"CDRA Award: {name}, {spec['NUM']} streams. Open the award page")}
+    block = [f'              <{t} class="{c}">{esc(x)}</{t}>' for t, c, x in spec['group1']]
+    out = []
+    for line in tpl.split('\n'):
+        if line.strip() == '{{#HERO_GROUP1}}':
+            out += block
+            continue
+        for k, v in inline.items():
+            line = line.replace('{{' + k + '}}', v)
+        out.append(line)
+    text = '\n'.join(out)
+    text = text.replace('<body class="embed" data-tier="">', '<body class="embed">')   # the artist award has no metal (same rule as the award pages)
+    assert '{{' not in text, 'unfilled placeholder (embed)'
+    return text
+
+
+def render_embed_guide(d, version):
+    tpl = EMBED_GUIDE_TPL.read_text(encoding='utf-8')
+    sizes = embed_sizes()
+    items = []
+    for fname, spec in embed_specs(d):
+        name = spec['group1'][1][2]
+        kind = 'artist' if fname == d['artist_page']['file'] else ('album' if d.get('album') and fname == d['album']['file'] else 'track')
+        items.append(f'      <h2>{esc(name)} · {spec["NUM"]} streams</h2>')
+        items.append(f'      <p class="embed-hint">{kind.capitalize()} award, {esc(spec["DATE"])}</p>')
+        items.append(f'      <div class="embed-demo">{embed_iframe(d, fname, spec, "light", sizes)}</div>')
+        for theme in EMBED_THEMES:
+            items.append(f'      <h3>{theme.capitalize()} code</h3>')
+            items.append(f'      <pre class="embed-code"><code>{esc(embed_iframe(d, fname, spec, theme, sizes))}</code></pre>')
+    out = []
+    for line in tpl.split('\n'):
+        if line.strip() == '{{#EMBED_ITEMS}}':
+            out += items
+            continue
+        out.append(line.replace('{{VERSION}}', version).replace('{{BASE}}', d['base_url']))
+    text = '\n'.join(out)
+    assert '{{' not in text, 'unfilled placeholder (embed guide)'
+    return text
+
+
+def embed_files(d, version):
+    """{relative path: text} for every generated embed file (widget pages + the guide)."""
+    files = {}
+    for fname, spec in embed_specs(d):
+        for theme in EMBED_THEMES:
+            files[f'{EMBED_DIR}/{embed_name(fname, theme)}'] = render_embed(spec, d, version, theme)
+    specs = page_specs(d)
+    for r in d['redirects']:   # v1.16.0: an absorbed award's widget (already pasted on other sites) now shows the award that replaced it
+        if r['widget'] and r['to'] in specs:
+            for theme in EMBED_THEMES:
+                files[f'{EMBED_DIR}/{embed_name(r["file"], theme)}'] = render_embed(specs[r['to']], d, version, theme)
+    files['EMBED.html'] = render_embed_guide(d, version)
+    return files
+
+
 def build(check=False):
     version = (ROOT / 'VERSION').read_text(encoding='utf-8').strip()
     d = load_data()
     template = TEMPLATE.read_text(encoding='utf-8')
     bad = []
     keep = {a['file'] for a in d['awards']}
+    moved = {r['file'] for r in d['redirects']}
     for m in d['milestones']:   # recorded but not earned under the current standards: no page, no preview card
-        if m['file'] in keep: continue
+        if m['file'] in keep or m['file'] in moved: continue
         for q in (ROOT / m['file'], ROOT / d['og_dir'] / f"og-{m['file'][:-5]}.png"):
             if q.exists():
                 bad.append(f'{q.name} (not earned under the standards: remove)')
                 if not check: q.unlink()
-    # v1.12.0: the artist award moved from SETTWOR-1m.html to its new file; the old public URL stays as a tiny static redirect (rule 6a)
-    new_artist = d['artist_page']['file']
-    for old in LEGACY_ARTIST_URLS:
-        if old == new_artist: continue
-        stub = ('<!doctype html>\n<html lang="en">\n<head>\n<meta charset="utf-8">\n<title>Moved | CDRA</title>\n<meta name="robots" content="noindex">\n'
-                f'<meta http-equiv="refresh" content="0; url={url_quote(new_artist)}">\n<link rel="canonical" href="{d["base_url"] + url_quote(new_artist)}">\n</head>\n'
-                f'<body>\n<p>This page moved to <a href="{url_quote(new_artist)}">{esc(d["track"]["artist"])}, {d["artist_page"]["streams"]} streams award</a>.</p>\n</body>\n</html>\n')
-        q = ROOT / old
+    # v1.16.0: an absorbed / superseded award keeps its old public address as a tiny static redirect to the award that replaced it (rule 6a);
+    # its preview card and story picture are removed (v1.12.0 did this by hand for the old artist award)
+    for r in d['redirects']:
+        q = ROOT / r['file']
+        stub = redirect_stub(d, r)
         if not q.exists() or q.read_text(encoding='utf-8') != stub:
-            bad.append(old)
+            bad.append(r['file'])
             if not check: q.write_text(stub, encoding='utf-8', newline='\n')
-        oq = ROOT / d['og_dir'] / f"og-{old[:-5]}.png"
-        if oq.exists():
-            bad.append(f'{oq.name} (old artist card: remove)')
-            if not check: oq.unlink()
+        for oq in (ROOT / d['og_dir'] / f"og-{r['file'][:-5]}.png", ROOT / STORY_DIR / f"{r['file'][:-5]}.png"):
+            if oq.exists():
+                bad.append(f'{oq.name} (picture of a replaced award: remove)')
+                if not check: oq.unlink()
     for fname, spec in page_specs(d).items():
         text = render(template, spec, d, version)
         p = ROOT / fname
@@ -648,6 +796,18 @@ def build(check=False):
             bad.append(fname)
             if not check:
                 p.write_text(text, encoding='utf-8', newline='\n')
+    wanted = embed_files(d, version)   # v1.15.0: the embeddable widget pages and their guide
+    for rel, text in wanted.items():
+        p = ROOT / rel
+        if not check: p.parent.mkdir(exist_ok=True)
+        if not p.exists() or p.read_text(encoding='utf-8') != text:
+            bad.append(rel)
+            if not check: p.write_text(text, encoding='utf-8', newline='\n')
+    if (ROOT / EMBED_DIR).is_dir():
+        for q in sorted((ROOT / EMBED_DIR).glob('*.html')):
+            if f'{EMBED_DIR}/{q.name}' not in wanted:
+                bad.append(f'{EMBED_DIR}/{q.name} (no longer an earned award: remove)')
+                if not check: q.unlink()
     if sync_style(check):   # v1.13.15: the dark-theme copies in css/style.css follow src/dark.css
         bad.append('css/style.css (dark theme copies differ from src/dark.css)')
     if not check:

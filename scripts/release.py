@@ -29,11 +29,11 @@ TILT_TAG = '<script src="js/tilt.js" defer>'
 TILT_FILE = 'js/tilt.js'
 SHARE_TAG = '<script src="js/share.js" defer>'   # v1.14.15 (owner): the share window on the award pages
 SHARE_FILE = 'js/share.js'
-REQUIRED_FILES = ['VERSION', 'css/style.css', 'js/tilt.js', 'js/share.js', 'index.html', 'src/page.html', 'src/pages.json', 'scripts/build_pages.py']
+REQUIRED_FILES = ['VERSION', 'css/style.css', 'css/embed.css', 'src/embed.html', 'src/embed-guide.html', 'scripts/measure_embed.py', 'js/tilt.js', 'js/share.js', 'index.html', 'src/page.html', 'src/pages.json', 'scripts/build_pages.py']
 # В .gitignore: в чистом клоне репозитория их может не быть — тогда только предупреждение
 LOCAL_ONLY = ['AGENTS.md', 'CLAUDE.md', 'CHANGELOG.md']
 BASE_URL = 'https://cdras.github.io/'
-EXTRA_PAGES = ['404.html', 'PRIVACY-POLICY.html']   # несут версию, но не попадают в sitemap (noindex)
+EXTRA_PAGES = ['404.html', 'PRIVACY-POLICY.html', 'EMBED.html']   # несут версию, но не попадают в sitemap (noindex)
 EXCLUDE = ['dist', '.git', '__pycache__', '*.pyc', '*.zip', '.DS_Store', 'Thumbs.db']
 
 
@@ -165,6 +165,17 @@ def check(version):
         if (p in pages) and TILT_TAG not in t: errs.append(f'{n}: script js/tilt.js missing')
         if 'class="plaque"' in t and SHARE_TAG not in t: errs.append(f'{n}: script js/share.js missing (award page)')
         if 'class="plaque"' not in t and SHARE_TAG in t: errs.append(f'{n}: js/share.js only belongs on award pages')
+
+    # v1.15.0: the embeddable widget pages (embed/*.html) must stay script-free, noindex and carry the version; they are generated, build_pages --check already compares the text
+    for q in sorted((ROOT / 'embed').glob('*.html')) if (ROOT / 'embed').is_dir() else []:
+        t = q.read_text(encoding='utf-8'); n = 'embed/' + q.name
+        if re.search(r'<script\b', t, re.I): errs.append(f'{n}: widget pages must have no <script> (AGENTS.md rule 8)')
+        if 'name="robots" content="noindex, nofollow"' not in t: errs.append(f'{n}: widget page must be noindex, nofollow')
+        m = re.search(r'<meta name="cdra-version" content="([^"]*)"', t)
+        if not m or m.group(1) != version: errs.append(f'{n}: meta cdra-version is {m.group(1) if m else None}, VERSION is {version}')
+        if 'href="../css/embed.css"' not in t: errs.append(f'{n}: ../css/embed.css is not linked')
+        for tag in re.findall(r'<(?:img|link)\b[^>]*>', t):
+            if 'rel="canonical"' not in tag and re.search(r'(?:src|href)="(?:https?:)?//(?!settwor\.github\.io/)', tag): errs.append(f'{n}: external resource not allowed in a widget: {tag[:80]}')
 
     sm = SITEMAP.read_text(encoding='utf-8') if SITEMAP.exists() else ''
     for p in pages:

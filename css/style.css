@@ -1138,9 +1138,17 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 .facts dd.is-links:not(.is-share) > span[aria-hidden] { display: none; }   /* no dots: a dot left at the end of a wrapped line looks stray */
 .facts dd.is-links:not(.is-share) .fact-link { min-inline-size: 0; justify-content: flex-start; padding: 0; }
 .facts > .fact-code dd { font-size: var(--fs-body); letter-spacing: 0.06em; white-space: nowrap; font-variant-numeric: tabular-nums; }
+/* v1.16.2 (owner: «the award code is written on two lines on my phone, make it one line and exactly on the table»): the code now fits its own column at ANY screen width and ANY text size.
+   The value cell is a size container, and the code takes 9.6% of the cell width as its font size (17 characters = about 10 em with the tracking), never more than body size.
+   So it cannot spill past the table edge or wrap, whatever the phone width or the user's text-size setting. The link is plain inline text (baseline = the label's baseline, row as tall as the other rows);
+   the 44px tap target is kept by padding cancelled with a negative margin, so the row no longer looks taller than its neighbours. */
+.facts > .fact-code dd { container-type: inline-size; min-inline-size: 0; }
+.facts > .fact-code dd a { display: inline-block; min-height: 44px; box-sizing: border-box; padding: 0.75rem 0.25rem; margin: -0.75rem -0.25rem; min-inline-size: 0; white-space: nowrap; letter-spacing: 0.02em; font-size: min(var(--fs-body), 9.6cqw); }
+@media (min-width: 30.0625rem) { .facts > .fact-code dd a { letter-spacing: 0.06em; font-size: min(var(--fs-body), 8.6cqw); } }
 @media (max-width: 30rem) {
-  .facts > div:has(> dd.is-links:not(.is-share)), .facts > .fact-code { grid-template-columns: 1fr; row-gap: 0.25rem; }
+  .facts > div:has(> dd.is-links:not(.is-share) > a + a, > dd.is-links:not(.is-share) > span) { grid-template-columns: 1fr; row-gap: 0.25rem; }   /* v1.16.8: only a row with SEVERAL links is stacked; one link stays label | value like the other rows */
 }
+/* v1.14.35 (owner: «on a phone the award code must be ONE line like the other rows, shrink the text if it does not fit»): the row stays label | value; the code shrinks with the width (floor 13px = small text floor, §5 item 5) */
 /* the extra row must not push «More information» past the window on short phones (320×568 was exactly full before): tighter rows under 600px of height */
 @media (max-height: 600px) { .facts { --rule-gap: 0.5rem; } }
 
@@ -1253,15 +1261,15 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 .reg-kind { flex: none; }
 .reg-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; }
 .reg-row {
-  position: relative; display: grid; grid-template-columns: auto 1fr auto; column-gap: 0.875rem; align-items: center;
+  position: relative; display: grid; grid-template-columns: auto auto 1fr auto; column-gap: 0.625rem; align-items: center;
   min-height: 44px; padding: 0.25rem 0.5rem; border-radius: 0.5rem;
 }
 .reg-row .mini-disc { grid-row: 1 / span 2; grid-column: 1; width: 1.625rem; height: 1.625rem; }
-.reg-row .icon { grid-row: 1 / span 2; grid-column: 3; opacity: 0.75; }
-.reg-main { grid-column: 2; display: flex; align-items: baseline; gap: 0.4rem; min-width: 0; white-space: nowrap; }
+.reg-row .icon { grid-row: 1 / span 2; grid-column: 4; opacity: 0.75; }
+.reg-main { grid-column: 3; display: flex; align-items: baseline; gap: 0.4rem; min-width: 0; white-space: nowrap; }
 .reg-num { font-family: var(--f-title); font-weight: 700; font-size: clamp(1.125rem, min(5vw, 3dvh), 1.5rem); line-height: 1.1; font-variant-numeric: lining-nums tabular-nums; letter-spacing: 0.01em; }
 .reg-unit { font-size: var(--fs-small); color: var(--ink-soft); letter-spacing: 0.04em; }
-.reg-meta { grid-column: 2; font-size: var(--fs-small); line-height: 1.25; color: var(--ink-soft); letter-spacing: 0.03em; }
+.reg-meta { grid-column: 3; font-size: var(--fs-small); line-height: 1.25; color: var(--ink-soft); letter-spacing: 0.03em; }
 .reg-row[aria-current="page"] { background: rgb(var(--line-rgb) / 0.07); }
 .reg-row[aria-current="page"]::before { content: ""; position: absolute; inset-block: 0.5rem; inset-inline-start: 0; width: 0.1875rem; border-radius: 2px; background: var(--ink); }
 @media (hover: hover) and (pointer: fine) { .reg-row:hover { background: rgb(var(--line-rgb) / 0.07); } }
@@ -1742,6 +1750,9 @@ html.ptr-on { overscroll-behavior-y: contain; }
   .bio-facts > div { padding-block: 0.125rem !important; }
 }
 
+/* v1.16.1 (owner: «the moving gradient background: faster and more transparent, the colour less saturated»): the colour tokens below are ~47% weaker (every alpha almost halved,
+   light and dark) and the two drift cycles are 20 s and 31 s (were 46 s and 71 s). Still one slow back-and-forth of ~40 s / ~62 s (far from the 0.2 Hz band of apple-design §14),
+   still off under prefers-reduced-motion. */
 /* ==========================================================================
    v1.14.10 (owner: «make the page background shimmer smoothly and beautifully»)
    Two fixed layers of soft colour blobs behind the pages (html::before / ::after) drift, turn and breathe very slowly, on different, long, never-synchronised
@@ -1750,18 +1761,18 @@ html.ptr-on { overscroll-behavior-y: contain; }
    prefers-reduced-motion: the blobs stay still (a static soft gradient). Print: off. Text, cards and covers sit above it, contrast is unchanged (the tints stay under ~25% opacity).
    ========================================================================== */
 :root {
-  --fx-a1: rgb(176 140 255 / 0.30);  --fx-a2: rgb(122 190 255 / 0.26);  --fx-a3: rgb(255 154 205 / 0.22);
-  --fx-b1: rgb(140 236 222 / 0.20);  --fx-b2: rgb(190 150 255 / 0.22);  --fx-b3: rgb(255 190 150 / 0.16);
+  --fx-a1: rgb(176 140 255 / 0.16);  --fx-a2: rgb(122 190 255 / 0.14);  --fx-a3: rgb(255 154 205 / 0.12);
+  --fx-b1: rgb(140 236 222 / 0.11);  --fx-b2: rgb(190 150 255 / 0.12);  --fx-b3: rgb(255 190 150 / 0.09);
 }
 @media screen and (prefers-color-scheme: dark) {
   html:not(:has(input[name="theme"][value="light"]:checked)) {
-    --fx-a1: rgb(122 72 214 / 0.34);  --fx-a2: rgb(58 92 224 / 0.26);   --fx-a3: rgb(196 74 186 / 0.20);
-    --fx-b1: rgb(60 170 200 / 0.14);  --fx-b2: rgb(150 90 235 / 0.26);  --fx-b3: rgb(220 90 150 / 0.14);
+    --fx-a1: rgb(122 72 214 / 0.18);  --fx-a2: rgb(58 92 224 / 0.14);   --fx-a3: rgb(196 74 186 / 0.11);
+    --fx-b1: rgb(60 170 200 / 0.08);  --fx-b2: rgb(150 90 235 / 0.14);  --fx-b3: rgb(220 90 150 / 0.08);
   }
 }
 html:has(input[name="theme"][value="dark"]:checked) {
-  --fx-a1: rgb(122 72 214 / 0.34);  --fx-a2: rgb(58 92 224 / 0.26);   --fx-a3: rgb(196 74 186 / 0.20);
-  --fx-b1: rgb(60 170 200 / 0.14);  --fx-b2: rgb(150 90 235 / 0.26);  --fx-b3: rgb(220 90 150 / 0.14);
+  --fx-a1: rgb(122 72 214 / 0.18);  --fx-a2: rgb(58 92 224 / 0.14);   --fx-a3: rgb(196 74 186 / 0.11);
+  --fx-b1: rgb(60 170 200 / 0.08);  --fx-b2: rgb(150 90 235 / 0.14);  --fx-b3: rgb(220 90 150 / 0.08);
 }
 @media screen {
   body { background: transparent; }   /* the page colour is the html background; the shimmer layers sit between it and the body */
@@ -1785,8 +1796,8 @@ html:has(input[name="theme"][value="dark"]:checked) {
 @media screen and (prefers-reduced-motion: no-preference) {
   /* v1.14.17: the background starts to move only after the entrance of the first screen (1.2 s), so the two big layers do not compete with it on a phone;
      `backwards` keeps the first keyframe during the wait, so nothing jumps when the drift starts */
-  html::before { animation: fx-drift-a 46s ease-in-out 1.2s infinite alternate backwards; }
-  html::after  { animation: fx-drift-b 71s ease-in-out 1.2s infinite alternate backwards; }
+  html::before { animation: fx-drift-a 20s ease-in-out 1.2s infinite alternate backwards; }
+  html::after  { animation: fx-drift-b 31s ease-in-out 1.2s infinite alternate backwards; }
   @keyframes fx-drift-a { from { translate: -5% -4%; rotate: -8deg; scale: 1; }    to { translate: 6% 5%;  rotate: 14deg; scale: 1.12; } }
   @keyframes fx-drift-b { from { translate: 6% 3%;   rotate: 10deg; scale: 1.1; }  to { translate: -6% -5%; rotate: -12deg; scale: 0.98; } }
 }
@@ -1930,6 +1941,7 @@ html:has(.share-dlg[open]) { overflow: hidden; }
     radial-gradient(circle at var(--sx, 50%) var(--sy, 50%), rgb(255 255 255 / 0.9), transparent 42%),
     linear-gradient(115deg, #ff8fd0 0%, #ffd27a 20%, #8dffb0 40%, #7fd6ff 60%, #b49bff 80%, #ff8fd0 100%);
   background-size: 100% 100%, 320% 320%;
+  background-repeat: no-repeat;   /* v1.14.34: a repeated tile showed coloured rectangles at the edges while a finger was held */
   background-position: 0 0, var(--sx, 50%) var(--sy, 50%);
   mix-blend-mode: multiply;
   opacity: calc(var(--sh, 0) * 0.34);
@@ -2005,3 +2017,142 @@ html:has(.share-dlg[open]) { overflow: hidden; }
   .rr-code, .rr-what, .rr-date { line-height: 1.15; }
   .rr-parts > div { padding-block: 0.0625rem; }
 }
+
+/* ==========================================================================
+   v1.14.33 (owner: «small pictures of the album / artist releases in Other awards»): a 24px cover in front of each group name (the track and the album: the album
+   cover; the artist: the artist photo). Decoration only (alt=""), the name stays text. The title row grows by about 7px per group, checked by audit_layout (rule 9).
+   ========================================================================== */
+.reg-title { align-items: center; }
+.reg-name { display: flex; align-items: center; gap: 0.5rem; }
+.reg-cover { flex: none; width: 1.5rem; height: 1.5rem; border-radius: 0.25rem; object-fit: cover; background: rgb(var(--line-rgb) / 0.08); box-shadow: 0 0 0 1px rgb(var(--line-rgb) / 0.22); }
+@media (prefers-contrast: more) { .reg-cover { box-shadow: 0 0 0 1px var(--ink); } }
+
+
+/* v1.14.36 (owner: small release / artist pictures «next to each disc»): the cover now sits in every row of Other awards, right after the disc (grid has 4 columns:
+   disc | cover | number + date | arrow). Same 1.625rem size as the disc, so the row height and the screen heights do not change; the group-title cover of v1.14.33 is gone (it would repeat the same picture). */
+.reg-row .reg-cover { grid-row: 1 / span 2; grid-column: 2; width: 1.625rem; height: 1.625rem; }
+
+
+/* ---------- v1.16.3 (owner: «improve the plaque on the main page: more information, prettier»): «Newest award» strip ----------
+   Under the three figures: the metal disc of the newest award, its level and kind, name, streams and registry code; the whole strip opens that line of the registry.
+   Ink hairline frame like the rest of the plaque, no new colours (the disc is the only metal). Hidden where the screen has no room (short phones, landscape) so rule 9 holds. */
+.home-newest { display: flex; align-items: center; gap: 0.75rem; width: 100%; max-width: 21rem; min-height: 44px; padding: 0.5rem 0.75rem; margin-top: 0.25rem; color: var(--ink); text-decoration: none; text-align: start; border: 1px solid rgb(var(--line-rgb) / 0.3); border-radius: 0.5rem; }
+.home-newest .mini-disc { flex: none; width: 2rem; height: 2rem; }
+.home-newest-text { display: flex; flex-direction: column; gap: 0.125rem; min-width: 0; }
+.home-newest-label { font-size: var(--fs-small); line-height: 1.25; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-soft); }
+.home-newest-what { font-family: var(--f-title); font-weight: 700; font-size: var(--fs-label); line-height: 1.2; overflow-wrap: anywhere; }
+.home-newest-meta { font-size: var(--fs-small); line-height: 1.3; letter-spacing: 0.04em; color: var(--ink-soft); font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+/* the code never breaks into two lines */
+.home-newest-code { white-space: nowrap; overflow-wrap: normal; }
+.home-newest-code { font-size: var(--fs-small); }
+@media (hover: hover) and (pointer: fine) { .home-newest:hover { background: rgb(var(--line-rgb) / 0.05); } }
+.home-newest:active { opacity: 0.6; }
+@media (prefers-contrast: more) { .home-newest { border-color: var(--ink); } .home-newest-label, .home-newest-meta { color: var(--ink); } }
+@media (max-height: 700px), (orientation: landscape) and (max-height: 520px) { .home-newest { display: none; } }
+
+/* ---------- v1.16.4 (owner: «More about SETTWOR is too squeezed on a phone»): roomy bio on short phones ----------
+   On phones under 720px tall the text, the facts table and the timeline were pressed together (no gap between the blocks, words hyphenated).
+   The «Label» row (SETTWOR, already shown in «More information» on screen 2) is left out here; the 30px it frees go back as gaps between the three blocks, and words are no longer hyphenated.
+   Taller phones and wider screens are unchanged. */
+@media (max-width: 26rem) and (max-height: 720px) {
+  .bio p { hyphens: manual; }
+  .bio { gap: 0.75rem; }
+  .bio-facts > div:nth-child(4) { display: none; }
+}
+
+
+/* ---------- v1.16.5 (owner: «add the creation date of CDRA, Oct 14, 2025»): «Since October 14, 2025» on the first-screen plaque ----------
+   Small caps line under the CDRA mark, same quiet ink as the eyebrow. Hidden on short phones and in low landscape, like the eyebrow and the newest-award strip, so the screen stays whole (rule 9). */
+.home-since { margin: 0; font-size: var(--fs-small); line-height: 1.2; letter-spacing: 0.16em; text-indent: 0.16em; text-transform: uppercase; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+@media (prefers-contrast: more) { .home-since { color: var(--ink); } }
+@media (max-height: 740px), (orientation: landscape) and (max-height: 520px) { .home-since { display: none; } }
+
+/* ---------- v1.16.7 (owner: «if I press the "Presented to SETTWOR to commemorate..." plaque on a phone it disappears for a second») ----------
+   The first-screen entrance of .dedication is `animation: rise` (opacity 0 -> 1, 240ms delay, fill backwards). The press rule (press-hold, v1.14.5) REPLACED that animation while the finger was down,
+   so on release `rise` started again from opacity 0 and the plaque vanished and faded back. Now the pressed state keeps `rise` first in the list (the same finished animation, it is not restarted)
+   and adds press-hold after it. Same fix for the other first-screen blocks that carry an entrance animation and a press rule. */
+@media (hover: none) and (prefers-reduced-motion: no-preference) {
+  .s1 .dedication:active { animation: rise 560ms var(--ease) 240ms backwards, press-hold 700ms cubic-bezier(.22, .61, .36, 1) both; }
+}
+
+
+/* ---------- v1.16.8 (owner: «on a PC make the other rows (Date, Award code) as wide as the other table rows; on a phone put Listen and Website on one line like the others») ----------
+   PC / wide screens (over 30rem): every row of the facts table is the same: value at the same size and the same 44px row height (Date and Award code were smaller and tighter than Listen and Website).
+   Phones (30rem and under): a row with ONE link («Listen: Spotify», «Website») is one line, label left and value right, exactly like Date and Award code; the 44px tap target is kept by padding
+   cancelled with a negative margin, so the row is as tall as the others. A row with several links is still stacked. */
+@media (min-width: 30.0625rem) and (min-height: 521px) {   /* not in a low landscape phone: there the compact rows stay */
+  .facts { --rule-gap: clamp(0.25rem, 1dvh, 0.75rem); gap: var(--rule-gap); }   /* rows are 44px tall now, so the space between the rules shrinks and the longest table (9 rows) still fits one window */
+  .facts > div > dd:not(.is-links):not(.is-share) { display: flex; align-items: center; min-height: 44px; }
+  .facts > .fact-code dd { font-size: clamp(1rem, min(0.85rem + 0.9vw, 3.2dvh), 1.375rem); letter-spacing: normal; }
+  .facts > .fact-code dd a { display: inline-flex; align-items: center; min-height: 44px; padding: 0; margin: 0; font-size: inherit; letter-spacing: normal; }
+}
+@media (max-width: 30rem) {
+  .facts dd.is-links:not(.is-share) > .fact-link:only-child { display: inline-block; min-height: 44px; box-sizing: border-box; padding: 0.75rem 0.25rem; margin: -0.75rem -0.25rem; }
+  .facts dd.is-links:not(.is-share):has(> .fact-link:only-child) { min-height: 0; }
+}
+
+
+/* ---------- v1.16.9 (owner: «Other awards: no split by track, just plaques; inside: single / album / artist and whose it is, SETTWOR») ----------
+   No group titles any more: the list is flat and every award is its own plaque (hairline frame, soft radius, like the «Newest award» strip). Rows have three lines on the right:
+   the number of streams, «Single · GOT ME UP 2 · SETTWOR» (the artist: «Artist · SETTWOR») and the level with the date (the last line goes on short screens, as before). */
+.reg { gap: 0; }
+.reg > .reg-list { gap: clamp(0.375rem, 1.4dvh, 0.75rem); }
+.reg-list > li > .reg-row { border: 1px solid rgb(var(--line-rgb) / 0.3); padding: 0.375rem 0.625rem; }
+.reg-row .mini-disc, .reg-row .reg-cover, .reg-row .icon { grid-row: 1 / span 3; }
+.reg-what { grid-column: 3; font-size: var(--fs-hint); line-height: 1.25; font-weight: 700; color: var(--ink); letter-spacing: 0.02em; }
+.reg-row .reg-main { grid-row: 1; }
+.reg-row .reg-what { grid-row: 2; }
+.reg-row .reg-meta { grid-row: 3; }
+@media (max-height: 700px) { .reg-row .reg-main { align-self: auto; } .reg-meta { display: block; } }   /* flat plaques are shorter than the old groups: the level and date stay on phones down to 561px tall */
+@media (max-height: 560px) { .reg-meta { display: none; } .reg-row .mini-disc, .reg-row .reg-cover, .reg-row .icon { grid-row: 1 / span 2; } }
+@media (prefers-contrast: more) { .reg-list > li > .reg-row { border-color: var(--ink); } }
+@media (orientation: landscape) and (max-height: 520px) {
+  .reg > .reg-list { display: grid; grid-template-columns: 1fr 1fr; column-gap: clamp(1rem, 4vw, 2.5rem); row-gap: 0.25rem; }
+  .reg-list > li > .reg-row { padding-block: 0.125rem; }
+  .reg-what { font-size: var(--fs-small); }
+}
+
+
+/* ---------- v1.16.10 (owner: «on a phone, in More about SETTWOR let every part breathe; make the Full information button smaller and lower; add a little air to the rest, nothing squeezed») ----------
+   Phones: the sentence, the facts table and the timeline now share the free room of the screen evenly (flex, `space-evenly`: the same gap above the first block, between the blocks and below the last),
+   so every part gets air exactly as much as the screen has to give: a tall phone gets a lot, a short one only what is left, and the screen can never grow past the window (rule 9: the extra room
+   only comes from space that was empty; the old gaps stay as the minimum). On phones 640 to 699px tall, where the table rows and the timeline steps were only 2 to 4px apart, they get a little more.
+   The button is smaller on every phone width: smaller type, tighter padding, smaller arrow chip (the height stays 44px: that is the tap target, §5 item 5); with the free room shared out it also sits lower.
+   CSS only; no fixed extra height anywhere, so no screen that fitted before can stop fitting. */
+@media (max-width: 899px) {
+  .s4 .bio { flex: 1 1 auto; justify-content: space-evenly; max-height: 38rem; }
+  .s4 .full-info { gap: 0.5rem; padding: 0.25rem 0.375rem 0.25rem 1.125rem; font-size: var(--fs-hint); }
+  .s4 .full-info .icon { width: 0.625rem; height: 0.625rem; padding: 0.375rem; }
+}
+@media (max-width: 899px) and (orientation: portrait) and (min-height: 640px) {
+  .s4 .section-title { margin-bottom: 0; }   /* the sentence never sits closer to the title than before: the title's -0.25rem pull is switched off here */
+  .s4 .bio { padding-top: 0.25rem; }
+}
+@media (min-width: 23.4rem) and (max-width: 899px) and (orientation: portrait) and (min-height: 640px) and (max-height: 699px) {
+  .s4 .bio-facts > div { padding-block: 0.3125rem !important; }
+}
+@media (min-width: 23.4rem) and (max-width: 899px) and (orientation: portrait) and (min-height: 640px) and (max-height: 660px) { .s4 .bio-line { gap: 0.5rem; } }
+@media (max-width: 899px) and (orientation: portrait) and (min-height: 640px) { .s4 .full-info { margin-bottom: max(0.5rem, clamp(0rem, calc((100dvh - 44rem) * 0.12), 1.75rem)); } }   /* room under the button above the footer: a little on every phone, more on tall ones */
+
+/* ---------- v1.16.11 (owner: «on the phone I press the plate and drag my finger over it, it must bend toward the finger until I let go») ----------
+   Before, the browser took a dragging finger for a page scroll, sent pointercancel and js/tilt.js let the plate spring back after a few pixels.
+   On touch screens the plate (and the enlarged cover) now keep the finger for themselves: no scroll starts on them, so the plate follows the finger
+   all the way until it is lifted. A tap still works (click on the cover, links). The page scrolls and swipes from everywhere else
+   (top bar, the space above and below the plate, the arrow). No layout space, no visual change at rest. */
+@media (pointer: coarse) { .s1 .plaque, .zoom-tilt { touch-action: none; } }
+
+/* ---------- v1.16.12 (owner: «in Other awards the cover first, a little bigger, and the disc hides behind it on the right») ----------
+   Each row: the cover (was 1.625rem, now --rc) comes first; the metal disc of the same size sits in the same grid cell, pushed right so about 40% of it
+   peeks out from behind the cover (the markup keeps disc then cover, so the cover paints on top; no markup change). The cell is as wide as cover + peek,
+   so the text column moves by the peek only. Row heights stay set by the 2-3 text lines (cover fits inside them), checked by audit_layout (rule 9).
+   Decoration only (alt="" / aria-hidden); the number, kind, level and date stay text. */
+.reg-row { --rc: 2.5rem; --peek: calc(var(--rc) * 0.4); grid-template-columns: auto 1fr auto; }
+.reg-row .reg-cover, .reg-row .mini-disc { grid-column: 1; grid-row: 1 / span 3; align-self: center; width: var(--rc); height: var(--rc); }
+.reg-row .reg-cover { justify-self: start; border-radius: 0.3125rem; box-shadow: 0 0 0 1px rgb(var(--line-rgb) / 0.3), 0.125rem 0 0.375rem rgb(0 0 0 / 0.22); }
+.reg-row .mini-disc { margin-inline-start: var(--peek); }
+.reg-row .reg-main, .reg-row .reg-what, .reg-row .reg-meta { grid-column: 2; }
+.reg-row .icon { grid-column: 3; grid-row: 1 / span 3; }
+.reg-row .reg-cover, .reg-row .mini-disc, .reg-row .icon { align-self: center; }
+@media (max-height: 560px) { .reg-row { --rc: 2rem; } .reg-row .reg-cover, .reg-row .mini-disc, .reg-row .icon { grid-row: 1 / span 2; } }
+@media (orientation: landscape) and (max-height: 520px) { .reg-row { --rc: 1.75rem; } }
+@media (prefers-contrast: more) { .reg-row .reg-cover { box-shadow: 0 0 0 1px var(--ink); } }
