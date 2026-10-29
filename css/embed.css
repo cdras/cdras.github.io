@@ -89,3 +89,13 @@ body.embed {
 /* The page background of the site (the drifting colour haze, html::before/::after, and the fades under the bar, body::before/::after) is page decoration,
    not part of the plaque: switched off in the widget so it stays a clean card on any host background. */
 html:has(body.embed)::before, html:has(body.embed)::after, body.embed::before, body.embed::after { display: none !important; }
+
+/* v1.16.18 (owner: "remove the gradient background in the widgets for other sites"): the widget has NO gradient fills. The plaque, the tinted
+   tier row and the number bar are flat colours (same hues as before, taken from the middle of each old gradient), light and dark. The CSS disc
+   on the cover and the thin gilt rules are not backgrounds of the widget and stay. A widget page carries ONE radio (light or dark), so the
+   dark rules below match exactly the dark widget pages. */
+.embed .s1 .plaque { background: #fff; }
+.embed .s1 .tier-row { background: rgb(var(--line-rgb) / 0.06); }
+html:has(input[name="theme"][value="dark"]:checked) .embed .s1 .plaque { background: #1a1029; }
+html:has(input[name="theme"][value="dark"]:checked) .embed .s1 .tier-row { background: rgb(var(--line-rgb) / 0.08); }
+html:has(input[name="theme"][value="dark"]:checked) .embed .s1 .ledger-rank { background: rgb(122 72 214 / 0.15); }
