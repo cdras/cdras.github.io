@@ -16,9 +16,9 @@ OUT = ROOT / 'images' / 'story'
 sys.path.insert(0, str(pathlib.Path(__file__).resolve().parent))
 import build_pages
 
-# v1.14.17: the artist page shows the portrait from settwor.github.io; offline (or on a slow network) it never loaded and the story picture had a broken image.
+# v1.14.17: the artist page shows the portrait from settwor.com.pl; offline (or on a slow network) it never loaded and the story picture had a broken image.
 # The same file lives in images/, so any request for the remote portrait is answered from the local copy.
-REMOTE = 'https://settwor.github.io/images/main.jpg'
+REMOTE = 'https://settwor.com.pl/images/main.jpg'
 LOCAL = ROOT / 'images' / 'SETTWOR_main.jpg'
 
 def local_portrait(route):

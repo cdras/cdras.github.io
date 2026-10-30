@@ -762,7 +762,7 @@ ul { list-style: none; }
   .s1 .tier-row .t-display { font-size: 2.125rem !important; }
   .s1 .ledger-rank .t-num { font-size: 2.5rem !important; }
   .topbar .logo { width: 7.02rem !important; height: auto; }
-  main::after { content: "cdras.github.io"; display: block; margin-top: 4mm; text-align: center; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--ink); }
+  main::after { content: "cdra.settwor.com.pl"; display: block; margin-top: 4mm; text-align: center; font-size: 0.75rem; letter-spacing: 0.14em; color: var(--ink); }
 }
 
 /* ---------- Status finish (v1.10.2) ----------

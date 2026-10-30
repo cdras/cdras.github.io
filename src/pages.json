@@ -1,5 +1,5 @@
 {
-  "base_url": "https://cdras.github.io/",
+  "base_url": "https://cdra.settwor.com.pl/",
   "track": {
     "name": "GOT ME UP 2",
     "artist": "SETTWOR",
@@ -34,7 +34,7 @@
     "settwor": {
       "base": "images/SETTWOR_main",
       "sleeve": "images/SETTWOR_main",
-      "src": "https://settwor.github.io/images/main.jpg",
+      "src": "https://settwor.com.pl/images/main.jpg",
       "ext": "jpg",
       "cls": "cover--wide",
       "w": 900,
@@ -106,21 +106,21 @@
     "desc": "CDRA — stream awards: {list} all-time streams.",
     "alt_names": [
       "CDRA Awards",
-      "cdras.github.io"
+      "cdra.settwor.com.pl"
     ]
   },
   "og_dir": "images/og",
   "artist": {
-    "id": "https://settwor.github.io/#artist",
+    "id": "https://settwor.com.pl/#artist",
     "name": "SETTWOR",
-    "url": "https://settwor.github.io/",
+    "url": "https://settwor.com.pl/",
     "job": "Phonk artist and producer",
     "genres": [
       "Brazilian Funk",
       "Phonk"
     ],
     "same_as": [
-      "https://settwor.github.io/",
+      "https://settwor.com.pl/",
       "https://open.spotify.com/artist/5BD8hsAGp1fwJKcnlQWjGf",
       "https://music.apple.com/us/artist/settwor/1526983418",
       "https://music.youtube.com/channel/UCr8rodS7kLD36B_8B4028kg",

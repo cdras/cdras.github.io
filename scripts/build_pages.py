@@ -439,7 +439,7 @@ def jsonld_graph(spec, d):
     """Structured data (JSON-LD) for one page. Every fact here must also be visible on the page."""
     base, tr, ar = d['base_url'], d['track'], d['artist']
     og = base + url_quote(spec['og'])
-    # v1.16.16: the SETTWOR entity (type, sameAs, jobTitle) is defined ONCE, on https://settwor.github.io/ (see docs/SEO.md).
+    # v1.16.16: the SETTWOR entity (type, sameAs, jobTitle) is defined ONCE, on https://settwor.com.pl/ (see docs/SEO.md).
     # CDRA only references it by @id and never redefines its type; ar['same_as'] in pages.json is the master copy for that site.
     page = {'@type': 'WebPage', '@id': spec['URL'] + '#webpage', 'url': spec['URL'], 'name': spec['TITLE'],
             'description': spec['DESC'], 'inLanguage': 'en',
@@ -513,7 +513,7 @@ def page_specs(d):
         og=f"{d['og_dir']}/og-{s['file'][:-5]}.png",
         group1=[('p', 't-label', f"{s['level']} award for the artist" if s.get('level') else 'Award for'), ('h1', 't-display', tr['artist'])],
         facts=[('Date', s['date'], True)] + ([('Award code', s['code'], True)] if s.get('code') else [])
-              + [('Listen', '', True, [('Spotify', [u for u in d['artist']['same_as'] if 'open.spotify.com/artist' in u][0])]), ('Website', '', True, [('settwor.github.io', d['artist']['url'])])],   # v1.14.18 (owner gave the artist links)
+              + [('Listen', '', True, [('Spotify', [u for u in d['artist']['same_as'] if 'open.spotify.com/artist' in u][0])]), ('Website', '', True, [('settwor.com.pl', d['artist']['url'])])],   # v1.14.18 (owner gave the artist links)
         award_label='Awards for', about_track=False, is_home=False)
     home = d['home']
     src = dict(specs[d['awards'][-1]['file'] if d['awards'] else d['artist_page']['file']])

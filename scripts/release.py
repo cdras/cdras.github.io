@@ -32,7 +32,7 @@ SHARE_FILE = 'js/share.js'
 REQUIRED_FILES = ['VERSION', 'css/style.css', 'css/embed.css', 'src/embed.html', 'src/embed-guide.html', 'scripts/measure_embed.py', 'js/tilt.js', 'js/share.js', 'index.html', 'src/page.html', 'src/pages.json', 'scripts/build_pages.py']
 # В .gitignore: в чистом клоне репозитория их может не быть — тогда только предупреждение
 LOCAL_ONLY = ['AGENTS.md', 'CLAUDE.md', 'CHANGELOG.md']
-BASE_URL = 'https://cdras.github.io/'
+BASE_URL = 'https://cdra.settwor.com.pl/'
 EXTRA_PAGES = ['404.html', 'PRIVACY-POLICY.html', 'EMBED.html']   # несут версию, но не попадают в sitemap (noindex)
 EXCLUDE = ['dist', '.git', '__pycache__', '*.pyc', '*.zip', '.DS_Store', 'Thumbs.db']
 
@@ -155,11 +155,11 @@ def check(version):
             else:
                 try:
                     g = json.loads(lds[0]).get('@graph', [])
-                    aid = 'https://settwor.github.io/#artist'
+                    aid = 'https://settwor.com.pl/#artist'
                     if any(x.get('@id') == aid for x in g): errs.append(f'{n}: JSON-LD must not define the entity {aid} (reference it by @id only, docs/SEO.md)')
                     if not any((x.get('creator') or {}).get('@id') == aid for x in g): errs.append(f'{n}: JSON-LD creator must be {{"@id": "{aid}"}}')
                 except ValueError as e: errs.append(f'{n}: JSON-LD is not valid JSON ({e})')
-            if 'href="https://settwor.github.io/"' not in t: errs.append(f'{n}: no visible link to https://settwor.github.io/')
+            if 'href="https://settwor.com.pl/"' not in t: errs.append(f'{n}: no visible link to https://settwor.com.pl/')
         # rule 8 (owner exception, v1.11.16): JSON-LD plus exactly one local file, js/tilt.js, and (v1.14.0: tilt + pull-to-refresh) on every site page
         for tag in re.findall(r'<script\b[^>]*>', t):
             if 'application/ld+json' in tag or tag == TILT_TAG or tag == SHARE_TAG: continue
