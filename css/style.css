@@ -874,13 +874,13 @@ ul { list-style: none; }
 }
 /* iOS Safari fires :active on plain text only for elements it treats as clickable; on touch screens the cursor is invisible, so this is free */
 @media (hover: none) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver) { cursor: pointer; }
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver) { cursor: pointer; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver),
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver),
   .facts dt { transition: translate var(--soft), scale var(--soft), color var(--soft); }
-  :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)) { transform-origin: left center; }
+  :is(.facts > div, .award-head, .award-date, .group-title, .artist-title, .faq p, .bio p:nth-child(odd)) { transform-origin: left center; }
   .bio p:nth-child(even) { transform-origin: right center; }
   .ledger-top > span:first-child { transform-origin: left center; }
   .ledger-top > span:last-child { transform-origin: right center; }
@@ -889,7 +889,7 @@ ul { list-style: none; }
   @media (hover: hover) and (pointer: fine) { .cover:hover, .thumb:hover, .card-art:hover { animation: none; scale: 1.03; } }
 
   @media (hover: hover) and (pointer: fine) {
-    :is(.facts > div, .award-head, .award-date, .group-title, .faq p, .bio p:nth-child(odd)):hover { translate: 0.1875rem 0; }
+    :is(.facts > div, .award-head, .award-date, .group-title, .artist-title, .faq p, .bio p:nth-child(odd)):hover { translate: 0.1875rem 0; }
     .bio p:nth-child(even):hover { translate: -0.1875rem 0; }
     :is(.section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):hover { scale: 1.015; }
     .next:hover .arrow { scale: 1.12; }
@@ -898,7 +898,7 @@ ul { list-style: none; }
     .fact-link:hover, .foot-link:hover { text-underline-offset: 0.32em; }
   }
   /* press: instant (90 ms), release: the same soft settle as the hover transition */
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):active {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):active {
     scale: 0.985; transition-duration: 90ms;
   }
   .faq summary { transition: translate var(--soft), opacity 100ms; }
@@ -921,7 +921,7 @@ ul { list-style: none; }
 
 /* reduced motion: no movement, a short dim answers the press */
 @media (prefers-reduced-motion: reduce) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):active { opacity: 0.6; }
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver):active { opacity: 0.6; }
 }
 
 /* ---------- v1.11.0: award standards page (owner: «for an artist, an album and a track the award standards differ; make a separate beautiful page») ----------
@@ -1210,7 +1210,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
   .tier-row > :is(.t-label, .t-display, .t-title) { transform-origin: left center; transition: scale var(--soft); }
   @media (hover: hover) and (pointer: fine) { .tier-row > :is(.t-label, .t-display, .t-title):hover { scale: 1.015; } }
   @media (hover: none) {
-    :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active { scale: 1.015; transition-duration: 90ms; }
+    :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active { scale: 1.015; transition-duration: 90ms; }
     :is(.cover, .thumb, .card-art):active { scale: 1.03; transition-duration: 90ms; }
   }
 }
@@ -1425,7 +1425,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 /* v1.13.10 (owner: text looks soft on a PC when the pointer is on it): text that zooms or nudges is drawn with exact glyph geometry
    (no hinting jumps while the scale changes) and the zoom ends on the pixel grid; with the tilt now flat over text (js/tilt.js) it stays crisp. */
 @media (hover: hover) and (pointer: fine) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver),
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver),
   .tier-row > :is(.t-label, .t-display, .t-title), .facts dt { text-rendering: geometricPrecision; -webkit-font-smoothing: subpixel-antialiased; }
 }
 
@@ -1488,7 +1488,7 @@ html:has(.zoom-toggle:checked) { overflow: hidden; }
 html { scrollbar-width: none; -ms-overflow-style: none; }
 html::-webkit-scrollbar, body::-webkit-scrollbar { display: none; width: 0; height: 0; }
 @media (hover: none) and (prefers-reduced-motion: no-preference) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active {
     scale: 1.02; transition-duration: 280ms; transition-timing-function: cubic-bezier(.22, .61, .36, 1);
   }
 }
@@ -1704,13 +1704,13 @@ html.ptr-on { overscroll-behavior-y: contain; }
    the text eases back to its normal size after 0.3 s and stays still, so the selection handles can work. A tap (released early) looks as before.
    ========================================================================== */
 @media (hover: none) and (prefers-reduced-motion: no-preference) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title)):active {
     animation: press-hold 700ms cubic-bezier(.22, .61, .36, 1) both;
   }
   @keyframes press-hold { 0% { scale: 1; } 25% { scale: 1.02; } 40% { scale: 1.02; } 75%, 100% { scale: 1; } }
 }
 @media (hover: none) {
-  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title), .home-stats dt, .home-stats dd) {
+  :is(.facts > div, .award-head, .award-date, .bio p, .group-title, .artist-title, .faq p, .section-title, .dedication, .ledger-top > span, .ledger-rank > p, .home-lead, .home-eyebrow, .home-name, .foot-note, .ver, .tier-row > :is(.t-label, .t-display, .t-title), .home-stats dt, .home-stats dd) {
     -webkit-user-select: text; user-select: text;
   }
 }
@@ -2167,3 +2167,33 @@ html:has(.share-dlg[open]) { overflow: hidden; }
 @media (prefers-contrast: more) { .own-note { color: var(--ink); } }
 /* the home plaque gives back the height the note takes (laptop windows 700–800px tall); only its top and bottom padding shrink */
 @media (min-width: 900px) and (min-height: 700px) and (max-height: 800px) { .s1 .home-plaque:not(.std-plaque) { padding-block: clamp(1.25rem, 4dvh, 2.25rem); } }
+
+/* ---------- v1.16.19 (owner: «move all our awards into Awards SETTWOR, later this will be a site with awards of different artists; I mean All awards») ----------
+   «All awards» (#s2 of the home page) is now a list of ARTIST blocks. Today there is one: <section class="award-artist"> = the heading «Awards SETTWOR» + the
+   old three release groups (.award-groups, unchanged). Another artist later = another .award-artist after this one (own heading, own groups).
+   The block takes over the width the groups had (26rem / 38rem / 72rem, same breakpoints, same order), the groups fill it. The heading is a notch above the
+   release titles (ink, bold, label size; the release titles stay soft small caps), text only, no layout space beyond its own row. */
+.award-artist { width: min(100%, 26rem); display: flex; flex-direction: column; gap: clamp(0.25rem, 1dvh, 0.625rem); }
+.award-artist > .award-groups { width: 100%; }
+.artist-title { display: flex; align-items: center; gap: 0.75rem; font-family: var(--f-title); font-weight: 700; font-size: var(--fs-label); line-height: 1.2; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-soft); }
+.artist-title::after { content: ""; flex: 1 1 auto; height: 1px; background: rgb(var(--line-rgb) / 0.6); }
+@media (min-width: 900px) and (min-height: 700px) { .award-artist { width: min(100%, 38rem); } }
+@media (min-width: 900px) { .award-artist { width: min(100%, 72rem); } .stack:has(> .award-artist) { max-width: 76rem; } }
+@media (max-height: 699px) { .artist-title { font-size: 0.9375rem; } }
+@media (prefers-contrast: more) { .artist-title::after { background: var(--ink); } }
+
+/* ---------- v1.16.20 (owner: «no phrases outside the small award plate like "GOT ME UP 2 by SETTWOR"; the one line "Awards SETTWOR" does that job; the rest goes into the plate») ----------
+   The three release titles are gone: one list of cards under «Awards SETTWOR»; every card now starts with the release name (.card-name, text, ink, bold).
+   Wide screens: the cards sit in three columns (they used to be the three groups). Phone ladder: the name takes grid row 1, the old rows move down by one. */
+.card-name { font-size: var(--fs-label); line-height: 1.2; font-weight: 700; color: var(--ink); overflow-wrap: anywhere; }
+@media (min-width: 900px) {
+  .award-groups { display: block; }
+  .award-groups .cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; align-items: start; }
+  .award-groups .card-name { font-size: 1rem; }
+}
+@media (max-width: 899px) and (max-height: 839px) {
+  .award-groups .card-name { grid-column: 1 / -1; grid-row: 1; font-size: 0.9375rem; }
+  .award-groups .card-kind, .award-groups .card-date { grid-row: 2; }
+  .award-groups .card-num { grid-row: 3; }
+  .award-groups .card-sub { grid-row: 4; }
+}

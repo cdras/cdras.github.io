@@ -31,7 +31,6 @@
             <a class="home-link" href="AWARD-REGISTRY.html">Award registry</a>
           </div>
         </div>
-        <p class="own-note">{{OWN_NOTE}}</p>
       </div>
       <a class="next" href="#s2">
         <span class="next-text"><span class="hint-touch">Swipe</span><span class="hint-mouse">Scroll</span> to see all awards</span>
@@ -42,20 +41,16 @@
     <section class="screen s2" id="s2" aria-labelledby="h-all">
       <h2 class="section-title" id="h-all"><span>All awards</span></h2>
       <div class="stack">
-        <div class="award-groups">
-          <h3 class="group-title"><span>GOT ME UP 2 by SETTWOR</span></h3>
-          <ul class="cards">
+        <section class="award-artist" aria-labelledby="h-artist-settwor">
+          <h3 class="artist-title" id="h-artist-settwor"><span>Awards SETTWOR</span></h3>
+          <div class="award-groups">
+            <ul class="cards">
 {{#HOME_TRACK_CARDS}}
-          </ul>
-          <h3 class="group-title"><span>GET IT, Vol.1 by SETTWOR</span></h3>
-          <ul class="cards">
 {{#HOME_ALBUM_CARD}}
-          </ul>
-          <h3 class="group-title"><span>SETTWOR</span></h3>
-          <ul class="cards">
 {{#HOME_ARTIST_CARD}}
-          </ul>
-        </div>
+            </ul>
+          </div>
+        </section>
       </div>
       <a class="next" href="#s3">
         <span class="next-text">Questions and answers</span>

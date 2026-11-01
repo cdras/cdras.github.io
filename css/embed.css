@@ -99,3 +99,9 @@ html:has(body.embed)::before, html:has(body.embed)::after, body.embed::before, b
 html:has(input[name="theme"][value="dark"]:checked) .embed .s1 .plaque { background: #1a1029; }
 html:has(input[name="theme"][value="dark"]:checked) .embed .s1 .tier-row { background: rgb(var(--line-rgb) / 0.08); }
 html:has(input[name="theme"][value="dark"]:checked) .embed .s1 .ledger-rank { background: rgb(122 72 214 / 0.15); }
+
+/* v1.16.23 (owner: "remove the gradient background in the widgets for other sites", again): what still read as a gradient behind the card was the wide soft
+   shadow under the plaque (it fades from violet to nothing around the card). The widget has no shadow now: a flat card with its fine ink border, on any host
+   background. The empty room that was kept for the shadow stays (bottom padding of .s1), so the measured iframe heights in src/embed-sizes.json and the
+   embed code people already pasted stay correct. The CSS disc on the cover is the artwork and keeps its metal. */
+.embed .s1 .plaque, .embed .s1 .plaque:hover { box-shadow: none !important; filter: none !important; }

@@ -1,0 +1,4952 @@
+/* =============================================================
+   SETTWOR — main.css
+   -------------------------------------------------------------
+   Sections:  1 Tokens   2 Base   3 Page frame   4 Header
+              5 Components   6 Content   7 News and articles
+              7b Biography, photographs, releases
+              8 Side rails   9 Footer
+              10 Desktop (min-width: 40rem)   11 Wide (min-width: 68rem)
+   Mobile-first: sections 1-8 describe the phone layout.
+   To restyle the site, change the variables in section 1.
+   ============================================================= */
+
+
+/* ---------- 1. Tokens ---------- */
+:root {
+    --color-bg: #fff;
+    --color-surface: #f6f6f6;
+    --color-text: #000;
+    --color-text-soft: #333;
+    --color-muted: #696969;
+    --color-line: #868181;
+    --color-line-soft: #dcdcdc;
+    --color-border: #000;
+    --color-hover: #e6e6e6;
+    --color-on-text: #fff;   /* text on a --color-text fill (6.4: it flips with the theme) */
+
+    /* Typography: Geologica everywhere (SIL OFL 1.1, files and licence in /fonts, @font-face in /fonts.css).
+       To go back to the system font for text, set --font-ui to
+       system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif. */
+    --font-brand: 'Geologica', system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+    --font-ui: var(--font-brand);
+    --fw-regular: 400;
+    --fw-medium: 500;
+    --fw-hero-title: 700;   /* hero name on desktop (v11.9 made it 600 by mistake, back to Bold in v11.10) */
+    --fw-hero-tagline: var(--fw-body); /* line under the name on desktop: as before, the body weight */
+    --fw-hero-title-phone: 600;   /* v11.10: phones only (was Bold 700) */
+    --fw-hero-tagline-phone: 600; /* v11.10: phones only (was Bold 700) */
+    --fw-body: 450;     /* normal text, a little lighter than Medium (v11.8); Geologica is a variable font, so 450 is real */
+    --fw-semibold: 600; /* v11.11: one step down from Bold 700 (the font has a real 600) */
+    --fw-bold: 600;     /* v11.11: one step down from 700; the hero name on desktop keeps 700 on purpose (--fw-hero-title) */
+
+    /* Type scale (rem, follows the browser text size). Pair = size + leading + tracking. */
+    --fs-caption: 0.75rem;
+    --fs-footnote: 0.8125rem;
+    --fs-subhead: 0.875rem;
+    --fs-body: 1.0625rem;
+    --fs-headline: 1.125rem;
+    --fs-title-3: 1.375rem;
+    --fs-title-2: 1.75rem;
+    --fs-title-1: clamp(1.75rem, 8.5vw, 2.25rem);
+    --fs-display: clamp(2.25rem, 10.5vw, 4rem);
+
+    --lh-display: 1.05;
+    --lh-title: 1.15;
+    --lh-headline: 1.3;
+    --lh-body: 1.55;
+    --lh-caption: 1.4;
+
+    --track-display: -0.02em;
+    --track-title: -0.01em;
+    --track-body: 0;
+    --track-caption: 0.01em;
+    --track-label: 0.08em; /* only for UPPERCASE labels */
+
+    /* Spacing, 4/8 px grid in rem */
+    --space-1: 0.25rem;
+    --space-2: 0.5rem;
+    --space-3: 0.75rem;
+    --space-4: 1rem;
+    --space-5: 1.5rem;
+    --space-6: 2rem;
+    --space-7: 3rem;
+    --space-8: 4rem;
+
+    /* Radii */
+    --radius-xs: 0.375rem;   /* 8.4: small chips and inputs (was 6px) */
+    --radius-s: 0.5rem;
+    --radius-m: 0.75rem;
+    --radius-l: 1.125rem;
+    --radius-xl: 2rem;       /* 9.4: the sheet (release window). Concentric with its round buttons: 32 = 20 (button) + 12 (inset), and the content keeps 32 of padding, so nothing else sits in the curved corner */
+
+    /* Elevation: the bigger the surface, the softer and deeper the shadow */
+    --elev-1: 0 1px 2px rgba(0, 0, 0, 0.08), 0 1px 1px rgba(0, 0, 0, 0.04);
+    --elev-2: 0 4px 12px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.06);
+    --elev-3: 0 16px 40px rgba(0, 0, 0, 0.2), 0 4px 12px rgba(0, 0, 0, 0.1);
+
+    /* Motion. Springs are CSS linear() curves of a spring (see skills/apple-design, section 4).
+       default: damping 1.0, response 0.4 s, no overshoot. momentum: damping 0.8, response 0.3 s,
+       use ONLY after a flick or throw. Gesture-driven things get a real JS spring in phase 3. */
+    --ease-standard: cubic-bezier(0.2, 0, 0, 1);
+    --spring-default: linear(0, 0.026, 0.089, 0.172, 0.262, 0.353, 0.44, 0.519, 0.591, 0.655, 0.71, 0.758, 0.799, 0.833, 0.862, 0.887, 0.907, 0.924, 0.938, 0.949, 0.959, 0.966, 0.973, 0.978, 1);
+    --spring-momentum: linear(0, 0.07, 0.223, 0.399, 0.565, 0.705, 0.813, 0.893, 0.947, 0.981, 1.001, 1.011, 1.015, 1.015, 1.013, 1.01, 1.008, 1.005, 1.004, 1.002, 1.001, 1.001, 1, 1, 1, 1, 1, 1, 1, 1, 1);
+    --t-press: 100ms;
+    --t-sheet: 300ms;
+    --t-move: 400ms;
+    --t-spring-momentum: 600ms;
+
+    --header-h: 3.5rem;
+    --sheet-w: 44rem;
+    --wide-w: 76rem;
+    --radius-pill: 999px;
+
+    /* Materials (todo design 4.1, 4.2). Three levels of surface, from light to thick:
+       chrome (header, menu) < banner (cookie notice, notification ask) < sheet (release window).
+       Content scrolls under chrome, so it is translucent; a sheet is dense and has the deepest shadow. */
+    --mat-chrome-bg: rgba(246, 246, 246, 0.78);
+    --mat-chrome-bg-dense: rgba(246, 246, 246, 0.97);   /* phones: no blur, see 4.1 notes in CHANGELOG */
+    --mat-chrome-blur: blur(20px) saturate(180%);
+    --mat-chrome-bg-thick: rgba(246, 246, 246, 0.9);    /* mobile menu: a bigger surface is thicker */
+    --mat-clear: rgba(246, 246, 246, 0);                   /* transparent end of the soft scroll edge */
+    --edge-solid: rgba(0, 0, 0, 0.3);                      /* the clear edge of a solid surface (6.2, 6.3) */
+    --edge-h: 1.25rem;                                    /* height of the soft scroll edge under the header */
+
+    --mat-banner-bg: rgba(250, 250, 250, 0.88);         /* parallel notices: no scrim, the page stays usable */
+    --mat-banner-blur: blur(16px) saturate(160%);
+    --mat-banner-line: rgba(0, 0, 0, 0.08);
+
+    --mat-sheet-bg: #0d0d0d;                              /* modal sheet: dense, deepest shadow */
+    --mat-sheet-line: rgba(255, 255, 255, 0.12);
+    --mat-control-bg: rgba(255, 255, 255, 0.12);          /* 9.3: a round control on a dark surface (sheet buttons, photo viewer buttons): one fill ... */
+    --mat-control-bg-hover: rgba(255, 255, 255, 0.28);    /* ... and one hover fill */
+    --mat-grip: rgba(255, 255, 255, 0.3);                 /* 9.3: the grip bar on top of the sheet */
+    --mat-control-edge: transparent;                      /* 9.6: a 1 px ring around round controls; only shown under more contrast */
+    --mat-row-hover: rgba(255, 255, 255, 0.05);           /* 9.3: hover of a track row on the sheet (a state fill, not a material) */
+    --elev-4: 0 40px 90px rgba(0, 0, 0, 0.6), 0 8px 24px rgba(0, 0, 0, 0.3);
+
+    /* Scrims (todo design 4.3). Only a MODAL task dims the page and pushes it back (release window, photo viewer).
+       A parallel notice (cookie notice, notification ask) has no scrim: the page stays usable. */
+    --scrim-modal: rgba(0, 0, 0, 0.72);
+    --scrim-modal-blur: blur(10px);
+    --scrim-viewer: rgba(0, 0, 0, 0.92);   /* the photo viewer is darker on purpose; js/main.js setViewer reads this alpha (9.3) */
+    --scrim-cover: linear-gradient(to top, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0) 60%);   /* 9.3: darkens the lower part of a cover under its "Open" label */
+    --cover-glow: blur(60px) saturate(1.3);   /* 9.3: the blurred cover behind the release window (decoration, not glass; owner question in AI-NOTES) */
+
+    --t-enter: 400ms;   /* every surface comes in with this ... */
+    --t-exit: 280ms;    /* ... and leaves with this (same as the exit animations in js/main.js) */
+    --t-fast: 200ms;    /* 8.4: small state changes (colour, border) */
+    --t-slow: 1100ms;   /* 8.4: the one long settle (cover tilt return, bell ring). Endless loops (spin 9 s, pulse 2 s) are loop periods, not durations, and stay literal */
+    --t-rise: 500ms;    /* 8.4: the reveal/rise entrance of a block */
+
+    /* Vibrancy (todo design 4.4, SKILL 12). Text on a translucent surface is never flat grey: higher contrast,
+       a heavier weight, +0.01em of tracking. Colour belongs on a solid layer, not on the translucent
+       foreground (this site is black and white, so nothing coloured sits on a material).
+       The site uses Medium (500, the body weight of the whole site) and Bold (700), nothing in between.
+       So the weight step is used only for short SMALL labels (caption, footnote size, a few words): they get Bold.
+       Body-size text and every full sentence on a material stay Medium (the next face is a jump to Bold: it would
+       flatten the hierarchy with titles and make long lines wrap) and get the contrast and the tracking only. */
+    --vib-weight: var(--fw-bold);   /* short small labels only (see above) */
+    --vib-track: 0.01em;
+    --vib-on-light: #111;                       /* main text on a light material (banner, menu) */
+    --vib-on-light-2: #3a3a3a;                  /* replaces --color-muted (#696969) on a light material */
+    --vib-on-dark-2: rgba(255, 255, 255, 0.9);  /* the release window: the cover glows behind, so no .5-.75 whites */
+    --vib-on-dark-3: rgba(255, 255, 255, 0.8);  /* at least 4.5:1 even over a pure white cover glow */
+}
+
+
+/* ---------- 2. Base ---------- */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-padding-top: calc(var(--header-h) + 1rem);
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    margin: 0;
+    padding-bottom: env(safe-area-inset-bottom);
+    background: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-body); /* body text: 450 since v11.8 (Medium 500 before) */
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    overflow-x: hidden;
+}
+
+body.menu-open {
+    overflow: hidden;
+}
+
+h1,
+h2,
+h3,
+p,
+ul,
+ol,
+dl,
+dd,
+figure {
+    margin: 0;
+}
+
+ul,
+ol {
+    padding: 0;
+    list-style: none;
+}
+
+img,
+iframe {
+    display: block;
+    max-width: 100%;
+}
+
+img {
+    height: auto;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+p a,
+dd a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+main:focus {
+    outline: none;
+}
+
+:focus-visible {
+    outline: 3px solid var(--color-text);
+    outline-offset: 2px;
+}
+
+[hidden] {
+    display: none !important;
+}
+
+
+/* ---------- 3. Page frame ---------- */
+/* Phone: one column. Wide screens (section 10): sheet in the middle,
+   rails on both sides. */
+.page__main {
+    padding-inline: var(--space-4);
+    padding-bottom: var(--space-7);
+}
+
+.section {
+    padding-bottom: 2.25rem;
+}
+
+/* 5.2: a section heading is a row. The title on the left, one secondary link on the right. No lines:
+   sections are separated by space (grouping by proximity). Centring stays only in the hero. */
+.section-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0 var(--space-4);
+    margin-bottom: var(--space-3);
+}
+
+.section-title {
+    min-width: 0;
+    font-family: var(--font-ui);
+    font-size: var(--fs-title-3);
+    font-weight: var(--fw-bold);
+    letter-spacing: var(--track-title);
+    line-height: var(--lh-title);
+    text-wrap: balance;
+}
+
+
+/* ---------- 4. Header ---------- */
+.skip-link {
+    position: absolute;
+    top: 0.5rem;
+    left: -999rem;
+    z-index: 2000;
+    display: inline-flex;
+    align-items: center;
+    min-height: 2.75rem;
+    padding: 0.6rem var(--space-4);
+    background: var(--color-text);
+    color: var(--color-on-text);
+}
+
+.skip-link:focus {
+    left: 0.5rem;
+}
+
+.site-header {
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+    align-items: center;
+    gap: var(--space-2);
+    min-height: var(--header-h);
+    padding-inline: 1.1rem 0.9rem;
+    background: var(--color-surface);
+}
+
+.site-header__start {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.brand {
+    display: block;
+}
+
+.brand img {
+    width: min(6.25rem, 30vw); /* keeps the header inside the screen at large text sizes */
+    height: 1.05rem;
+    object-fit: contain;
+}
+
+.site-nav ul {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.site-nav--end ul {
+    justify-content: flex-end;
+}
+
+.site-nav--start,
+.is-desktop {
+    display: none;
+}
+
+.burger {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 5px;
+    width: 2.25rem;
+    height: 2.25rem;
+    padding: var(--space-2);
+    border: 0;
+    background: none;
+    cursor: pointer;
+}
+
+.burger__line {
+    display: block;
+    height: 2px;
+    background: var(--color-text);
+    transition: transform var(--t-sheet), opacity var(--t-sheet);
+}
+
+.burger[aria-expanded="true"] .burger__line:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+}
+
+.burger[aria-expanded="true"] .burger__line:nth-child(2) {
+    opacity: 0;
+}
+
+.burger[aria-expanded="true"] .burger__line:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+}
+
+/* Mobile menu (closed = invisible and not focusable) */
+/* The menu's position is set by JS (a spring, a swipe: js/main.js section 1). CSS only hides it
+   and lets the swipe reach the script (pan-y: scrolling up and down still works). */
+.mobile-menu {
+    position: fixed;
+    inset: var(--header-h) 0 0 0;
+    z-index: 900;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    /* 9.9: solid, no backdrop blur. A full-screen layer with blur(20px) saturate(180%) that moves every frame
+       made the opening lag on phones (the browser re-blurs the page behind it on each frame). */
+    background: var(--color-bg);
+    visibility: hidden;
+    transform: translate3d(100%, 0, 0);
+    touch-action: pan-y;
+}
+
+.mobile-menu.is-open {
+    visibility: visible;
+    will-change: transform;   /* own layer only while it is open or moving */
+}
+
+.mobile-menu a {
+    display: block;
+    padding: 0.9rem var(--space-4);
+    border-bottom: 1px solid var(--mat-banner-line);
+    color: var(--vib-on-light);
+    font-size: var(--fs-headline);
+    letter-spacing: var(--vib-track);
+    line-height: var(--lh-headline);
+    text-align: center;
+}
+
+.mobile-menu a[aria-current] {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+}
+
+
+/* ---------- 5. Components ---------- */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 2.4rem;
+    padding: 0.3rem 1.1rem;
+    border: 2px solid var(--color-border);
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-subhead);
+    line-height: 1.2;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color var(--t-fast);
+}
+
+.btn:hover {
+    background: var(--color-hover);
+}
+
+.btn--sm {
+    min-height: 2rem;
+    padding: 0.2rem 0.8rem;
+    border-width: 1.5px;
+    font-size: var(--fs-caption);
+}
+
+.btn--thin {
+    border-width: 1px;
+    border-color: #595959;
+}
+
+.link-button {
+    padding: 0;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+    cursor: pointer;
+}
+
+.embed iframe {
+    width: 100%;
+    border: 0;
+    border-radius: var(--radius-m);
+}
+
+.embed--video {
+    aspect-ratio: 16 / 9;
+}
+
+.embed--video iframe {
+    height: 100%;
+}
+
+.consent {
+    position: fixed;
+    inset: auto var(--space-2) calc(var(--space-2) + env(safe-area-inset-bottom)) var(--space-2);
+    z-index: 1100;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    max-width: 44rem;
+    margin-inline: auto;
+    padding: var(--space-4);
+    border: 1px solid var(--mat-banner-line);
+    border-radius: var(--radius-l);
+    background: var(--mat-banner-bg);
+    -webkit-backdrop-filter: var(--mat-banner-blur);
+    backdrop-filter: var(--mat-banner-blur);
+    box-shadow: var(--elev-2);
+    font-size: var(--fs-subhead);
+    transform-origin: 50% 100%;   /* grows from the edge it sits on */
+    animation: banner-in var(--t-enter) var(--spring-default) both;
+}
+
+/* leaves the way it came (class set by js/main.js) */
+.consent.is-leaving {
+    animation: banner-out var(--t-exit) var(--ease-standard) both;
+}
+
+/* 4.5 materialization (SKILL 12): a glass surface does not just fade. Blur, scale and move arrive together, and the exit
+   plays the same path backwards. The `-plain` copies are for reduced transparency (movement without blur) and are
+   used by the media blocks below. */
+@keyframes banner-in {
+    from { opacity: 0; transform: translateY(1rem) scale(0.96); -webkit-backdrop-filter: blur(0) saturate(100%); backdrop-filter: blur(0) saturate(100%); }
+    to { opacity: 1; transform: none; -webkit-backdrop-filter: var(--mat-banner-blur); backdrop-filter: var(--mat-banner-blur); }
+}
+
+@keyframes banner-out {
+    from { opacity: 1; transform: none; -webkit-backdrop-filter: var(--mat-banner-blur); backdrop-filter: var(--mat-banner-blur); }
+    to { opacity: 0; transform: translateY(1rem) scale(0.96); -webkit-backdrop-filter: blur(0) saturate(100%); backdrop-filter: blur(0) saturate(100%); }
+}
+
+@keyframes banner-in-plain {
+    from { opacity: 0; transform: translateY(1rem); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes banner-out-plain {
+    from { opacity: 1; transform: none; }
+    to { opacity: 0; transform: translateY(1rem); }
+}
+
+.consent__text {
+    color: var(--vib-on-light);
+    letter-spacing: var(--vib-track);
+}
+
+.consent__text a {
+    text-decoration: underline;
+}
+
+.consent__actions {
+    display: flex;
+    gap: var(--space-2);
+}
+
+.consent__actions .btn {
+    flex: 1;
+}
+
+.noscript {
+    padding: var(--space-4);
+    background: var(--color-surface);
+    font-size: var(--fs-subhead);
+    text-align: center;
+}
+
+
+/* ---------- 6. Content (center sheet) ---------- */
+.hero {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-3);
+    padding: 1.75rem 0 var(--space-5);
+    text-align: center;
+}
+
+.hero__photo {
+    width: 9.5rem;
+    height: 9.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.hero__title {
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-3);
+    font-weight: var(--fw-hero-title);
+    letter-spacing: var(--track-display);
+    line-height: var(--lh-title);
+}
+
+.hero__tagline {
+    margin-top: var(--space-1);
+    font-size: var(--fs-subhead);
+    font-weight: var(--fw-hero-tagline);
+}
+
+.hero__note {
+    margin-top: var(--space-2);
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.section__body>p {
+    color: var(--color-text-soft);
+    font-size: var(--fs-subhead);
+    line-height: 1.6;
+}
+
+.section__body>p+p {
+    margin-top: var(--space-4);
+}
+
+.callout {
+    margin-top: var(--space-4);
+    padding: var(--space-3) var(--space-4);
+    border-left: 4px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-subhead);
+}
+
+.social {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: var(--space-2);
+}
+
+.social .btn {
+    width: 100%;
+    min-width: 0;
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+    margin-bottom: 1.25rem;
+}
+
+.photo-grid a {
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--radius-xs);
+}
+
+.photo-grid img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--t-sheet);
+}
+
+.photo-grid a:hover img {
+    transform: scale(1.04);
+}
+
+.center {
+    margin-top: 1.25rem;
+    text-align: center;
+}
+
+/* Text pages (privacy, license) */
+.prose {
+    padding-block: 1.75rem 2.5rem;
+}
+
+.prose h1 {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-3);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title);
+}
+
+.prose h2 {
+    margin: 1.75rem 0 var(--space-2);
+    font-family: var(--font-ui);
+    font-size: var(--fs-headline);
+    line-height: var(--lh-headline);
+    font-weight: var(--fw-semibold);
+}
+
+.prose p,
+.prose li {
+    color: var(--color-text-soft);
+}
+
+.prose p+p,
+.prose ul,
+.prose pre {
+    margin-top: var(--space-3);
+}
+
+.prose ul {
+    padding-left: 1.25rem;
+    list-style: disc;
+}
+
+.prose .meta {
+    color: var(--color-muted);
+}
+
+.prose pre {
+    padding: 0.9rem var(--space-4);
+    overflow-x: auto;
+    border-left: 4px solid var(--color-border);
+    background: var(--color-surface);
+    font-size: var(--fs-subhead);
+    white-space: pre-wrap;
+}
+
+
+/* ---------- 7. News and articles ---------- */
+
+/* Heading of the news list page */
+.page-head {
+    padding: 1.75rem 0 var(--space-2);
+    text-align: center;
+}
+
+.page-head__title {
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-3);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title);
+    letter-spacing: var(--track-title);
+}
+
+.page-head__lead {
+    margin-top: var(--space-2);
+    color: var(--color-muted);
+    font-size: var(--fs-subhead);
+    text-wrap: balance;
+}
+
+/* News list: entries separated by hairlines, years are quiet headings */
+.news-year+.news-year {
+    margin-top: 2.75rem;
+}
+
+.news-year__title {
+    margin: var(--space-5) 0 0;
+    padding-bottom: var(--space-2);
+    border-bottom: 1px solid var(--color-line);
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--track-caption);
+    text-align: left;
+}
+
+.news-list {
+    padding-bottom: var(--space-5);
+}
+
+.news-card {
+    border-bottom: 1px solid var(--color-line-soft);
+}
+
+.news-card:last-child {
+    border-bottom: 0;
+}
+
+.news-card__link {
+    display: grid;
+    grid-template-columns: 5.5rem minmax(0, 1fr);
+    gap: var(--space-4);
+    align-items: start;
+    padding: var(--space-4) 0;
+}
+
+.news-card__text {
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.news-card__link--noimg {
+    grid-template-columns: 1fr;
+}
+
+.news-card__img {
+    width: 5.5rem;
+    height: 5.5rem;
+    border-radius: var(--radius-xs);
+    object-fit: cover;
+}
+
+.news-card__date {
+    display: block;
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.news-card__title {
+    margin: 0.15rem 0 0.35rem;
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    line-height: 1.35;
+}
+
+.news-card__text p {
+    color: var(--color-text-soft);
+    font-size: var(--fs-subhead);
+    line-height: 1.5;
+}
+
+.news-card__link:hover .news-card__title {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+/* One article */
+.article {
+    padding: 1.25rem 0 var(--space-6);
+}
+
+.article__title {
+    margin-top: var(--space-4);
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-3);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title);
+    text-wrap: balance;
+}
+
+.article__deck {
+    margin-top: 0.6rem;
+    color: var(--color-muted);
+    font-size: var(--fs-subhead);
+    line-height: 1.5;
+}
+
+.article__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1) 1.25rem;
+    margin-top: 0.85rem;
+    padding-block: 0.6rem;
+    border-block: 1px solid var(--color-line-soft);
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.article__meta a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.article__cover {
+    margin-top: 1.25rem;
+}
+
+.article__cover img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto 16 / 9;   /* 7.6: room is kept before the picture loads (16:9), then the real ratio is used */
+    border-radius: var(--radius-xs);
+    background: var(--color-surface);
+}
+
+.article__cover figcaption {
+    margin-top: var(--space-2);
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.article__body {
+    margin-top: 1.25rem;
+    color: var(--color-text-soft);
+    font-size: var(--fs-body);
+    line-height: 1.65;
+}
+
+.article__body>*+* {
+    margin-top: 0.85rem;
+}
+
+.article__body h2,
+.article__body h3 {
+    margin-top: 1.75rem;
+    color: var(--color-text);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    line-height: 1.3;
+}
+
+.article__body h2 {
+    font-size: var(--fs-headline);
+    line-height: var(--lh-headline);
+}
+
+.article__body h3 {
+    font-size: var(--fs-body);
+}
+
+.article__body a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.article__body img {
+    border-radius: var(--radius-xs);
+}
+
+.article__body blockquote {
+    margin-inline: 0;
+    padding-left: var(--space-4);
+    border-left: 4px solid var(--color-border);
+    color: var(--color-text);
+}
+
+.article__body ul,
+.article__body ol {
+    padding-left: 1.25rem;
+}
+
+.article__body ul {
+    list-style: disc;
+}
+
+.article__body ol {
+    list-style: decimal;
+}
+
+/* The one emphasized block of an article: where to listen */
+.listen {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3) var(--space-4);
+    margin-top: 2.25rem;
+    padding: var(--space-4) 1.1rem;
+    border-left: 4px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.listen__text {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+}
+
+.pager {
+    display: grid;
+    margin-top: 2.5rem;
+    border-top: 1px solid var(--color-line);
+}
+
+.pager__link {
+    display: block;
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-line-soft);
+}
+
+.pager__label {
+    display: block;
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.pager__title {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    line-height: 1.35;
+}
+
+.pager__link:hover .pager__title {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+
+/* ---------- 7b. Biography, photographs, releases ---------- */
+
+/* Language switcher (biography) and year tabs (photographs) */
+.langs,
+.year-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: var(--space-2);
+    margin-top: 1.1rem;
+}
+
+.langs__link,
+.year-tabs__link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 2rem;
+    padding: 0.2rem 0.95rem;
+    border: 1px solid #595959;
+    border-radius: var(--radius-pill);
+    background: var(--color-surface);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-caption);
+    transition: background-color var(--t-fast);
+}
+
+.langs__link:hover,
+.year-tabs__link:hover {
+    background: var(--color-hover);
+}
+
+.langs__link[aria-current="page"],
+.year-tabs__link.is-active {
+    border-color: var(--color-border);
+    background: var(--color-text);
+    color: var(--color-on-text);
+}
+
+.year-tabs {
+    margin-bottom: 1.25rem;
+}
+
+/* Biography */
+.bio__photo {
+    max-width: 17rem;
+    margin: 1.25rem auto 0;
+    text-align: center;
+}
+
+.bio__photo img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto 4 / 5;   /* 7.6: room is kept before the picture loads (portrait), then the real ratio is used */
+    border-radius: var(--radius-xs);
+    background: var(--color-surface);
+}
+
+.bio__photo figcaption {
+    margin-top: 0.4rem;
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+}
+
+.bio__body {
+    padding-block: var(--space-2) var(--space-4);
+    font-size: var(--fs-subhead);
+    line-height: 1.65;
+}
+
+.bio__body h2 {
+    margin: 2.25rem 0 var(--space-4);
+    padding: 0.7rem var(--space-3);
+    border-block: 1px solid var(--color-line);
+    font-size: var(--fs-body);
+    text-align: center;
+    text-wrap: balance;
+}
+
+.bio__body h3 {
+    margin: 1.6rem 0 0.4rem;
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+}
+
+.bio__body p {
+    margin-top: var(--space-3);
+}
+
+.bio__body h2+p,
+.bio__body h3+p {
+    margin-top: 0;
+}
+
+.bio__body ul {
+    margin-top: var(--space-3);
+    padding-left: 1.25rem;
+    list-style: disc;
+}
+
+.bio__body li+li {
+    margin-top: 0.4rem;
+}
+
+.bio__body blockquote {
+    margin: var(--space-4) 0 0;
+    padding-left: var(--space-4);
+    border-left: 4px solid var(--color-border);
+    color: var(--color-text);
+}
+
+.bio__body a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.faq {
+    margin-top: var(--space-4);
+    padding-bottom: var(--space-4);
+}
+
+.faq__title {
+    margin-bottom: var(--space-2);
+    padding: 0.7rem var(--space-3);
+    border-block: 1px solid var(--color-line);
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    text-align: center;
+}
+
+.faq__item {
+    border-bottom: 1px solid var(--color-line-soft);
+}
+
+.faq__item summary {
+    padding: var(--space-3) 0;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-subhead);
+    cursor: pointer;
+}
+
+.faq__item p {
+    padding-bottom: 0.85rem;
+    color: var(--color-text-soft);
+    font-size: var(--fs-subhead);
+}
+
+/* Photographs */
+.gallery__year+.gallery__year {
+    margin-top: var(--space-6);
+}
+
+.photo-grid--gallery {
+    margin-top: 1.1rem;
+    margin-bottom: 0;
+}
+
+.gallery__year {
+    content-visibility: auto;
+    contain-intrinsic-size: auto 40rem;
+}
+
+.gallery__note {
+    margin-top: 2.25rem;
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--color-line-soft);
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.gallery__note a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 1500;
+    display: grid;
+    place-items: center;
+    padding: var(--space-4);
+    background: var(--scrim-viewer);
+}
+
+.lightbox__img {
+    max-width: 100%;
+    max-height: calc(100vh - 6rem);
+    object-fit: contain;
+    touch-action: none;   /* the picture is swiped by our own code (todo design 3.3) */
+    user-select: none;
+    -webkit-user-drag: none;
+}
+
+.lightbox__bar {
+    position: absolute;
+    inset: auto 0 0 0;
+    padding: 0.75rem 1rem calc(0.75rem + env(safe-area-inset-bottom));
+    color: #fff;
+    font-size: var(--fs-footnote);
+    letter-spacing: var(--vib-track);
+    text-align: center;
+}
+
+.lightbox__bar a {
+    text-decoration: underline;
+}
+
+.lightbox__btn {
+    position: absolute;
+    display: grid;
+    place-items: center;
+    width: 2.75rem;
+    height: 2.75rem;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px var(--mat-control-edge);   /* 9.6 */
+    background: var(--mat-control-bg);
+    color: #fff;
+    font-size: var(--fs-title-3);
+    line-height: var(--lh-title);
+    cursor: pointer;
+}
+
+.lightbox__btn:hover {
+    background: var(--mat-control-bg-hover);
+}
+
+.lightbox__btn--close {
+    top: 0.75rem;
+    right: 0.75rem;
+}
+
+.lightbox__btn--prev {
+    left: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.lightbox__btn--next {
+    right: 0.5rem;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+/* Releases */
+.release-hero {
+    margin-top: 1.25rem;
+}
+
+.release-hero img {
+    width: 100%;
+    height: auto;
+    aspect-ratio: auto 16 / 9;   /* 7.6: room is kept before the picture loads (16:9), then the real ratio is used */
+    border-radius: var(--radius-xs);
+    background: var(--color-surface);
+}
+
+.release-hero figcaption {
+    margin-top: 0.4rem;
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    text-align: center;
+}
+
+.release-year+.release-year {
+    margin-top: 2.5rem;
+}
+
+.release-list {
+    padding-bottom: var(--space-5);
+}
+
+.release-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem var(--space-3);
+    margin-top: 1.1rem;
+}
+
+.release__cover {
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--radius-xs);
+    background: var(--color-surface);
+}
+
+.release__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--t-sheet);
+}
+
+a.release__cover:hover img {
+    transform: scale(1.04);
+}
+
+.release__name {
+    margin-top: var(--space-2);
+    font-family: var(--font-ui);
+    font-size: var(--fs-subhead);
+    font-weight: var(--fw-semibold);
+    line-height: 1.3;
+    overflow-wrap: break-word;
+}
+
+.release__meta {
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    line-height: 1.4;
+}
+
+.release__links {
+    margin-top: 0.2rem;
+    font-size: var(--fs-caption);
+}
+
+.release__links a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+@media (min-width: 40rem) {
+    .bio__body {
+        font-size: var(--fs-subhead);
+    }
+
+    .bio__photo {
+        max-width: 19rem;
+    }
+
+    .release-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: var(--space-5) var(--space-4);
+    }
+
+    .photo-grid--gallery {
+        grid-template-columns: repeat(4, 1fr);
+    }
+}
+
+
+/* ---------- 8. Side rails ---------- */
+/* Phone: the left rail is hidden (the menu covers it) and the right
+   rail becomes a gray block under the content. */
+.rail {
+    font-size: var(--fs-subhead);
+}
+
+.rail--start {
+    display: none;
+}
+
+.rail--end {
+    padding: var(--space-5) var(--space-4);
+    border-top: 1px solid var(--color-line);
+    background: var(--color-surface);
+}
+
+.rail--end .rail__inner {
+    width: min(100%, var(--sheet-w));
+    margin-inline: auto;
+}
+
+.rail-block+.rail-block {
+    margin-top: var(--space-5);
+}
+
+.rail-block__title {
+    margin-bottom: 0.4rem;
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+}
+
+.rail-list li+li {
+    border-top: 1px solid var(--color-line-soft);
+}
+
+.rail-link {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-height: 2.75rem;
+    padding: 0.55rem var(--space-3);
+    border-left: 3px solid transparent;
+}
+
+.rail-link__name {
+    display: block;
+}
+
+.rail-link__desc {
+    display: block;
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.rail-link:hover .rail-link__name {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.rail-link[aria-current] {
+    border-left-color: var(--color-border);
+}
+
+.rail-link[aria-current] .rail-link__name {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+}
+
+.rail-text {
+    padding-inline: var(--space-3);
+    color: var(--color-text-soft);
+}
+
+.rail-text+.rail-text {
+    margin-top: var(--space-2);
+}
+
+
+/* ---------- 9. Footer ---------- */
+.site-footer {
+    padding: var(--space-6) var(--space-4) var(--space-5);
+    border-top: 1px solid var(--color-line);
+    background: var(--color-surface);
+    font-size: var(--fs-subhead);
+}
+
+.site-footer__grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+    width: min(100%, var(--wide-w));
+    margin-inline: auto;
+}
+
+.footer-title {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-ui);
+    font-size: var(--fs-subhead);
+    font-weight: var(--fw-semibold);
+}
+
+.footer-links li+li {
+    margin-top: 0.35rem;
+}
+
+.footer-copy {
+    margin-top: 1.75rem;
+    color: var(--color-muted);
+    font-size: var(--fs-subhead);
+    text-align: center;
+}
+
+/* 6.1 (v5.9): the old global "transition-duration: 0.01ms" is gone; reduced motion is handled in section 6.1 at the end of this file. */
+
+
+/* 9.1 (v11.7): room under the footer for the fixed banners at the bottom of the screen.
+   The cookie banner (.consent) and the notification card (.push-ask__card) lie ON TOP of the page, so on a phone
+   they covered the last lines of the footer and the page could not be scrolled further. js/main.js section 12
+   measures them and sets --bottom-banner-h on <html> (0 when none is visible); the footer grows by that height. */
+.site-footer {
+    padding-bottom: calc(var(--space-5) + var(--bottom-banner-h, 0px));
+}
+
+
+/* ---------- 10. Desktop (min-width: 40rem) ---------- */
+@media (min-width: 40rem) {
+    :root {
+        --header-h: 6rem;
+    }
+
+    .burger,
+    .mobile-menu {
+        display: none;
+    }
+
+    .site-header {
+        gap: clamp(1rem, 3vw, 3rem);
+        padding-inline: var(--space-6);
+    }
+
+    .site-header__start {
+        justify-content: flex-end;
+    }
+
+    .brand img {
+        width: clamp(7.5rem, 12vw, 10.5rem);
+        height: auto;
+        aspect-ratio: 6.15 / 1;
+    }
+
+    .site-nav--start {
+        display: block;
+    }
+
+    .site-nav--end ul {
+        justify-content: flex-start;
+    }
+
+    .is-desktop {
+        display: list-item;
+    }
+
+    .btn--sm {
+        min-height: 2.25rem;
+        padding-inline: 1.1rem;
+        font-size: var(--fs-footnote);
+    }
+
+    .section {
+        padding-bottom: 3.5rem;
+    }
+
+    .section-head {
+        margin-bottom: var(--space-4);
+    }
+
+    .section-title {
+        font-size: var(--fs-title-2);
+    }
+
+    .hero {
+        grid-template-columns: auto 1fr;
+        justify-items: start;
+        align-items: center;
+        column-gap: 1.75rem;
+        padding: 2.5rem 0 2.25rem;
+        text-align: left;
+    }
+
+    .hero__photo {
+        width: 8rem;
+        height: 8rem;
+    }
+
+    .hero__title {
+        font-size: var(--fs-title-2);
+    line-height: var(--lh-title);
+    }
+
+    .hero__tagline {
+        font-size: var(--fs-body);
+    }
+
+    .hero__note {
+        font-size: var(--fs-subhead);
+    }
+
+    .social {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+
+    .photo-grid {
+        gap: var(--space-2);
+    }
+
+    .prose h1 {
+        font-size: var(--fs-title-2);
+    line-height: var(--lh-title);
+    }
+
+    .site-footer__grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .consent {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: var(--space-5);
+    }
+
+    .consent__actions .btn {
+        flex: none;
+        min-width: 6.5rem;
+    }
+
+    /* News and articles */
+    .page-head {
+        padding-top: 2.5rem;
+    }
+
+    .page-head__title {
+        font-size: var(--fs-title-2);
+    line-height: var(--lh-title);
+    }
+
+    .page-head__lead {
+        font-size: var(--fs-subhead);
+    }
+
+    .news-card__link {
+        grid-template-columns: 7rem 1fr;
+        gap: 1.25rem;
+        padding-block: 1.1rem;
+    }
+
+    /* An entry without a picture keeps ONE column; the rule above would otherwise put its text into the 7rem column (11.19). */
+    .news-card__link--noimg {
+        grid-template-columns: 1fr;
+    }
+
+    .news-card__img {
+        width: 7rem;
+        height: 7rem;
+    }
+
+    .news-card__title {
+        font-size: var(--fs-headline);
+    line-height: var(--lh-headline);
+    }
+
+    .news-card__text p {
+        font-size: var(--fs-subhead);
+    }
+
+    .article {
+        padding-top: 1.75rem;
+    }
+
+    .article__title {
+        font-size: var(--fs-title-2);
+    line-height: var(--lh-title);
+    }
+
+    .article__deck {
+        font-size: var(--fs-body);
+    }
+
+    .pager {
+        grid-template-columns: 1fr 1fr;
+        column-gap: var(--space-5);
+    }
+
+    .pager__link--older {
+        grid-column: 2;
+        text-align: right;
+    }
+}
+
+
+/* ---------- 11. Wide (min-width: 68rem): sheet + two rails ---------- */
+@media (min-width: 68rem) {
+    .page {
+        display: grid;
+        grid-template-columns: minmax(10rem, 1fr) minmax(0, var(--sheet-w)) minmax(12rem, 1fr);
+        background: var(--color-surface);
+    }
+
+    .page__main {
+        grid-column: 2;
+        grid-row: 1;
+        padding-inline: var(--space-6);
+        border-inline: 1px solid var(--color-line);
+        background: var(--color-bg);
+    }
+
+    .rail {
+        grid-row: 1;
+        padding-block: var(--space-6);
+    }
+
+    .rail--start {
+        display: block;
+        grid-column: 1;
+    }
+
+    .rail--end {
+        grid-column: 3;
+        padding-inline: 0;
+        border-top: 0;
+    }
+
+    .rail__inner {
+        position: sticky;
+        top: calc(var(--header-h) + 1.5rem);
+    }
+
+    .rail--start .rail__inner {
+        width: min(100%, 13rem);
+        margin-left: auto;
+        padding-right: 1.25rem;
+    }
+
+    .rail--end .rail__inner {
+        width: min(100%, 15rem);
+        margin-inline: 0 auto;
+        padding-left: 1.25rem;
+    }
+}
+
+
+/* =============================================================
+   12. Motion and polish
+   Everything below is decoration: the site works without it.
+   Animations are switched off for visitors who ask for less motion.
+   ============================================================= */
+:root {
+    --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Page fade-in and the thin reading-progress line */
+body {
+    animation: page-in var(--t-sheet) var(--ease) both;   /* 8.1: the page is there at once, no waiting */
+}
+
+@keyframes page-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.progress {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 1200;
+    height: 2px;
+    background: var(--color-text);
+    transform: scaleX(0);
+    transform-origin: left;
+    pointer-events: none;
+}
+
+/* ---------- Header: glass and shrink after scrolling ---------- */
+.site-header {
+    transition: background-color var(--t-sheet),
+        -webkit-backdrop-filter var(--t-move) var(--ease-standard), backdrop-filter var(--t-move) var(--ease-standard);
+}
+
+.brand img {
+    transition: transform var(--t-move) var(--ease), opacity var(--t-sheet);
+}
+
+.brand:hover img {
+    opacity: 0.8;
+}
+
+.site-header.is-scrolled {
+    background: var(--mat-chrome-bg);
+    -webkit-backdrop-filter: var(--mat-chrome-blur);
+    backdrop-filter: var(--mat-chrome-blur);
+}
+
+/* 7.7: the soft fade under the scrolled header is gone (owner: the header glowed at the bottom). */
+
+/* 7.2 (v6.2): the header keeps its height when the page scrolls (a changing height is layout work on every scroll and
+   moved the page by 24 px); only the logo scales (transform) and the colour changes. */
+@media (min-width: 40rem) {
+    .site-header.is-scrolled .brand img {
+        transform: scale(0.78);
+    }
+}
+
+/* ---------- Buttons: the black fill grows from the pointer ---------- */
+.btn,
+.year-tabs__link,
+.langs__link {
+    position: relative;
+    isolation: isolate;
+    transition: color var(--t-sheet), transform var(--t-sheet) var(--ease), box-shadow var(--t-sheet), border-color var(--t-sheet);
+}
+
+.btn::before,
+.year-tabs__link::before,
+.langs__link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit; /* the fill is clipped by the pill shape itself (no overflow: hidden, so the hit area below can extend) */
+    background: var(--color-text);
+    clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
+    transition: clip-path var(--t-rise) var(--ease);
+}
+
+.btn img {
+    transition: filter var(--t-sheet);
+}
+
+@media (hover: hover) {
+
+    /* Hover only adds a hint (plan 2.2): a thin change of the background.
+       No lift, no big shadow. The press (below) is the real feedback. */
+    .btn:hover,
+    .year-tabs__link:hover,
+    .langs__link:hover {
+        background-color: var(--color-hover);
+    }
+
+    /* Brand effect kept for the main buttons only: the fill grows from the pointer, 250 ms. */
+    .btn--solid:hover::before {
+        clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
+    }
+
+    .btn--solid:hover img {
+        filter: invert(1);
+    }
+}
+
+/* Hit area (plan 2.3): every tap target is at least 44 x 44 px to touch, even when it looks
+   smaller. An invisible layer grows the clickable area only where the element is smaller. */
+.btn::after,
+.year-tabs__link::after,
+.langs__link::after,
+.burger::after,
+.brand::after,
+.plat__link::after,
+.link-button::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((100% - 2.75rem) / 2));
+}
+
+.burger,
+.brand,
+.plat__link,
+.link-button {
+    position: relative;
+}
+
+.plat__link {
+    display: inline-block;
+}
+
+/* Press feedback: appears at once (100 ms) on pointer-down, comes back smoothly.
+   Placed AFTER the hover block so a press wins over hover on desktop. */
+.btn:active,
+.year-tabs__link:active,
+.langs__link:active {
+    background-color: var(--color-hover);
+    transition-duration: var(--t-press);
+}
+
+/* v9.6: the shrink itself is made by js/fluid.js (a spring, from pointerdown); this is only the fallback without it */
+html:not(.fluid) .btn:active,
+html:not(.fluid) .year-tabs__link:active,
+html:not(.fluid) .langs__link:active {
+    transform: scale(0.97);
+}
+
+.btn--solid:active {
+    background-color: var(--color-text-soft);
+}
+
+.btn:active::before,
+.year-tabs__link:active::before,
+.langs__link:active::before {
+    transition-duration: var(--t-press);
+}
+
+.year-tabs__link.is-active,
+.langs__link[aria-current="page"] {
+    background: var(--color-text);
+    color: var(--color-on-text);
+}
+
+/* ---------- Hero: entrance (10.2: the turning ring was removed, it was decoration) ---------- */
+.hero__ring {
+    position: relative;
+    display: block;
+    padding: 4px;
+    border-radius: 50%;
+    animation: rise var(--t-rise) var(--ease) both;
+}
+
+.hero__ring .hero__photo {
+    transition: transform var(--t-rise) var(--ease);
+}
+
+html:not(.fluid) .hero__ring:hover .hero__photo {   /* v9.6: with fluid.js the whole ring grows on a spring (1.07) */
+    transform: scale(1.04);
+}
+
+.hero__title {
+    animation: title-in var(--t-rise) var(--ease) 0.05s both;   /* 8.1: the whole hero is in place in 0.65 s (was 1.4 s) */
+}
+
+.hero__tagline {
+    animation: rise var(--t-rise) var(--ease) 0.1s both;
+}
+
+.hero__note {
+    animation: rise var(--t-rise) var(--ease) 0.15s both;
+}
+
+@keyframes rise {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: none; }
+}
+
+@keyframes title-in {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to { opacity: 1; transform: none; }
+}
+
+.page-head__title {
+    animation: rise var(--t-rise) var(--ease) both;
+}
+
+.page-head__lead {
+    animation: rise var(--t-rise) var(--ease) 0.08s both;
+}
+
+/* ---------- Scroll reveal (hidden only while JavaScript is running) ---------- */
+/* 7.1 (v6.2): only cards and photos arrive on scroll (releases, news cards, key facts, photos, year titles).
+   Headings, players, the side rail, call-outs and social links are there at once. Shift 12 px, 0.5 s, delay up to 0.2 s. */
+.js:not(.no-reveal) [data-reveal],
+.js:not(.no-reveal) .news-card,
+.js:not(.no-reveal) .photo-grid li {
+    opacity: 0;
+    transform: translateY(12px);
+}
+
+.js:not(.no-reveal) .is-in.is-in {
+    opacity: 1;
+    transform: none;
+    transition: opacity var(--t-rise) var(--ease) var(--d, 0s), transform var(--t-rise) var(--ease) var(--d, 0s);
+}
+
+/* the hairlines of titles draw themselves */
+.section-title,
+.news-year__title {
+    position: relative;
+    border-image: none;
+}
+
+.js:not(.no-reveal) .news-year__title.is-in::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    bottom: -1px;
+    height: 1px;
+    width: 100%;
+    background: var(--color-text);
+    transform-origin: left;
+    animation: draw var(--t-rise) var(--ease) 0.1s both;
+}
+
+@keyframes draw {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+}
+
+/* ---------- Cards, photos, navigation ---------- */
+.news-card__link {
+    transition: transform var(--t-sheet) var(--ease);
+}
+
+.news-card__link:hover {
+    transform: translateX(6px);
+}
+
+.photo-grid a {
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0);
+    transition: box-shadow var(--t-move), transform var(--t-move) var(--ease);
+}
+
+.photo-grid a:hover {
+    box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25);
+    transform: translateY(-3px);
+}
+
+.rail-link {
+    transition: transform var(--t-sheet) var(--ease), border-color var(--t-sheet), background-color var(--t-sheet);
+}
+
+.rail-link:hover {
+    transform: translateX(0.5rem);
+    border-left-color: var(--color-line);
+}
+
+.mobile-menu a {
+    transition: background-color var(--t-fast);
+}
+
+.mobile-menu a:active {
+    background: var(--color-surface);
+    transition-duration: 0s;
+}
+
+.mobile-menu.is-open a {
+    animation: rise var(--t-enter) var(--ease) both;   /* 8.3: all links are in at 0.58 s (was 0.8 s) */
+}
+
+.mobile-menu.is-open a:nth-child(2) { animation-delay: 0.03s; }
+.mobile-menu.is-open a:nth-child(3) { animation-delay: 0.06s; }
+.mobile-menu.is-open a:nth-child(4) { animation-delay: 0.09s; }
+.mobile-menu.is-open a:nth-child(5) { animation-delay: 0.12s; }
+.mobile-menu.is-open a:nth-child(6) { animation-delay: 0.15s; }
+.mobile-menu.is-open a:nth-child(7) { animation-delay: 0.18s; }
+
+.gallery__year:not([hidden]) {
+    animation: rise var(--t-rise) var(--ease) both;
+}
+
+.lightbox:not([hidden]) {
+    animation: fade-in var(--t-sheet) ease both;
+}
+
+.lightbox:not([hidden]) .lightbox__img {
+    animation: zoom-in var(--t-enter) var(--ease) both;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoom-in {
+    from { opacity: 0; transform: scale(0.94); }
+    to { opacity: 1; transform: none; }
+}
+
+/* ---------- Releases: covers and the preview window ---------- */
+.release__cover {
+    position: relative;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    transform: perspective(700px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform var(--t-move) var(--spring-default), box-shadow var(--t-sheet);
+}
+
+/* 7.3 (v6.2): the layer is promoted only while the cover is hovered or tilting, not for ever */
+.release__cover:hover,
+.release__cover.is-tilting {
+    will-change: transform;
+}
+
+.release__cover::after {
+    content: "Open";
+    position: absolute;
+    inset: 0;
+    display: grid;
+    place-items: center;
+    background: var(--scrim-cover);
+    color: #fff;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-footnote);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    opacity: 0;
+    transition: opacity var(--t-sheet);
+}
+
+@media (hover: hover) {
+    .release__cover:hover {
+        box-shadow: 0 18px 34px rgba(0, 0, 0, 0.3);
+    }
+
+    .release__cover:hover::after {
+        opacity: 1;
+    }
+}
+
+.release__name {
+    transition: opacity var(--t-fast);
+}
+
+.release:hover .release__name {
+    opacity: 0.7;
+}
+
+html.modal-open,
+body.modal-open {
+    overflow: hidden;
+}
+
+html.modal-open {
+    scrollbar-width: none;
+}
+
+html.modal-open::-webkit-scrollbar {
+    display: none;
+}
+
+/* the page goes back a little while a sheet is up (js/main.js, section 9: pageBack) */
+main#main,
+.site-footer {
+    transition: transform var(--t-exit) var(--spring-default);   /* 8.3: the page returns as fast as the sheet leaves (was 400 ms, the sheet left in 280 ms) */
+}
+
+html.sheet-back main#main,
+html.sheet-back .site-footer {
+    transform: scale(0.98);
+    transition-duration: var(--t-enter);   /* going back takes as long as the sheet coming in */
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    html.sheet-back main#main,
+    html.sheet-back .site-footer {
+        transform: none;
+    }
+}
+
+.rmodal__panel {
+    scrollbar-width: none;
+}
+
+.rmodal__panel::-webkit-scrollbar {
+    display: none;
+}
+
+.rmodal {
+    position: fixed;
+    inset: 0;
+    z-index: 1600;
+    display: grid;
+    place-items: center;
+    padding: var(--space-3);
+}
+
+.rmodal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: var(--scrim-modal);
+    -webkit-backdrop-filter: var(--scrim-modal-blur);
+    backdrop-filter: var(--scrim-modal-blur);
+    animation: scrim-in var(--t-sheet) ease both;
+}
+
+/* 4.5: the blur of the scrim grows while the panel scales up (panel-in), so the window arrives as one material */
+@keyframes scrim-in {
+    from { opacity: 0; -webkit-backdrop-filter: blur(0); backdrop-filter: blur(0); }
+    to { opacity: 1; -webkit-backdrop-filter: var(--scrim-modal-blur); backdrop-filter: var(--scrim-modal-blur); }
+}
+
+.rmodal__panel {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 1.25rem;
+    width: min(100%, 56rem);
+    max-height: calc(100dvh - 1.5rem);
+    padding: var(--space-6);   /* 9.4: as wide as the corner radius, so the cover and the arrows are outside the curved corner */
+    overflow: hidden auto;
+    overscroll-behavior: contain;
+    border: 1px solid var(--mat-sheet-line);
+    border-radius: var(--radius-xl);   /* 9.4 */
+    background: var(--mat-sheet-bg);
+    color: #fff;
+    box-shadow: var(--elev-4);
+    animation: panel-in var(--t-enter) var(--ease) both;
+}
+
+@keyframes panel-in {
+    from { opacity: 0; transform: translateY(var(--enter-y, 28px)) scale(var(--enter-scale, 0.95)); }
+    to { opacity: 1; transform: none; }
+}
+
+/* the cover, blurred, glows behind everything */
+.rmodal__bg {
+    position: absolute;
+    inset: -20%;
+    z-index: 0;
+    width: 140%;
+    max-width: none;
+    height: 140%;
+    object-fit: cover;
+    filter: var(--cover-glow);
+    opacity: 0.35;
+    pointer-events: none;
+    transition: opacity var(--t-rise);
+}
+
+.rmodal__art,
+.rmodal__info {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.rmodal__art {
+    width: min(100%, 22rem);
+    margin-inline: auto;
+}
+
+.rmodal__cover {
+    width: 100%;
+    aspect-ratio: 1;
+    object-fit: cover;
+    border-radius: var(--radius-m);
+    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.55);
+    transform: perspective(900px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: transform var(--t-move) var(--spring-default);
+}
+
+/* While the pointer moves over a cover it is glued to it: no transform delay (plan 2.5). */
+.release__cover.is-tilting,
+.rmodal__cover.is-tilting {
+    transition-property: box-shadow;
+}
+
+.rmodal.is-switching .rmodal__cover {
+    animation: cover-swap var(--t-rise) var(--ease) both;
+}
+
+@keyframes cover-swap {
+    from { opacity: 0; transform: scale(0.92) translateX(var(--dir, 20px)); }
+    to { opacity: 1; transform: none; }
+}
+
+.rmodal__kind {
+    color: var(--vib-on-dark-3);
+    font-size: var(--fs-caption);
+    font-weight: var(--vib-weight);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+}
+
+.rmodal__title {
+    margin-top: 0.35rem;
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-2);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title);
+    overflow-wrap: anywhere;
+}
+
+.rmodal__artist {
+    margin-top: 0.3rem;
+    color: var(--vib-on-dark-2);
+    letter-spacing: var(--vib-track);
+}
+
+.rmodal__h {
+    margin: 1.4rem 0 0.6rem;
+    color: var(--vib-on-dark-3);
+    font-family: var(--font-ui);
+    font-size: var(--fs-caption);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+}
+
+.rmodal__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+}
+
+.rmodal__link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    min-height: 2.4rem;
+    padding: 0.3rem var(--space-4);
+    overflow: hidden;
+    isolation: isolate;
+    border: 1.5px solid #fff;
+    border-radius: var(--radius-pill);
+    background: #fff;
+    color: #000;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-footnote);
+    transition: transform var(--t-sheet) var(--ease), box-shadow var(--t-sheet), color var(--t-sheet);
+}
+
+.rmodal__link::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: #000;
+    clip-path: circle(0% at var(--x, 50%) var(--y, 50%));
+    transition: clip-path var(--t-rise) var(--ease);
+}
+
+.rmodal__link::after {
+    content: "\2197";
+    font-size: 0.9em;
+    transition: transform var(--t-sheet) var(--ease);
+}
+
+.rmodal__link--search {
+    background: transparent;
+    border-color: rgba(255, 255, 255, 0.35);
+    color: #fff;
+}
+
+.rmodal__link--search::before {
+    background: #fff;
+}
+
+@media (hover: hover) {
+    .rmodal__link:hover {
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .rmodal__link--search:hover {
+        color: #000;
+    }
+
+    .rmodal__link:hover::before {
+        clip-path: circle(150% at var(--x, 50%) var(--y, 50%));
+    }
+
+    .rmodal__link:hover::after {
+        transform: translate(2px, -2px);
+    }
+}
+
+.rmodal__link--search::after {
+    content: "\2315";
+}
+
+.rmodal__note {
+    margin-top: 0.6rem;
+    color: var(--vib-on-dark-3);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--vib-track);
+}
+
+.rmodal__tracks {
+    max-height: 15rem;
+    padding-right: var(--space-2);
+    overflow-y: auto;
+    counter-reset: track;
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 255, 255, 0.3) transparent;
+}
+
+.rmodal__tracks li {
+    display: flex;
+    gap: 0.9rem;
+    padding: var(--space-2) var(--space-1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    font-size: var(--fs-subhead);
+    counter-increment: track;
+    transition: background-color var(--t-sheet);
+}
+
+.rmodal__tracks li::before {
+    content: counter(track, decimal-leading-zero);
+    min-width: 1.6rem;
+    color: var(--vib-on-dark-3);
+    font-size: var(--fs-caption);
+    line-height: 1.9;
+}
+
+html:not(.fluid) .rmodal__tracks li:hover {   /* v9.6: with fluid.js one sliding highlight (.lens) replaces it */
+    background: var(--mat-row-hover);
+}
+
+/* track name and the "Lyrics" button in the release window */
+.rmodal__trackname {
+    flex: 1;
+    min-width: 0;
+    overflow-wrap: anywhere;
+}
+
+.rmodal__lyrics {
+    flex: none;
+    align-self: center;
+    padding: 0.15rem 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.45);
+    border-radius: var(--radius-pill);
+    color: #fff;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--track-caption);
+    line-height: 1.6;
+    transition: background-color var(--t-fast), color var(--t-fast), border-color var(--t-fast);
+}
+
+.rmodal__lyrics:focus-visible {
+    outline: 2px solid #fff;
+    outline-offset: 2px;
+}
+
+@media (hover: hover) {
+    .rmodal__lyrics:hover {
+        border-color: #fff;
+        background: #fff;
+        color: #000;
+    }
+}
+
+/* page with the words of a song */
+.lyrics__text {
+    max-width: 36rem;
+    margin: var(--space-5) auto 0;
+    overflow-wrap: anywhere;
+    line-height: 1.7;
+}
+
+/* line breaks inside a verse are kept; the empty line between verses is the paragraph gap */
+.lyrics__text p {
+    white-space: pre-line;
+}
+
+.lyrics__text p+p {
+    margin-top: 1.4rem;
+}
+
+.lyrics__back {
+    margin-top: 2.5rem;
+    text-align: center;
+    font-size: var(--fs-subhead);
+}
+
+/* the content slides in one piece after another */
+.rmodal__info>* {
+    animation: rise var(--t-enter) var(--ease) both;   /* 8.3: last piece is in at 0.64 s, the sheet lands at 0.4 s (was 0.98 s) */
+}
+
+.rmodal__info>*:nth-child(1) { animation-delay: 0.06s; }
+.rmodal__info>*:nth-child(2) { animation-delay: 0.09s; }
+.rmodal__info>*:nth-child(3) { animation-delay: 0.12s; }
+.rmodal__info>*:nth-child(4) { animation-delay: 0.15s; }
+.rmodal__info>*:nth-child(5) { animation-delay: 0.18s; }
+.rmodal__info>*:nth-child(6) { animation-delay: 0.21s; }
+.rmodal__info>*:nth-child(7) { animation-delay: 0.24s; }
+
+.rmodal__btn {
+    position: absolute;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 2.5rem;
+    height: 2.5rem;
+    border: 0;
+    border-radius: 50%;
+    box-shadow: inset 0 0 0 1px var(--mat-control-edge);   /* 9.6 */
+    background: var(--mat-control-bg);
+    color: #fff;
+    font-size: var(--fs-title-3);
+    line-height: var(--lh-title);
+    cursor: pointer;
+    transition: background-color var(--t-fast), transform var(--t-sheet) var(--ease);
+}
+
+.rmodal__btn:hover {
+    background: var(--mat-control-bg-hover);
+}
+
+.rmodal__btn--close {
+    top: 0.75rem;
+    right: 0.75rem;
+}
+
+.rmodal__btn--close:hover {
+    transform: rotate(90deg);
+}
+
+.rmodal__nav {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-2);
+}
+
+.rmodal__nav .rmodal__btn {
+    position: static;
+}
+
+/* the grip: the sheet is swiped down by it (phones only; see js/main.js, section 9) */
+.rmodal__grip {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    z-index: 3;
+    width: 9rem;
+    height: 2rem;
+    transform: translateX(-50%);
+    touch-action: none;
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.rmodal__grip::before {
+    content: "";
+    position: absolute;
+    top: 0.5rem;
+    left: 50%;
+    width: 2.5rem;
+    height: 4px;
+    border-radius: var(--radius-pill);
+    background: var(--mat-grip);
+    transform: translateX(-50%);
+}
+
+@media (min-width: 46rem) {
+    .rmodal {
+        padding: var(--space-5);
+    }
+
+    .rmodal__panel {
+        grid-template-columns: minmax(0, 22rem) minmax(0, 1fr);
+        align-items: center;
+        gap: 2.25rem;
+        padding: var(--space-6);
+    }
+
+    .rmodal__art {
+        width: 100%;
+    }
+
+    .rmodal__nav {
+        grid-column: 1 / -1;
+    }
+
+    .rmodal__grip {
+        display: none;
+    }
+
+    .rmodal__tracks {
+        max-height: 12rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    /* 6.1: nothing travels, but things still arrive: a short cross-fade (see section 6.1 at the end of the file) */
+    .js .is-in,
+    .js [data-reveal],
+    .js .news-card,
+    .js .social li,
+    .js .photo-grid li,
+    .js .section-head,
+    .js .embed,
+    .js .rail-block,
+    .js .callout,
+    .js .gallery__note {
+        opacity: 1 !important;
+        transform: none !important;
+    }
+}
+
+
+/* ---------- Added: references, external links, latest releases on the home page ---------- */
+
+/* Citation marks inside the text: [1] small and raised, like on Wikipedia */
+.bio__body a[href^="#ref-"],
+.article__body a[href^="#ref-"] {
+    margin-left: 0.1em;
+    font-size: 0.7em;
+    line-height: 0;
+    vertical-align: super;
+    text-decoration: none;
+    white-space: nowrap;
+}
+
+.bio__body a[href^="#ref-"]:hover,
+.article__body a[href^="#ref-"]:hover {
+    text-decoration: underline;
+}
+
+.refs {
+    margin-top: var(--space-6);
+}
+
+.bio__refs .refs:first-child,
+.refs+.refs {
+    margin-top: var(--space-5);
+}
+
+.refs__title {
+    margin-bottom: var(--space-3);
+    padding: 0.7rem var(--space-3);
+    border-block: 1px solid var(--color-line);
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+    text-align: center;
+    text-wrap: balance;
+}
+
+.refs__list {
+    padding-left: 1.6rem;
+    color: var(--color-text-soft);
+    font-size: var(--fs-footnote);
+    line-height: 1.5;
+}
+
+.refs__list li {
+    padding-block: 0.2rem;
+    overflow-wrap: anywhere;
+}
+
+.refs__list li:target {
+    background: var(--color-hover);
+    outline: 6px solid var(--color-hover);
+}
+
+.refs__list:not(.refs__list--links) {
+    list-style: decimal;
+}
+
+.refs__list--links {
+    list-style: disc;
+}
+
+.refs__list a {
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.refs__site {
+    color: var(--color-muted);
+    font-style: normal;
+}
+
+.refs__site::before {
+    content: "— ";
+}
+
+.refs__list--links .refs__site::before {
+    content: none;
+}
+
+.bio__refs {
+    padding-bottom: var(--space-5);
+}
+
+/* "More on this site" under an article */
+.article__more {
+    margin-top: var(--space-6);
+}
+
+.article__more-title {
+    margin-bottom: var(--space-2);
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+}
+
+.article__more ul {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.1rem;
+}
+
+.article__more a {
+    font-size: var(--fs-subhead);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+/* Latest releases on the home page */
+.release-grid--home {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.release-mini__cover {
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--radius-xs);
+    background: var(--color-surface);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+.release-mini__cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--t-sheet);
+}
+
+.release-mini__cover:hover img {
+    transform: scale(1.04);
+}
+
+@media (min-width: 40rem) {
+    .release-grid--home {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+/* Very narrow phones (320 px): keep the bigger logo from squeezing the Biography button */
+@media (max-width: 22.5rem) {
+    .site-header {
+        padding-inline: 0.9rem 0.6rem;
+    }
+
+    .brand img {
+        width: 5.4rem;
+        height: 0.95rem;
+    }
+}
+
+
+/* =============================================================
+   Added: stronger home page on phones, biography with sections,
+   key facts and key moments, subscribe box
+   ============================================================= */
+
+/* ---------- Buttons: a solid (black) variant ---------- */
+.btn--solid {
+    background: var(--color-text);
+    color: var(--color-on-text);
+}
+
+.btn--solid::before {
+    background: var(--color-on-text);
+    transition: clip-path var(--t-fast) var(--ease);
+}
+
+@media (hover: hover) {
+    .btn--solid:hover {
+        background: var(--color-text);
+        color: var(--color-text);
+    }
+}
+
+/* ---------- Home: buttons and numbers under the name ---------- */
+.hero__actions {
+    display: grid;
+    gap: 0.6rem;
+    width: 100%;
+    margin-top: var(--space-2);
+}
+
+/* Phone: the first screen must feel like a main page */
+@media (max-width: 39.99rem) {
+    /* 7.5: .hero, .hero__photo, the title size, the tagline size and the note size are set once, in the "2.3" phone block below
+       (this block used to set them too and was overridden there) */
+    .hero__ring {
+        padding: 5px;
+        margin-bottom: 0.35rem;
+    }
+
+    .hero__title {
+        font-weight: var(--fw-hero-title-phone);
+    }
+
+    .hero__tagline {
+        font-family: var(--font-ui);
+        font-weight: var(--fw-hero-tagline-phone);
+        line-height: var(--lh-headline);
+    }
+
+    .hero__note {
+        margin-top: var(--space-1);
+        text-wrap: balance;
+    }
+
+    .hero__actions .btn {
+        min-height: 3rem;
+        font-size: var(--fs-body);
+    }
+}
+
+@media (min-width: 40rem) {
+    .hero__actions {
+        grid-column: 1 / -1;
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, max-content);   /* 5.1: wraps instead of overflowing at a 200% text size */
+        justify-content: start;
+        gap: var(--space-3);
+        margin-top: var(--space-3);
+    }
+
+}
+
+/* Questions on the home page */
+.faq--home {
+    margin-top: 0;
+}
+
+/* ---------- Biography: key facts and key moments ---------- */
+.bio-block-title {
+    margin-bottom: 0.6rem;
+    font-family: var(--font-ui);
+    font-size: var(--fs-footnote);
+    font-weight: var(--fw-semibold);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+    color: var(--color-muted);
+}
+
+.bio-facts,
+.bio-moments {
+    margin-top: var(--space-5);
+}
+
+.bio-facts__list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    column-gap: 1.25rem;
+}
+
+.bio-facts__item {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    padding: 0.65rem 0;
+    border-top: 1px solid var(--color-line-soft);
+}
+
+.bio-facts__item dt {
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+}
+
+.bio-facts__item dd {
+    overflow-wrap: anywhere;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-subhead);
+    line-height: 1.3;
+}
+
+.bio-facts__item a {
+    font-size: var(--fs-footnote);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+.bio-moments__list {
+    position: relative;
+    margin: 0;
+    padding: 0 0 0 0.1rem;
+    list-style: none;
+}
+
+.bio-moments__list::before {
+    content: "";
+    position: absolute;
+    top: 0.6rem;
+    bottom: 0.6rem;
+    left: 3.55rem;
+    width: 1px;
+    background: var(--color-line);
+}
+
+.bio-moments__item {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3.1rem minmax(0, 1fr);
+    column-gap: 1.1rem;
+    padding: 0.4rem 0;
+    font-size: var(--fs-subhead);
+    line-height: 1.5;
+}
+
+.bio-moments__item::before {
+    content: "";
+    position: absolute;
+    top: 0.85rem;
+    left: 3.25rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border: 2px solid var(--color-border);
+    border-radius: 50%;
+    background: var(--color-bg);
+}
+
+.bio-moments__year {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-subhead);
+    line-height: 1.5;
+}
+
+.bio-moments__text {
+    color: var(--color-text-soft);
+}
+
+@media (min-width: 40rem) {
+    .bio-facts__list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+}
+
+/* ---------- Biography: one long page ---------- */
+.bio__flow {
+    margin-top: var(--space-5);
+}
+
+/* ---------- Subscribe box (news page and footer) ---------- */
+.subscribe {
+    margin-top: var(--space-6);
+    padding: var(--space-4) 1.1rem;
+    border: 1px solid var(--color-line-soft);
+    border-left: 4px solid var(--color-border);
+    background: var(--color-surface);
+}
+
+.subscribe__title {
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+}
+
+.subscribe__text {
+    margin-top: 0.35rem;
+    color: var(--color-text-soft);
+    font-size: var(--fs-subhead);
+}
+
+.subscribe__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-top: 0.85rem;
+}
+
+
+/* ---------- Window that asks for permission to send notifications (js/push-ask.js) ---------- */
+.push-ask {
+    position: fixed;
+    inset: 0;
+    z-index: 1200;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 0;
+}
+
+.push-ask[hidden] {
+    display: none;
+}
+
+/* 4.3: a parallel notice. No scrim, the page behind stays visible and usable: only the card takes clicks.
+   The backdrop element stays in the markup (it is part of the template) but is not drawn. */
+.push-ask {
+    pointer-events: none;
+}
+
+.push-ask__card {
+    pointer-events: auto;
+}
+
+.push-ask__card {
+    position: relative;
+    width: 100%;
+    max-width: 26rem;
+    padding: 1.6rem 1.4rem calc(1.4rem + env(safe-area-inset-bottom));
+    border: 1px solid var(--mat-banner-line);
+    border-bottom: 0;
+    border-radius: var(--radius-l) var(--radius-l) 0 0;
+    background: var(--mat-banner-bg);
+    -webkit-backdrop-filter: var(--mat-banner-blur);
+    backdrop-filter: var(--mat-banner-blur);
+    box-shadow: var(--elev-2);
+    text-align: center;
+    /* closed = not there yet: moved down, a little smaller, no blur (4.5 materialization) */
+    transform: translateY(1rem) scale(0.96);
+    transform-origin: 50% 100%;
+    opacity: 0;
+    -webkit-backdrop-filter: blur(0) saturate(100%);
+    backdrop-filter: blur(0) saturate(100%);
+    transition: transform var(--t-enter) var(--spring-default), opacity var(--t-sheet) var(--ease-standard),
+        -webkit-backdrop-filter var(--t-enter) var(--ease-standard), backdrop-filter var(--t-enter) var(--ease-standard);
+}
+
+.push-ask.is-open .push-ask__card {
+    transform: none;
+    opacity: 1;
+    -webkit-backdrop-filter: var(--mat-banner-blur);
+    backdrop-filter: var(--mat-banner-blur);
+}
+
+/* leaving = the entry played backwards, a little shorter (same timing as every surface, todo design 4.2) */
+.push-ask:not(.is-open) .push-ask__card {
+    transition: transform var(--t-exit) var(--ease-standard), opacity var(--t-exit) var(--ease-standard),
+        -webkit-backdrop-filter var(--t-exit) var(--ease-standard), backdrop-filter var(--t-exit) var(--ease-standard);
+}
+
+.push-ask__bell {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 3.4rem;
+    height: 3.4rem;
+    margin-bottom: 0.9rem;
+    border-radius: 50%;
+    background: var(--color-text);
+    color: var(--color-on-text);
+    transform-origin: 50% 12%;
+}
+
+.push-ask.is-open .push-ask__bell:not(.push-ask__bell--ok) {
+    animation: push-ring var(--t-slow) 0.5s ease-in-out 2;
+}
+
+@keyframes push-ring {
+    0%, 100% { transform: rotate(0); }
+    15% { transform: rotate(16deg); }
+    35% { transform: rotate(-14deg); }
+    55% { transform: rotate(9deg); }
+    75% { transform: rotate(-5deg); }
+}
+
+.push-ask__title {
+    margin: 0 0 0.4rem;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-title-3);
+    line-height: var(--lh-title);
+}
+
+.push-ask__text {
+    margin: 0 0 var(--space-4);
+    color: var(--vib-on-light);
+    font-size: var(--fs-subhead);
+    letter-spacing: var(--vib-track);
+}
+
+.push-ask__preview {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    margin: 0 auto;
+    padding: 0.65rem 0.8rem;
+    border: 1px solid var(--color-line-soft);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    text-align: left;
+    opacity: 0;
+    transform: translateY(8px);
+}
+
+.push-ask.is-open .push-ask__preview {
+    animation: push-pop var(--t-rise) 0.35s cubic-bezier(0.2, 0.9, 0.3, 1) forwards;
+}
+
+@keyframes push-pop {
+    to { opacity: 1; transform: none; }
+}
+
+.push-ask__icon {
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: var(--radius-s);
+    background: #000;
+    object-fit: cover;
+}
+
+.push-ask__preview-body {
+    min-width: 0;
+}
+
+.push-ask__preview-site {
+    display: block;
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    line-height: 1.3;
+}
+
+.push-ask__preview-title {
+    display: -webkit-box;
+    overflow: hidden;
+    font-family: var(--font-ui);
+    font-size: var(--fs-subhead);
+    font-weight: var(--fw-semibold);
+    line-height: 1.3;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.push-ask__caption {
+    margin: 0.4rem 0 1.1rem;
+    color: var(--vib-on-light-2);
+    font-size: var(--fs-caption);
+    font-weight: var(--vib-weight);
+    letter-spacing: var(--vib-track);
+}
+
+.push-ask__actions {
+    display: flex;
+    align-items: stretch;
+    gap: var(--space-2);
+}
+
+/* 5.6: the answers have the same size and weight, side by side (before: a solid "Yes" and a quiet text "Not now") */
+.push-ask__choice {
+    flex: 1;
+    min-height: 3rem;
+    font-size: var(--fs-body);
+}
+
+.push-ask__choice:disabled {
+    opacity: 0.6;
+    cursor: progress;
+}
+
+.push-ask__fine {
+    margin: var(--space-2) 0 0;
+    color: var(--vib-on-light-2);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--vib-track);
+}
+
+@media (min-width: 40rem) {
+    .push-ask {
+        align-items: center;
+        padding: var(--space-4);
+    }
+
+    .push-ask__card {
+        border: 1px solid var(--mat-banner-line);
+        border-radius: var(--radius-l);
+        padding-bottom: 1.4rem;
+        box-shadow: var(--elev-3);
+    }
+}
+
+/* 4.5: with reduced transparency the surface keeps its movement but the blur does not change (nothing to materialize) */
+@media (prefers-reduced-transparency: reduce) {
+
+    .consent {
+        animation-name: banner-in-plain;
+    }
+
+    .consent.is-leaving {
+        animation-name: banner-out-plain;
+    }
+
+    .push-ask__card,
+    .push-ask:not(.is-open) .push-ask__card {
+        transform: translateY(1rem);
+        -webkit-backdrop-filter: var(--mat-banner-blur);
+        backdrop-filter: var(--mat-banner-blur);
+    }
+
+    .push-ask.is-open .push-ask__card {
+        transform: none;
+    }
+
+    .site-header {
+        transition: background-color var(--t-sheet);
+    }
+
+    .rmodal__backdrop {
+        animation-name: fade-in;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .consent,
+    .consent.is-leaving {
+        animation-name: fade-in;
+        animation-duration: var(--t-fast);
+    }
+
+    .rmodal__backdrop {
+        animation-name: fade-in;
+    }
+
+    .push-ask__card,
+    .push-ask:not(.is-open) .push-ask__card {
+        transition: none;
+    }
+
+    .push-ask__preview {
+        opacity: 1;
+        transform: none;
+        animation: none !important;
+    }
+
+    .push-ask__bell {
+        animation: none !important;
+    }
+}
+
+/* the "Get notifications" buttons appear only when the browser can show notifications (js/push-ask.js) */
+[data-push-open][hidden] {
+    display: none;
+}
+
+/* ---------- Home and Streams page: SETTWOR in numbers ---------- */
+/* the block adapts to the width of its own column, not of the screen */
+.numbers {
+    container: numbers / inline-size;
+}
+
+/* the colours of the platforms (their logos) */
+.c-spotify { --c: #1db954; }
+.c-apple_music { --c: #ff2d55; }
+.c-pandora { --c: #3668ff; }
+.c-youtube_music { --c: #ff5f57; }
+.c-deezer { --c: #a238ff; }
+.c-amazon_music { --c: #25d1da; }
+.c-tidal { --c: #ffffff; }
+.plat.c-tidal { --c: #111111; }
+.c-yandex_music { --c: #ffcc00; }
+.c-vk_music { --c: #0077ff; }
+.c-other { --c: #8a8a8a; }
+.c-yt_clips { --c: #ff0000; }
+.c-yt_other { --c: #a80000; }
+
+/* big black panel with the total */
+.numbers__hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+    overflow: hidden;
+    padding: var(--space-5) 1.25rem 1.25rem;
+    border-radius: var(--radius-l);
+    background: #000;
+    color: #fff;
+    box-shadow: 0 18px 40px -22px rgba(0, 0, 0, 0.65);
+    text-decoration: none;
+}
+
+a.numbers__hero--link {
+    cursor: pointer;
+    transition: transform var(--t-sheet) var(--ease), box-shadow var(--t-sheet);
+}
+
+a.numbers__hero--link:hover,
+a.numbers__hero--link:focus-visible {
+    transform: translateY(-3px);
+    box-shadow: 0 26px 46px -22px rgba(0, 0, 0, 0.75);
+}
+
+a.numbers__hero--link:focus-visible {
+    outline: 3px solid var(--color-text);
+    outline-offset: 3px;
+}
+
+.numbers__eyebrow {
+    color: rgba(255, 255, 255, 0.62);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+}
+
+.numbers__value {
+    font-family: var(--font-brand);
+    font-weight: var(--fw-bold);
+    font-size: var(--fs-display);
+    line-height: var(--lh-display);
+    font-variant-numeric: tabular-nums;
+    letter-spacing: var(--track-title);
+    white-space: nowrap;
+}
+
+.numbers__label {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--fs-subhead);
+}
+
+/* the smaller number under the big one: music platforms and YouTube videos together */
+.numbers__plus {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.2rem 0.7rem;
+    margin-top: 0.8rem;
+    padding-top: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.numbers__plus b {
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-3);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title);
+    font-variant-numeric: tabular-nums;
+}
+
+.numbers__plus span {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: var(--fs-subhead);
+}
+
+/* one coloured piece for every platform */
+.numbers__split {
+    display: flex;
+    gap: 3px;
+    height: 0.6rem;
+    margin-top: 1.1rem;
+}
+
+.seg {
+    display: block;
+    flex-basis: 0;
+    min-width: 5px;
+    border-radius: var(--radius-pill);
+    background: var(--c);
+    transform-origin: left center;
+}
+
+.numbers__legend {
+    display: grid;
+    margin: 0.9rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.numbers__legend li {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.45rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.14);
+    font-size: var(--fs-subhead);
+}
+
+.numbers__legend li span {
+    color: rgba(255, 255, 255, 0.78);
+}
+
+.numbers__legend b {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-variant-numeric: tabular-nums;
+}
+
+.dot {
+    display: inline-block;
+    width: 0.65rem;
+    height: 0.65rem;
+    border-radius: 50%;
+    background: var(--c);
+    box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.06);
+}
+
+.numbers__cta {
+    display: inline-flex;
+    align-items: center;
+    align-self: flex-start;
+    gap: var(--space-2);
+    margin-top: 0.9rem;
+    padding: var(--space-2) var(--space-4);
+    border-radius: var(--radius-pill);
+    background: #fff;
+    color: #000;
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-footnote);
+    transition: gap var(--t-sheet) var(--ease);
+}
+
+a.numbers__hero--link:hover .numbers__cta {
+    gap: 0.9rem;
+}
+
+.numbers__arrow {
+    font-style: normal;
+}
+
+/* Streams page: status line */
+.status {
+    display: flex;
+    margin: 0 0 var(--space-4);
+}
+
+.status__badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.2rem 0.65rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-text);
+    color: var(--color-bg);
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+}
+
+.status__dot,
+.tag--live i {
+    display: inline-block;
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #1db954;
+}
+
+.status--live .status__dot,
+.tag--live i {
+    position: relative;
+}
+
+/* the green ring grows and fades (only transform and opacity, so the page is not repainted all the time) */
+.status--live .status__dot::after,
+.tag--live i::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: #1db954;
+    animation: pulse-ring 2s ease-out infinite;
+}
+
+@keyframes pulse-ring {
+    0% { transform: scale(1); opacity: 0.6; }
+    100% { transform: scale(3); opacity: 0; }
+}
+
+/* headings of the groups */
+.numbers__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-4);
+    margin: 2.25rem 0 0.9rem;
+    padding-bottom: 0.55rem;
+    border-bottom: 1px solid var(--color-line);
+    scroll-margin-top: 5rem;
+}
+
+.numbers__h {
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: var(--fs-headline);
+    line-height: var(--lh-headline);
+    font-weight: var(--fw-semibold);
+}
+
+.numbers__sum {
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+    font-variant-numeric: tabular-nums;
+}
+
+/* thin bar: the coloured part and the rest */
+.bar {
+    display: flex;
+    height: 0.45rem;
+    overflow: hidden;
+    border-radius: var(--radius-pill);
+    background: var(--color-line-soft);
+}
+
+.bar>i {
+    display: block;
+    flex-basis: 0;
+    transform-origin: left center;
+}
+
+.bar>i:first-child {
+    min-width: 5px;
+    border-radius: var(--radius-pill);
+    background: var(--c, var(--color-text));
+}
+
+.bar>i:last-child {
+    background: transparent;
+}
+
+.bar--split {
+    gap: 3px;
+    background: none;
+}
+
+.bar--split>i,
+.bar--split>i:first-child,
+.bar--split>i:last-child {
+    background: var(--c);
+    border-radius: var(--radius-pill);
+}
+
+/* cards: all the same size, in a straight grid */
+.numbers__plats,
+.numbers__yt,
+.profiles {
+    display: grid;
+    gap: 0.85rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.plat,
+.yt {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    padding: 1.1rem 1.15rem var(--space-4);
+    border: 1px solid var(--color-line-soft);
+    border-top: 4px solid var(--c, var(--color-text));
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    transition: transform var(--t-fast) ease, box-shadow var(--t-fast) ease;
+}
+
+.plat:hover,
+.yt:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 24px -16px rgba(0, 0, 0, 0.5);
+}
+
+.plat__top,
+.yt__top {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.plat__badge {
+    flex: none;
+    width: 0.8rem;
+    height: 0.8rem;
+    border-radius: 50%;
+    background: var(--c);
+}
+
+.plat__name {
+    flex: 1;
+    margin: 0;
+    font-family: var(--font-ui);
+    font-size: var(--fs-body);
+    font-weight: var(--fw-semibold);
+}
+
+.plat__pct {
+    padding: 0.1rem 0.55rem;
+    border-radius: var(--radius-pill);
+    background: var(--color-line-soft);
+    font-size: var(--fs-caption);
+    font-variant-numeric: tabular-nums;
+}
+
+.plat__n {
+    margin-top: 0.2rem;
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-2);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title);
+    font-variant-numeric: tabular-nums;
+}
+
+.plat__cap {
+    margin-top: -0.35rem;
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+}
+
+.plat__years {
+    display: grid;
+    margin: 0.3rem 0 0;
+    padding: 0;
+    list-style: none;
+}
+
+.plat__years li {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding: 0.32rem 0;
+    border-top: 1px solid var(--color-line-soft);
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.plat__years b {
+    color: var(--color-text-soft);
+    font-weight: normal;
+    font-variant-numeric: tabular-nums;
+}
+
+/* the bottom line of a card always sits at the bottom */
+.plat__foot {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-3);
+    margin-top: auto;
+    padding-top: 0.7rem;
+}
+
+.plat__link {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-footnote);
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+}
+
+.plat__link i {
+    font-style: normal;
+}
+
+.tag {
+    display: inline-flex;
+    white-space: nowrap;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.15rem 0.6rem;
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-pill);
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+}
+
+.tag--live {
+    color: var(--color-text);
+}
+
+/* YouTube tiles */
+.yt__t {
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    letter-spacing: var(--track-label);
+    text-transform: uppercase;
+}
+
+.yt__top {
+    justify-content: space-between;
+}
+
+.yt__n {
+    font-family: var(--font-brand);
+    font-size: var(--fs-title-2);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-title);
+    font-variant-numeric: tabular-nums;
+}
+
+.yt__s {
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.yt--main .yt__n {
+    font-size: var(--fs-title-1);
+    line-height: var(--lh-display);
+}
+
+/* official profiles */
+.profile {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: center;
+    gap: 0.1rem var(--space-3);
+    height: 100%;
+    padding: 0.8rem var(--space-4);
+    border: 1px solid var(--color-line-soft);
+    border-radius: var(--radius-m);
+    background: var(--color-surface);
+    text-decoration: none;
+    transition: border-color var(--t-fast), transform var(--t-fast) ease;
+}
+
+.profile:hover {
+    border-color: var(--color-text);
+    transform: translateY(-2px);
+}
+
+.profile__name {
+    font-family: var(--font-ui);
+    font-weight: var(--fw-semibold);
+    font-size: var(--fs-subhead);
+}
+
+.profile__host {
+    grid-column: 1;
+    overflow: hidden;
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.profile i {
+    grid-row: 1 / span 2;
+    grid-column: 2;
+    font-style: normal;
+}
+
+/* bars grow and the cards appear when each card comes into view (js/stats.js) */
+.numbers.is-armed .numbers__hero:not(.is-seen) .seg,
+.numbers.is-armed .plat:not(.is-seen) .bar>i,
+.numbers.is-armed .yt:not(.is-seen) .bar>i {
+    transform: scaleX(0);
+}
+
+.numbers.is-armed .plat:not(.is-seen),
+.numbers.is-armed .yt:not(.is-seen) {
+    opacity: 0;
+    transform: translateY(14px);
+}
+
+.numbers .is-seen .seg,
+.numbers .is-seen .bar>i {
+    transform: scaleX(1);
+    transition: transform var(--t-slow) cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s;
+}
+
+.numbers .plat.is-seen,
+.numbers .yt.is-seen {
+    opacity: 1;
+    transform: none;
+    transition: opacity var(--t-rise) ease, transform var(--t-rise) ease;
+    transition-delay: calc(var(--i, 0) * 60ms);
+}
+
+@container numbers (min-width: 34rem) {
+    .numbers__hero {
+        padding: var(--space-6) var(--space-6) var(--space-5);
+    }
+
+    .numbers__legend {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        column-gap: 2.5rem;
+    }
+
+    .numbers__plats,
+    .numbers__yt,
+    .profiles {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .yt--main {
+        grid-column: 1 / -1;
+    }
+
+    .yt--main .yt__n {
+        font-size: var(--fs-display);
+    line-height: var(--lh-display);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .status--live .status__dot,
+    .tag--live i {
+        animation: none;
+    }
+}
+
+
+/* =============================================================
+   2.3: home page on phones. Smaller name, one main button and a row of
+   quick links, tighter spacing, easier taps.
+   ============================================================= */
+.hero__more {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: var(--space-2);
+}
+
+/* The labels stay on one line (min-width 0 lets the grid cell shrink; the row itself wraps on desktop, see 5.1). */
+.hero__more .btn {
+    min-width: 0;
+    white-space: nowrap;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.btn--small {
+    min-height: 2.6rem;
+    padding: 0.3rem 0.4rem;
+    border-width: 1px;
+    border-color: #595959;
+    font-size: var(--fs-footnote);
+}
+
+@media (min-width: 40rem) {
+    .hero__more {
+        display: flex;
+        gap: var(--space-3);
+    }
+
+    .btn--small {
+        min-height: 2.4rem;
+        padding: 0.3rem 1.1rem;
+        font-size: var(--fs-subhead);
+    }
+}
+
+@media (max-width: 39.99rem) {
+    .hero {
+        gap: 0.4rem;
+        padding: 1.25rem 0 var(--space-4);
+    }
+
+    .hero__photo {
+        width: 9.5rem;
+        height: 9.5rem;
+    }
+
+    .hero__title {
+        font-size: var(--fs-title-1);
+    line-height: var(--lh-display);
+        letter-spacing: var(--track-display);
+    }
+
+    .hero__tagline {
+        margin-top: 0.3rem;
+        font-size: var(--fs-body);
+    }
+
+    .hero__note {
+        max-width: 19rem;
+        font-size: var(--fs-footnote);
+    }
+
+    .hero__actions {
+        gap: var(--space-2);
+        margin-top: 0.6rem;
+    }
+
+    .hero__actions .btn--solid {
+        min-height: 3.1rem;
+        font-size: var(--fs-body);
+    }
+
+    .hero__actions .btn--small {
+        min-height: 2.7rem;
+        font-size: var(--fs-caption);
+    }
+
+    .section {
+        padding-bottom: 2.25rem;
+    }
+
+    .social .btn {
+        min-height: 2.9rem;
+    }
+
+    .center .btn--thin {
+        min-height: 2.8rem;
+        padding-inline: 1.6rem;
+    }
+}
+
+@keyframes title-in-small {
+    from { opacity: 0; transform: translateY(0.75rem); }
+    to { opacity: 1; transform: none; }
+}
+
+@media (max-width: 39.99rem) {
+    .hero__title {
+        animation-name: title-in-small;
+    }
+}
+
+/* 2.4: lighter header on phones (a blur behind a moving page makes scrolling heavy) */
+@media (max-width: 39.99rem) {
+    .site-header.is-scrolled {
+        background: var(--mat-chrome-bg-dense);
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
+/* 2.4: the home "Key facts" (8 facts) in two even columns on every screen */
+.bio-facts--home .bio-facts__list {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.bio-facts--home {
+    margin-bottom: 1.75rem;
+}
+
+
+/* ---------- todo design 3.4 / 3.5 (v4.4, v4.5) ---------- */
+
+/* 3.4: the page does not jump when the menu locks scrolling (the scrollbar keeps its place) */
+html {
+    scrollbar-gutter: stable;
+}
+
+/* 3.5: one indicator travels behind the chosen year (js/main.js section 5a) */
+.year-tabs.has-indicator {
+    position: relative;
+}
+
+.year-tabs__indicator {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    border-radius: var(--radius-pill);
+    background: var(--color-text);
+    pointer-events: none;
+    z-index: 0;
+}
+
+html:not(.fluid) .year-tabs.is-ready .year-tabs__indicator {   /* v9.6: with fluid.js a spring moves it (js/fluid.js glide) */
+    transition: left 0.4s var(--ease-standard), top 0.4s var(--ease-standard),
+                width 0.4s var(--ease-standard), height 0.4s var(--ease-standard);
+}
+
+.year-tabs.has-indicator .year-tabs__link {
+    position: relative;
+    z-index: 1;
+    background: transparent;
+}
+
+.year-tabs.has-indicator .year-tabs__link:not(.is-active):hover {
+    background: var(--color-hover);
+}
+
+.year-tabs.has-indicator .year-tabs__link.is-active {
+    background: transparent;
+    border-color: transparent;
+    color: var(--color-on-text);
+}
+
+@keyframes enter-from-right {
+    from { opacity: 0; transform: translate3d(14px, 0, 0); }
+    to   { opacity: 1; transform: none; }
+}
+
+@keyframes enter-from-left {
+    from { opacity: 0; transform: translate3d(-14px, 0, 0); }
+    to   { opacity: 1; transform: none; }
+}
+
+.gallery__year[data-enter="right"]:not([hidden]) {
+    animation: enter-from-right var(--t-sheet) var(--ease-standard) both;
+}
+
+.gallery__year[data-enter="left"]:not([hidden]) {
+    animation: enter-from-left var(--t-sheet) var(--ease-standard) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .gallery__year[data-enter]:not([hidden]) {
+        animation: fade-in var(--t-fast) ease both;
+    }
+}
+
+/* 3.4: with reduced motion the menu does not travel: it fades in (JS still jumps it to its place) */
+@media (prefers-reduced-motion: reduce) {
+    .mobile-menu.is-open {
+        animation: fade-in var(--t-fast) ease both;
+    }
+}
+
+
+/* =============================================================
+   5.1 / 5.2: home page. Heading rows with a secondary link on the right, and one block for
+   the video and the Spotify player.
+   ============================================================= */
+.section-head__more {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    min-height: 2.75rem;
+    color: var(--color-text-soft);
+    font-size: var(--fs-subhead);
+    font-weight: var(--fw-body);
+    white-space: nowrap;
+    transition: opacity var(--t-sheet) var(--ease-standard);
+}
+
+.section-head__arrow {
+    display: inline-block;
+    transition: transform var(--t-move, 0.4s) var(--ease-standard);
+}
+
+@media (hover: hover) {
+    html:not(.fluid) .section-head__more:hover .section-head__arrow {   /* v9.6: fluid.js shoots the arrow out on a spring */
+        transform: translateX(0.25rem);
+    }
+}
+
+/* the press answers at once and comes back smoothly (SKILL 1) */
+html:not(.fluid) .section-head__more:active {   /* v9.6: with fluid.js the spring dips the opacity */
+    opacity: 0.55;
+    transition-duration: var(--t-press);
+}
+
+.listen-watch {
+    display: grid;
+    gap: var(--space-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .section-head__arrow {
+        transition: none;
+        transform: none;
+    }
+}
+
+
+/* =============================================================
+   5.3: the current page in the top bar. The same fill as the chosen year tab (3.5): a filled pill, so it
+   does not rely on colour alone to say "you are here" (the link also carries aria-current).
+   5.4: the way back on a news page and a song page.
+   ============================================================= */
+.site-nav .btn[aria-current] {
+    background: var(--color-text);
+    color: var(--color-on-text);
+}
+
+.site-nav .btn[aria-current]:hover,
+.site-nav .btn[aria-current]:active {
+    background-color: var(--color-text-soft);
+}
+
+.back {
+    margin-bottom: var(--space-2);
+}
+
+.btn--back {
+    min-height: 2.5rem;
+    padding-inline: var(--space-4) 1.1rem;
+    text-decoration: none; /* the global "p a" underline must not reach a button */
+}
+
+.btn--back .btn__arrow {
+    display: inline-block;
+    transition: transform var(--t-move) var(--ease-standard);
+}
+
+@media (hover: hover) {
+    html:not(.fluid) .btn--back:hover .btn__arrow {
+        transform: translateX(-0.25rem);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .btn--back .btn__arrow {
+        transition: none;
+        transform: none;
+    }
+}
+
+/* 5.1: at a 200% text size the three quick links of the hero were wider than the screen on desktop (sideways scroll).
+   They wrap to a second line only when there is no room; at the normal size nothing changes. */
+@media (min-width: 40rem) {
+    .hero__more {
+        flex-wrap: wrap;
+    }
+}
+
+
+/* =============================================================
+   5.5 (v5.7): empty and failed states. Calm, plain words, one way forward (SKILL 16 wayfinding).
+   ============================================================= */
+.empty {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-2);
+    max-width: 26rem;
+    margin: var(--space-6) auto;
+    padding: var(--space-6) var(--space-5);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    text-align: center;
+}
+
+.empty__title {
+    margin: 0;
+    font-size: var(--fs-headline);
+    font-weight: var(--fw-bold);
+    line-height: var(--lh-headline);
+    letter-spacing: var(--track-title);
+    text-wrap: balance;
+}
+
+.empty__text {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: var(--fs-subhead);
+    line-height: var(--lh-body);
+    text-wrap: balance;
+}
+
+.empty__action {
+    margin-top: var(--space-3);
+    text-decoration: none;   /* the global "p a" underline must not reach a button */
+}
+
+/* a player that does not load: the line under it is always there, so there is a way forward either way */
+.embed-block {
+    display: grid;
+    gap: var(--space-1);
+}
+
+.embed__alt {
+    margin: 0;
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+    line-height: var(--lh-caption);
+    letter-spacing: var(--track-caption);
+    text-align: center;
+}
+
+.embed__alt a {
+    display: inline-block;
+    padding-block: 0.85rem;   /* with the line height: at least a 44 px tap target */
+    color: var(--color-text);
+    text-decoration: underline;
+    text-underline-offset: 0.15em;
+}
+
+/* a picture that cannot be loaded keeps the clean grey frame: no broken-picture icon, no alt text spilling out */
+img.is-failed {
+    visibility: hidden;
+}
+
+.photo-grid a {
+    background: var(--color-surface);
+}
+
+
+/* =============================================================
+   6.1 (v5.9): reduced motion the Apple way (SKILL 14). Nothing travels, nothing springs, nothing turns, nothing
+   moves for ever. But the page is not frozen either: things arrive with a short cross-fade, colours and
+   opacity still change smoothly, and the press still answers at once (a press is feedback, not travel).
+   JS side (already done in v3.x): springs jump to their end, tilt is off, reveal shows everything, windows fade.
+   ============================================================= */
+@keyframes rm-fade {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    /* entrances: the same short fade everywhere, no delay, no shift, no blur, no zoom */
+    body,
+    .hero__ring,
+    .hero__title,
+    .hero__tagline,
+    .hero__note,
+    .page-head__title,
+    .page-head__lead,
+    .mobile-menu.is-open a,
+    .gallery__year:not([hidden]),
+    .lightbox:not([hidden]) .lightbox__img,
+    .rmodal__panel,
+    .rmodal.is-switching .rmodal__cover,
+    .rmodal__info>*,
+    .consent,
+    .consent.is-leaving,
+    .push-ask.is-open .push-ask__preview {
+        animation: rm-fade var(--t-fast) ease both !important;
+    }
+
+    .consent.is-leaving {
+        animation-direction: reverse !important;
+    }
+
+    /* the line under a year title is drawn by scaling: it just appears */
+    .js:not(.no-reveal) .news-year__title.is-in::after {
+        animation: none;
+    }
+
+    /* endless and decorative motion: off (the Live dot keeps its colour, the bell keeps its place) */
+    .status--live .status__dot::after,
+    .tag--live i::after,
+    .push-ask__bell {
+        animation: none !important;
+    }
+
+    /* hover never moves anything (a lift, a slide, a zoom, a turn); the colour and shadow changes stay */
+    .photo-grid a:hover img,
+    a.release__cover:hover img,
+    .hero__ring:hover .hero__photo,
+    .news-card__link:hover,
+    .photo-grid a:hover,
+    .rmodal__link:hover,
+    .rmodal__link:hover::after,
+    .rmodal__btn--close:hover,
+    .release-mini__cover:hover img,
+    a.numbers__hero--link:hover,
+    a.numbers__hero--link:focus-visible,
+    .plat:hover,
+    .yt:hover,
+    .profile:hover,
+    .rail-link:hover {
+        transform: none;
+    }
+
+    /* the header does not shrink and the logo does not scale when the page scrolls: it only changes its colour */
+    .site-header {
+        transition: background-color var(--t-fast) ease;
+    }
+
+    .site-header.is-scrolled,
+    .site-header.is-scrolled .brand img {
+        min-height: var(--header-h);
+        transform: none;
+    }
+
+    /* colour, opacity and shadow changes keep a short, calm time (instead of 0.01 ms) */
+    .btn,
+    .year-tabs__link,
+    .langs__link {
+        transition: color 0.2s ease, background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease,
+            transform var(--t-press) ease-out;
+    }
+}
+
+/* =============================================================
+   6.2 (v5.9): reduced transparency (SKILL 12, 14). Every material becomes a solid surface: no blur, no see-through
+   background, and a clear edge where the blur used to separate the surface from the page.
+   All materials come from the tokens of section 4.2, so the tokens are replaced in one place.
+   ============================================================= */
+/* =============================================================
+   6.4 (v6.0): dark theme, strictly monochrome (greys only, nothing blue). Since v9.4 the page is a soft dark grey,
+   not pure black: page #1a1a1a, cards #2a2a2a, hover #363636, soft line #3a3a3a (the black number panel and the
+   modal sheet #0d0d0d stay darker on purpose). To make the page lighter or darker, change --color-bg and the
+   matching rgba(26, 26, 26, ...) chrome tokens in BOTH token lists below (system block and [data-theme="dark"])
+   and the two theme-color values (_layouts/default.html, COLORS in js/main.js). It follows the system
+   setting by default; since v8.1 the footer has a switch (Auto / Light / Dark) that sets `data-theme` on <html>. Everything is a token override: the
+   tokens of sections 1 and 4 are replaced here, so components do not know about the theme.
+   ============================================================= */
+:root {
+    color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+        --color-bg: #1a1a1a;
+        --color-surface: #2a2a2a;
+        --color-text: #fff;
+        --color-text-soft: #d9d9d9;
+        --color-muted: #a6a6a6;
+        --color-line: #7a7a7a;
+        --color-line-soft: #3a3a3a;
+        --color-border: #fff;
+        --color-hover: #363636;
+        --color-on-text: #000;
+
+        --mat-chrome-bg: rgba(26, 26, 26, 0.78);
+        --mat-chrome-bg-dense: rgba(26, 26, 26, 0.97);
+        --mat-chrome-bg-thick: rgba(26, 26, 26, 0.9);
+        --mat-clear: rgba(26, 26, 26, 0);
+        --mat-banner-bg: rgba(42, 42, 42, 0.88);
+        --mat-banner-line: rgba(255, 255, 255, 0.14);
+        --edge-solid: rgba(255, 255, 255, 0.3);
+        --scrim-modal: rgba(0, 0, 0, 0.8);
+        --vib-on-light: #f2f2f2;
+        --vib-on-light-2: #d0d0d0;
+    }
+
+    /* the logo is a black SVG: on black it is turned white (brightness only, the shape is the same) */
+    .brand img {
+        filter: invert(1);
+    }
+
+    /* TIDAL's mark is dark on the light cards; on a dark card it is white */
+    .plat.c-tidal {
+        --c: #fff;
+    }
+
+    /* black things (the numbers panel, the notification icon) need an edge on a black page */
+    .numbers__hero {
+        outline: 1px solid rgba(255, 255, 255, 0.16);
+        outline-offset: -1px;
+    }
+
+    .push-ask__icon {
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+    }
+}
+
+/* =============================================================
+   8.1 (v8.1): the manual theme switch (footer: Auto / Light / Dark). The choice is stored in the browser and set on
+   <html> as data-theme="light" or "dark" (no attribute = follow the system). The selectors are plain attribute
+   selectors on purpose: the same specificity as `:root`, so the reduced transparency and more contrast blocks below
+   still win, as they did for the system dark theme. Keep these token lists in step with the system dark block above
+   and the base tokens of section 1.
+   ============================================================= */
+[data-theme="dark"] {
+    color-scheme: dark;
+    --color-bg: #1a1a1a;
+    --color-surface: #2a2a2a;
+    --color-text: #fff;
+    --color-text-soft: #d9d9d9;
+    --color-muted: #a6a6a6;
+    --color-line: #7a7a7a;
+    --color-line-soft: #3a3a3a;
+    --color-border: #fff;
+    --color-hover: #363636;
+    --color-on-text: #000;
+    --mat-chrome-bg: rgba(26, 26, 26, 0.78);
+    --mat-chrome-bg-dense: rgba(26, 26, 26, 0.97);
+    --mat-chrome-bg-thick: rgba(26, 26, 26, 0.9);
+    --mat-clear: rgba(26, 26, 26, 0);
+    --mat-banner-bg: rgba(42, 42, 42, 0.88);
+    --mat-banner-line: rgba(255, 255, 255, 0.14);
+    --edge-solid: rgba(255, 255, 255, 0.3);
+    --scrim-modal: rgba(0, 0, 0, 0.8);
+    --vib-on-light: #f2f2f2;
+    --vib-on-light-2: #d0d0d0;
+}
+
+[data-theme="dark"] .brand img {
+    filter: invert(1);
+}
+
+[data-theme="dark"] .plat.c-tidal {
+    --c: #fff;
+}
+
+[data-theme="dark"] .numbers__hero {
+    outline: 1px solid rgba(255, 255, 255, 0.16);
+    outline-offset: -1px;
+}
+
+[data-theme="dark"] .push-ask__icon {
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.22);
+}
+
+[data-theme="light"] {
+    color-scheme: light;
+    --color-bg: #fff;
+    --color-surface: #f6f6f6;
+    --color-text: #000;
+    --color-text-soft: #333;
+    --color-muted: #696969;
+    --color-line: #868181;
+    --color-line-soft: #dcdcdc;
+    --color-border: #000;
+    --color-hover: #e6e6e6;
+    --color-on-text: #fff;
+    --mat-chrome-bg: rgba(246, 246, 246, 0.78);
+    --mat-chrome-bg-dense: rgba(246, 246, 246, 0.97);
+    --mat-chrome-bg-thick: rgba(246, 246, 246, 0.9);
+    --mat-clear: rgba(246, 246, 246, 0);
+    --mat-banner-bg: rgba(250, 250, 250, 0.88);
+    --mat-banner-line: rgba(0, 0, 0, 0.08);
+    --edge-solid: rgba(0, 0, 0, 0.3);
+    --scrim-modal: rgba(0, 0, 0, 0.72);
+    --vib-on-light: #111;
+    --vib-on-light-2: #3a3a3a;
+}
+
+/* light chosen by hand while the system is dark: undo the extra rules of the system dark block */
+@media (prefers-color-scheme: dark) {
+    [data-theme="light"] .brand img {
+        filter: none;
+    }
+
+    [data-theme="light"] .plat.c-tidal {
+        --c: #111111;
+    }
+
+    [data-theme="light"] .numbers__hero {
+        outline: 0;
+    }
+
+    [data-theme="light"] .push-ask__icon {
+        box-shadow: none;
+    }
+}
+
+/* the switch itself (footer) */
+.theme-switch {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    margin-top: var(--space-3);
+}
+
+.theme-switch[hidden] {
+    display: none;
+}
+
+.theme-switch__label {
+    flex-basis: 100%;
+    color: var(--color-muted);
+}
+
+.theme-switch .btn[aria-pressed="true"] {
+    background: var(--color-text);
+    color: var(--color-on-text);
+}
+
+.theme-switch .btn[aria-pressed="true"]:hover,
+.theme-switch .btn[aria-pressed="true"]:active {
+    background-color: var(--color-text-soft);
+}
+
+@media (prefers-reduced-transparency: reduce) {
+    :root {
+        --mat-chrome-bg: var(--color-surface);
+        --mat-chrome-bg-dense: var(--color-surface);
+        --mat-chrome-bg-thick: var(--color-surface);
+        --mat-chrome-blur: none;
+        --mat-banner-bg: var(--color-surface);
+        --mat-banner-blur: none;
+        --mat-banner-line: var(--edge-solid);   /* the edge does the work the blur did */
+        --scrim-modal: rgba(0, 0, 0, 0.88);       /* dim only, no blur: the page behind is not shown through glass */
+        --scrim-modal-blur: none;
+        --mat-control-bg: #2a2a2a;                /* 9.6: the same greys as the translucent fills give on the dark sheet, but solid */
+        --mat-control-bg-hover: #515151;
+        --mat-grip: #565656;
+        --mat-row-hover: #191919;
+    }
+
+    /* the header and the menu keep a clear line under them once they cover content */
+    .site-header.is-scrolled {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+        box-shadow: 0 1px 0 var(--edge-solid);
+    }
+
+    .mobile-menu,
+    .consent,
+    .push-ask__card {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    /* the release window: the blurred cover that glowed behind the panel is a see-through effect: off */
+    .rmodal__bg {
+        display: none;
+    }
+
+    .rmodal__backdrop {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+}
+
+
+/* =============================================================
+   6.3 (v6.0): more contrast (SKILL 14). Surfaces are solid with a clear 1 px edge, grey text is darker (lighter in
+   the dark theme), lines are strong, the focus ring is thicker. Tokens only, as in 6.2.
+   ============================================================= */
+@media (prefers-contrast: more) {
+    :root {
+        --color-text-soft: #111;
+        --color-muted: #333;
+        --color-line: #000;
+        --color-line-soft: #595959;
+
+        --mat-chrome-bg: var(--color-surface);
+        --mat-chrome-bg-dense: var(--color-surface);
+        --mat-chrome-bg-thick: var(--color-surface);
+        --mat-chrome-blur: none;
+        --mat-banner-bg: var(--color-surface);
+        --mat-banner-blur: none;
+        --mat-banner-line: var(--color-border);
+        --mat-sheet-line: rgba(255, 255, 255, 0.6);
+        --scrim-modal: rgba(0, 0, 0, 0.9);
+        --scrim-modal-blur: none;
+        --mat-control-bg: #2a2a2a;                /* 9.6: solid, as under reduced transparency */
+        --mat-control-bg-hover: #515151;
+        --mat-grip: #565656;
+        --mat-row-hover: #191919;
+        --edge-solid: var(--color-border);
+        --vib-on-light: var(--color-text);
+        --vib-on-light-2: var(--color-text);
+    }
+
+    :focus-visible {
+        outline-width: 4px;
+        outline-offset: 3px;
+    }
+
+    .site-header.is-scrolled,
+    .mobile-menu,
+    .consent,
+    .push-ask__card {
+        -webkit-backdrop-filter: none;
+        backdrop-filter: none;
+    }
+
+    .site-header.is-scrolled {
+        box-shadow: 0 1px 0 var(--color-border);
+    }
+
+    .rmodal__bg {
+        display: none;
+    }
+
+    /* 9.6: round controls on the dark sheet and photo viewer get a white ring (the fill alone is a grey on black) */
+    :root {
+        --mat-control-edge: #fff;
+    }
+
+    .btn--thin,
+    .btn--small,
+    .year-tabs__link {
+        border-color: var(--color-border);
+    }
+}
+
+@media (prefers-contrast: more) and (prefers-color-scheme: dark) {
+    :root {
+        --color-text-soft: #f2f2f2;
+        --color-muted: #e0e0e0;
+        --color-line: #fff;
+        --color-line-soft: #bdbdbd;
+    }
+}
+
+/* 8.1: the same under a manual choice (placed after the blocks above so it wins) */
+@media (prefers-contrast: more) {
+    [data-theme="dark"] {
+        --color-text-soft: #f2f2f2;
+        --color-muted: #e0e0e0;
+        --color-line: #fff;
+        --color-line-soft: #bdbdbd;
+    }
+
+    [data-theme="light"] {
+        --color-text-soft: #111;
+        --color-muted: #333;
+        --color-line: #000;
+        --color-line-soft: #595959;
+    }
+}
+
+/* =============================================================
+   6.5 (v6.1): colour is never the only signal, and the focus ring is visible on every surface.
+   Measured: text contrast of the grey tokens is at least 5.0:1 on both themes (see CHANGELOG 6.1), so no colour changed.
+   ============================================================= */
+
+/* the release window, the photo viewer and the black numbers panel are dark in BOTH themes: a black ring would vanish there */
+.rmodal :focus-visible,
+.lightbox :focus-visible,
+.numbers__hero :focus-visible {
+    outline-color: #fff;
+}
+
+/* forced colours (Windows high contrast) replace every fill, so a filled "you are here" pill would look like the
+   others: the current page and the chosen tab also get an underline and a heavier outline */
+@media (forced-colors: active) {
+    [aria-current="page"],
+    [aria-current="true"],
+    .year-tabs__link.is-active {
+        text-decoration: underline;
+        text-decoration-thickness: 2px;
+        text-underline-offset: 0.2em;
+        outline: 2px solid CanvasText;
+        outline-offset: -2px;
+    }
+}
+
+/* =============================================================
+   6.6 (v6.1): endless motion. The only endless animations are the hero ring (one turn in 9 s = 0.11 Hz, below the
+   0.2 Hz limit, `transform` only) and the Live dot pulse (`transform` and `opacity` only); both are off with reduced
+   motion (6.1). Nothing changed here on purpose; this note records the check.
+   ============================================================= */
+
+
+/* =============================================================
+   11 (v9.5): press layer, the CSS part. The reaction itself is drawn by js/main.js section 11 (scale and opacity
+   animations). Here only the browser's own grey tap flash is switched off on touch screens, because it would
+   double our feedback. Buttons, tabs and language links keep their own :active rules (section "Press feedback").
+   ============================================================= */
+a,
+button,
+summary,
+[role="button"],
+[role="tab"],
+.link-button {
+    -webkit-tap-highlight-color: transparent;
+}
+
+
+/* =============================================================
+   9.6 (v9.6): fluid.js. The class `fluid` on <html> is set by js/fluid.js when it runs. Everything here is for that case;
+   the rules above that carry html:not(.fluid) are the fallback when it does not run.
+   ============================================================= */
+
+/* reveal: the slide is done by the spring (translate), so the CSS hidden state is only transparent and nothing moves
+   when the class is-in comes (no second animation on top of the spring) */
+html.fluid.js:not(.no-reveal) [data-reveal],
+html.fluid.js:not(.no-reveal) .news-card,
+html.fluid.js:not(.no-reveal) .photo-grid li {
+    transform: none;
+}
+
+html.fluid.js:not(.no-reveal) .is-in.is-in {
+    transition: transform var(--t-rise) var(--ease);
+}
+
+/* the round photo: held, dragged with a finger or a mouse, thrown */
+html.fluid .hero__ring {
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+}
+
+html.fluid .hero__ring img {
+    -webkit-user-drag: none;
+    user-drag: none;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    html.fluid .hero__ring {
+        cursor: grab;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    html.fluid .hero__ring {
+        touch-action: auto;
+        cursor: auto;
+    }
+}
+
+/* a name slides on hover: a transform needs a box, so the name inside the rail link is inline-block */
+html.fluid .rail-link__name {
+    display: inline-block;
+}
+
+/* the lens of a list (rows of the tracklist): one highlight that glides between rows; a ripple opens at a touch */
+html.fluid .rmodal__tracks,
+html.fluid .rmodal__tracks li {
+    position: relative;
+}
+
+.lens {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+    width: 100%;
+    height: 0;
+    border-radius: var(--radius-s, 8px);
+    background: var(--mat-row-hover);
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.lens__ripple {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.14);
+    pointer-events: none;
+}
+
+
+/* =============================================================
+   10.9: Streams page, line chart "Plays by year" (was 10.8 "Plays over time") (_includes/stats-trend.html).
+   The line is an SVG stretched to the box (preserveAspectRatio none, non-scaling stroke); the dots and the
+   years are HTML placed by percent, so they stay round and sharp. Monochrome: it follows the text colour,
+   so the dark theme needs no extra rules. Drawn when the card comes into view (js/stats.js adds .is-seen).
+   ============================================================= */
+.trend {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-4);
+    padding: 1.1rem 1.15rem var(--space-4);
+    border: 1px solid var(--color-line-soft);
+    border-top: 4px solid var(--color-text);
+    border-radius: var(--radius-l);
+    background: var(--color-surface);
+    font-variant-numeric: tabular-nums;
+}
+
+.trend__plot {
+    position: relative;
+    margin: 0.6rem 0.6rem 0;
+    padding-bottom: 1.7rem;
+}
+
+.trend__draw {
+    position: relative;
+    height: 11rem;
+    border-bottom: 1px solid var(--color-line);
+    clip-path: inset(-1rem -1rem -1px -1rem);
+}
+
+.trend__svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.trend__grid {
+    stroke: var(--color-line-soft);
+    stroke-width: 1;
+    vector-effect: non-scaling-stroke;
+}
+
+.trend__area {
+    fill: var(--color-text);
+    fill-opacity: 0.07;
+    stroke: none;
+}
+
+.trend__line {
+    fill: none;
+    stroke: var(--color-text);
+    stroke-width: 2.5;
+    stroke-linejoin: round;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.trend__dot {
+    position: absolute;
+    width: 0.7rem;
+    height: 0.7rem;
+    margin: -0.35rem 0 0 -0.35rem;
+    border: 2px solid var(--color-text);
+    border-radius: 50%;
+    background: var(--color-surface);
+}
+
+.trend__dot--now {
+    background: var(--color-text);
+    box-shadow: 0 0 0 4px var(--color-line-soft);
+}
+
+.trend__axis {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    height: 1.2rem;
+}
+
+.trend__tick {
+    position: absolute;
+    top: 0;
+    transform: translateX(-50%);
+    color: var(--color-muted);
+    font-size: var(--fs-caption);
+    white-space: nowrap;
+}
+
+.trend__tick {
+    font-size: 0.6875rem;
+}
+
+.trend__tick--first {
+    transform: translateX(-0.6rem);
+}
+
+.trend__tick--last {
+    transform: translateX(calc(-100% + 0.6rem));
+}
+
+.trend__rows {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    grid-template-columns: minmax(0, 1fr);
+}
+
+.trend__row {
+    display: grid;
+    grid-template-columns: 3.2rem minmax(0, 1fr) 6.4rem;
+    align-items: center;
+    gap: var(--space-3);
+    padding: 0.42rem 0;
+    border-top: 1px solid var(--color-line-soft);
+    color: var(--color-muted);
+    font-size: var(--fs-footnote);
+}
+
+.trend__bar {
+    position: relative;
+    display: block;
+    height: 0.5rem;
+    border-radius: 99px;
+    background: var(--color-line-soft);
+    overflow: hidden;
+}
+
+.trend__bar u {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    border-radius: 99px;
+    background: var(--color-text);
+    opacity: 0.55;
+    text-decoration: none;
+}
+
+.trend__row b {
+    color: var(--color-text-soft);
+    font-weight: normal;
+    text-align: right;
+}
+
+.trend__row--peak .trend__bar u {
+    opacity: 1;
+}
+
+.trend__row--peak span,
+.trend__row--peak b {
+    color: var(--color-text);
+    font-weight: var(--fw-semibold);
+}
+
+.trend__row--earlier {
+    border-top: 0;
+    order: 99;
+}
+
+.trend__row--earlier .trend__bar {
+    background: none;
+}
+
+/* the bars of the list grow with the line */
+.numbers.is-armed .trend:not(.is-seen) .trend__bar u {
+    transform: scaleX(0);
+}
+
+.numbers .trend.is-seen .trend__bar u {
+    transform: scaleX(1);
+    transform-origin: left center;
+    transition: transform 1s cubic-bezier(0.2, 0.7, 0.2, 1) 0.4s;
+}
+
+/* the line is drawn from left to right, the dots follow */
+.numbers.is-armed .trend:not(.is-seen) .trend__draw {
+    clip-path: inset(-1rem 100% -1px -1rem);
+}
+
+.numbers.is-armed .trend:not(.is-seen) .trend__dot {
+    opacity: 0;
+}
+
+.numbers .trend.is-seen .trend__draw {
+    clip-path: inset(-1rem -1rem -1px -1rem);
+    transition: clip-path 1.3s cubic-bezier(0.2, 0.7, 0.2, 1) 0.1s;
+}
+
+.numbers .trend.is-seen .trend__dot {
+    opacity: 1;
+    transition: opacity var(--t-rise) ease 0.9s;
+}
+
+@container numbers (min-width: 34rem) {
+    .trend {
+        padding: var(--space-5) var(--space-6);
+    }
+
+    .trend__draw {
+        height: 14rem;
+    }
+
+    .trend__tick {
+        font-size: var(--fs-caption);
+    }
+
+}
+
+
+/* ---------- Pull to refresh (v11.5, js/fluid.js section 7) ---------- */
+html.ptr-on {
+    overscroll-behavior-y: contain;   /* the native pull-to-refresh and glow are off: ours replaces them */
+}
+
+.ptr {
+    position: fixed;
+    top: calc(env(safe-area-inset-top, 0px) + 12px);
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin-left: -20px;
+    z-index: 1000;
+    pointer-events: none;
+    opacity: 0;
+    visibility: hidden;
+}
+
+.ptr.is-on {
+    visibility: visible;
+}
+
+.ptr__disc {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--color-surface);
+    color: var(--color-text);
+    border: 1px solid var(--color-line-soft);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.14);
+}
+
+.ptr.is-armed .ptr__disc {
+    border-color: var(--color-text);
+}
+
+.ptr__arrow {
+    display: block;
+}
+
+.ptr__spin {
+    display: none;
+}
+
+.ptr.is-busy .ptr__arrow {
+    display: none;
+}
+
+.ptr.is-busy .ptr__spin {
+    display: block;
+    animation: ptr-spin 0.8s linear infinite;
+}
+
+.ptr__sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+}
+
+@keyframes ptr-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .ptr.is-busy .ptr__spin { animation: none; }
+}
+
+
+/* =============================================================
+   11.17 (v11.17): CDRA award plaques on the home page (_includes/cdra-awards.html, cdra-plaque.html).
+   Each plaque is two iframes (light and dark) of https://cdra.settwor.com.pl/embed/. The one that matches the theme is shown:
+   the system theme when there is no data-theme, otherwise the footer switch. The plaque has its own colours, so the page tokens are not used on it.
+   ============================================================= */
+.cdra__intro {
+    max-width: 42rem;
+    margin-bottom: var(--space-4);
+    color: var(--color-text-soft);
+}
+
+.cdra__list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 300px), 1fr));
+    gap: var(--space-4);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.cdra__item {
+    min-width: 0;
+    max-width: 504px;
+}
+
+.cdra__frame {
+    display: block;
+    width: 100%;
+    max-width: 504px;
+    height: auto;
+    border: 0;
+}
+
+.cdra__frame--light {
+    color-scheme: light;
+}
+
+.cdra__frame--dark {
+    display: none;
+    color-scheme: dark;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) .cdra__frame--light {
+        display: none;
+    }
+
+    :root:not([data-theme="light"]) .cdra__frame--dark {
+        display: block;
+    }
+}
+
+[data-theme="dark"] .cdra__frame--light {
+    display: none;
+}
+
+[data-theme="dark"] .cdra__frame--dark {
+    display: block;
+}
+
+[data-theme="light"] .cdra__frame--light {
+    display: block;
+}
+
+[data-theme="light"] .cdra__frame--dark {
+    display: none;
+}

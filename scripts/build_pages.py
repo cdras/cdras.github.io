@@ -293,12 +293,13 @@ def level_shown(a, d):
 def cards_block(items, d):
     """Home page cards: one link per award, with the tier named in text (not by colour alone)."""
     out = []
-    for a, hero in items:
+    for a, hero, name in items:
         out += [
             '            <li>',
             f'              <a class="award-card"{" data-tier=" + chr(34) + a["tier"] + chr(34) if a.get("tier") else ""} href="{url_quote(a["file"])}">',
             *card_art(hero),
             '                <span class="card-text">',
+            f'                  <span class="card-name">{esc(name)}</span>',
             f'                  <span class="card-kind">{esc(a.get("kind", "Single"))}</span>',
             f'                  <span class="card-num">{a["streams"]}</span>',
             f'                  <span class="card-sub">all-time streams{" · " + level_shown(a, d) if level_shown(a, d) else ""}</span>',
@@ -306,7 +307,7 @@ def cards_block(items, d):
             *([f'                  <span class="card-code">{esc(a["code"])}</span>'] if a.get('code') else []),
             '                </span>',
             '                <img src="images/link.svg" class="icon" alt="" width="38" height="38" loading="lazy" decoding="async">',
-            f'                <span class="visually-hidden"> — open the award page for {a["streams"]} streams</span>',
+            f'                <span class="visually-hidden"> — open the award page for {esc(name)}, {a["streams"]} streams</span>',
             '              </a>',
             '            </li>']
     return out
@@ -643,9 +644,9 @@ def render(template, spec, d, version):
         'AWARD_LABEL': [f'                <p class="t-label">{spec["award_label"]}</p>'] if spec['award_label'] else [],
         'AWARDS': awards_block(d['awards'], spec['current']),
         'AWARD_GROUPS': award_groups(d, spec['URL']),
-        'HOME_TRACK_CARDS': cards_block([(a, {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True}) for a in d['awards']], d),
-        'HOME_ALBUM_CARD': cards_block([(d['album'], {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True})], d) if d.get('album') else [],
-        'HOME_ARTIST_CARD': cards_block([(d['artist_page'], {**d['heroes']['settwor'], 'disc': True})], d),
+        'HOME_TRACK_CARDS': cards_block([(a, {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True}, d['track']['name']) for a in d['awards']], d),
+        'HOME_ALBUM_CARD': cards_block([(d['album'], {**d['heroes']['low'], 'base': 'images/GET_IT,Vol.1/GET_IT,Vol.1_cover', 'w': 668, 'h': 668, 'ext': 'webp', 'disc': True}, d['track']['album'])], d) if d.get('album') else [],
+        'HOME_ARTIST_CARD': cards_block([(d['artist_page'], {**d['heroes']['settwor'], 'disc': True}, d['track']['artist'])], d),
         'STD_ROWS': std_rows(d['standards']),
         'STD_DISCS': disc_row(d['standards']),
         'REG_LIST': reg_list(d),
