@@ -17,7 +17,7 @@ Put this block in the home page of settwor.com.pl (`src/pages.json` -> `artist.s
   "name": "SETTWOR",
   "url": "https://settwor.com.pl/",
   "genre": [
-    "Brazilian Funk",
+    "Brazilian Phonk",
     "Phonk"
   ],
   "sameAs": [
