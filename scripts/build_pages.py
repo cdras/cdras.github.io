@@ -277,7 +277,7 @@ def home_texts(d):
             'HOME_NEWEST_NAME': esc({'Single': tr['name'], 'Album': tr['album']}.get(last.get('kind', 'Single'), tr['artist'])),
             'HOME_NEWEST_STREAMS': last['streams'],
             'HOME_NEWEST_CODE': esc(last.get('code', '')),
-            'HOME_NEWEST_HREF': 'AWARD-REGISTRY.html#' + esc(last.get('code', ''))}
+            'HOME_NEWEST_HREF': url_quote(last['file'])}
 
 
 def level_shown(a, d):
