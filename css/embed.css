@@ -53,6 +53,8 @@ body.embed {
 .embed .s1 .ledger-top, .embed .s1 .tier-row .t-label, .embed .s1 .ledger-unit { font-size: 0.875rem !important; }
 .embed .s1 .ledger-top { padding: 0.3rem 0.625rem !important; letter-spacing: 0.16em !important; }
 .embed .s1 .tier-row { padding: 0.5rem 0.625rem !important; }
+/* v1.16.25: every card is the same size. The release awards have one more line (the artist name under the title); the artist award has not, so the tier row is pinned to the height of the 3-line version and its 2 lines sit in the middle. */
+.embed .s1 .tier-row { min-height: 5.7rem; display: flex; flex-direction: column; justify-content: center; }
 .embed .s1 .ledger-rank { gap: 0.75rem !important; padding: 0.4rem 0.625rem !important; }
 .embed .s1 .ledger-unit { letter-spacing: 0.14em !important; white-space: normal; }
 /* short or narrow iframes must not hide parts of the plaque (style.css hides them on short screens) */

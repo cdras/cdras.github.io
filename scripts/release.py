@@ -24,7 +24,7 @@ SITEMAP = ROOT / 'sitemap.xml'
 DIST = ROOT / 'dist'
 SEMVER = re.compile(r'^(\d+)\.(\d+)\.(\d+)$')
 ZIP_NAME = re.compile(r'^CDRA v\d+\.\d+\.\d+\.zip$')
-REQUIRED_SKILLS = ['apple-design', 'apple-hig-review', 'claude-liquid-glass']
+REQUIRED_SKILLS = ['apple-design', 'apple-hig-review', 'claude-liquid-glass', 'unslop']
 TILT_TAG = '<script src="js/tilt.js" defer>'
 TILT_FILE = 'js/tilt.js'
 SHARE_TAG = '<script src="js/share.js" defer>'   # v1.14.15 (owner): the share window on the award pages

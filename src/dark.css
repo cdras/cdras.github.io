@@ -10,6 +10,7 @@
 
 :root {
   color-scheme: dark;
+  --sheen-blend: screen; --sheen-op: 0.16; --sheen-blend-zoom: screen; --sheen-op-zoom: 0.2;   /* v1.16.29 */
   --ink: #f1eafc;
   --ink-soft: #b9a9d3;
   --bg: #0f0818;
@@ -74,8 +75,8 @@ body { background: transparent; }
 .zoom-img { border: 1px solid rgb(var(--line-rgb) / 0.25); }
 .dots a::before { border-color: var(--ink-soft); }
 
-/* v1.14.17: the sheen on a dark plate: light colours are added (screen), softer than on white */
-.s1 .plaque::after, .zoom-tilt::after { mix-blend-mode: screen; opacity: calc(var(--sh, 0) * 0.3); }
+/* v1.14.17: the sheen on a dark plate: light colours are added (screen), softer than on white.
+   v1.16.29: set by the variables in :root above (the old rule here lost to the later light rule, so dark had NO sheen) */
 
 /* @solid */
 /* more-contrast / less-transparency users: the solid sheets must be dark too, not the light #fff from above */
